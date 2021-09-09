@@ -1,6 +1,6 @@
 # ignore environment variables and local dev settings
 django/env/
-.env
+.env.dev
 pyrightconfig.json
 
 # ignore cache files
