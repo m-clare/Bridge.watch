@@ -1,1 +1,16 @@
+# ignore environment variables and local dev settings
 django/env/
+.env
+pyrightconfig.json
+
+# ignore cache files
+django/nbi/__pycache__
+django/nbi/migrations/__pycache__
+django/nbi-api/__pycache__
+django/nbi-api/migrations/__pycache__
+
+# ignore frontend package files
+preact/node_modules
+preact/public/build
+express/node_modules
+express/data
