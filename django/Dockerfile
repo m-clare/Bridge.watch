@@ -12,6 +12,11 @@ ENV PYTHONUNBUFFERED 1
 RUN apk update \
     && apk add postgresql-dev gcc python3-dev musl-dev
 
+# copy entrypoint.sh
+COPY ./entrypoint.sh .
+RUN sed -i 's/\r$//g' /usr/src/django/entrypoint.sh
+RUN chmod +x /usr/src/django/entrypoint.sh
+
 # install dependencies
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
@@ -19,3 +24,6 @@ RUN pip install -r requirements.txt
 
 # copy project
 COPY . .
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/django/entrypoint.sh"]
