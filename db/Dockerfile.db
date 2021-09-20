@@ -1,0 +1,6 @@
+FROM postgres:13.0-alpine
+ADD ./db/nbi_demo.sql /docker-entrypoint-initdb.d
+
+# to load from command line
+# docker exec -i ${CONTAINER_NAME} psql -U admin -d nbi_test < nbi_demo.sql
+# table name is 'small_nbi', schema is 'initial'

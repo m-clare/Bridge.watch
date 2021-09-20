@@ -12,7 +12,9 @@ services:
       - ./.env.dev
 
   db:
-    image: postgres:13.0-alpine
+    build:
+      context: .
+      dockerfile: ./db/Dockerfile.db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
