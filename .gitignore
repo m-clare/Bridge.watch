@@ -14,3 +14,6 @@ preact/node_modules
 preact/public/build
 express/node_modules
 express/data
+
+#ignore csvs
+postgres/*.csv
