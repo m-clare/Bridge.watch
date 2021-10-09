@@ -1,0 +1,5 @@
+code,description
+0,"No median"
+1,"Open median"
+2,"Closed median with no barrier"
+3,"Closed median with non-mountable barriers"

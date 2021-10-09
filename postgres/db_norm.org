@@ -1,0 +1,49 @@
+* Foreign Key Tables
+** DONE 1. State Code
+   CLOSED: [2021-10-08 Fri 20:09]
+** TODO 2. Highway District Code 
+** TODO 3. County/Parish Code (FIPS) - find existing csv
+** TODO 4. Place Code (FIPS) - find existing csv
+** 5. Inventory Route
+*** TODO A Record Type On/Under
+*** TODO B Route Signing Prefix
+*** TODO C Level of Service
+*** D Route Number (5 digit many)
+*** TODO E Directional Suffix
+** 6. Features Intersected VARCHAR(25)
+** 7. Facility Carried VARCHAR(18)
+** 8. Structure Number VARCHAR(15)
+** 9. Location VARCHAR(25)
+** 10. Inventory Route, Min Vertical Clearance (DECIMAL 2)
+** 11. Kilometerpoint (Decimal 3)
+** 12. Base highway network BOOLEAN
+** 13. LRS Inventory Route, Subroute Number VARCHAR(12) - must be 12 characters
+** DONE 16. Latitude
+   CLOSED: [2021-10-08 Fri 20:21]
+** DONE 17. Longitude
+   CLOSED: [2021-10-08 Fri 20:21]
+** 19. Bypass Detour Length (m) (INT 3)
+** DONE 20. Toll
+   CLOSED: [2021-10-08 Fri 20:26]
+** DONE 21. Maintenance Responsibility
+   CLOSED: [2021-10-08 Fri 20:32]
+** DONE 22. Owner
+   CLOSED: [2021-10-08 Fri 20:33]
+** DONE 26. Functional Classification of Inventory Route
+   CLOSED: [2021-10-08 Fri 20:36]
+** 27. Year Built (Int 4)
+** 28A. Traffic Lanes On Structure Int (max 2)
+** 28B. Traffic Lanes Under structure (Int max 2)
+** 29. Average Daily Traffic Int max 6
+** 30. Year of Average Daily Traffic
+** DONE 31. Design Load
+   CLOSED: [2021-10-08 Fri 20:43]
+** 32. Approach Roadway Width (Decimal XXX.X)
+** DONE 33. Bridge Median
+   CLOSED: [2021-10-08 Fri 20:45]
+** 34. Skew (degrees 2 int)
+** 35. Structure flared - boolean
+** DONE 36. Traffic Safety Features
+   CLOSED: [2021-10-08 Fri 20:47]
+** DONE 37. Historical Significance
+   CLOSED: [2021-10-08 Fri 20:51]

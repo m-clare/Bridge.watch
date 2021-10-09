@@ -1,0 +1,13 @@
+code,description
+01,"Principal Arterial - Interstate"
+02,"Principal Arterial - Other"
+06,"Minor Arterial"
+07,"Major Collector"
+08,"Minor Collector"
+09,"Local"
+11,"Principal Arterial - Interstate"
+12,"Principal Arterial - Other Freeways or Expressways"
+14,"Other Principal Arterial"
+16,"Minor Arterial"
+17,"Collector"
+19,"Local"
