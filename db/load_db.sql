@@ -1,4 +1,5 @@
-DROP TABLE nbi_raw;
+CREATE DATABASE nbi_2020;
+-- DROP TABLE nbi_raw IF EXISTS;
 CREATE TABLE nbi_raw (
 state TEXT,
 structure_number TEXT,
@@ -132,7 +133,7 @@ ALTER TABLE nbi_raw ALTER COLUMN latitude TYPE DOUBLE PRECISION USING latitude::
 UPDATE nbi_raw SET longitude = NULL WHERE longitude = 'NULL';
 ALTER TABLE nbi_raw ALTER COLUMN longitude TYPE DOUBLE PRECISION USING longitude::double precision;
 
-DROP TABLE state;
+-- DROP TABLE state IF EXISTS;
 CREATE TABLE state (
   id SERIAL,
   name VARCHAR(24) UNIQUE NOT NULL,
@@ -145,7 +146,7 @@ CREATE TABLE state (
 ALTER TABLE nbi_raw ADD COLUMN state_id INTEGER REFERENCES state(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET state_id = (SELECT state.id FROM state WHERE state.fips_code = nbi_raw.state);
 
-DROP TABLE toll;
+-- DROP TABLE toll IF EXISTS;
 CREATE TABLE toll (
   id SERIAL,
   code CHAR(1) UNIQUE,
@@ -158,7 +159,7 @@ CREATE TABLE toll (
 ALTER TABLE nbi_raw ADD COLUMN toll_id INTEGER REFERENCES toll(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET toll_id = (SELECT toll.id FROM toll WHERE toll.code = nbi_raw.toll);
 
-DROP TABLE traffic_safety_features_approach_guardrail_ends;
+-- DROP TABLE traffic_safety_features_approach_guardrail_ends IF EXISTS;
 CREATE TABLE traffic_safety_features_approach_guardrail_ends (
 id SERIAL,
  code CHAR(1) UNIQUE,
@@ -172,7 +173,7 @@ ALTER TABLE nbi_raw ADD COLUMN traffic_safety_features_approach_guardrail_ends_i
 UPDATE nbi_raw SET traffic_safety_features_approach_guardrail_ends_id = (SELECT traffic_safety_features_approach_guardrail_ends.id FROM traffic_safety_features_approach_guardrail_ends where traffic_safety_features_approach_guardrail_ends.code = nbi_raw.traffic_safety_features_approach_guardrail_ends);
 ALTER TABLE nbi_raw DROP COLUMN traffic_safety_features_approach_guardrail_ends;
 
-DROP TABLE design_load;
+-- DROP TABLE design_load IF EXISTS;
 CREATE TABLE design_load (
 id SERIAL,
  code CHAR(1) UNIQUE,
@@ -187,7 +188,7 @@ ALTER TABLE nbi_raw ADD COLUMN design_load_id INTEGER REFERENCES design_load(id)
 UPDATE nbi_raw SET design_load_id = (SELECT design_load.id FROM design_load where design_load.code = nbi_raw.design_load);
 ALTER TABLE nbi_raw DROP COLUMN design_load;
 
-DROP TABLE traffic_safety_features_approach_guardrail; 
+-- DROP TABLE traffic_safety_features_approach_guardrail IF EXISTS; 
 CREATE TABLE traffic_safety_features_approach_guardrail (
 id SERIAL, 
  code CHAR(1) UNIQUE, 
@@ -201,7 +202,7 @@ ALTER TABLE nbi_raw ADD COLUMN traffic_safety_features_approach_guardrail_id INT
 UPDATE nbi_raw SET traffic_safety_features_approach_guardrail_id = (SELECT traffic_safety_features_approach_guardrail.id FROM traffic_safety_features_approach_guardrail where traffic_safety_features_approach_guardrail.code = nbi_raw.traffic_safety_features_approach_guardrail);
 ALTER TABLE nbi_raw DROP COLUMN traffic_safety_features_approach_guardrail;
 
-DROP TABLE deck_condition;
+-- DROP TABLE deck_condition IF EXISTS;
 CREATE TABLE deck_condition (
 id SERIAL,
  code INTEGER UNIQUE,
@@ -218,7 +219,7 @@ ALTER TABLE nbi_raw ADD COLUMN deck_condition_id INTEGER REFERENCES deck_conditi
 UPDATE nbi_raw SET deck_condition_id = (SELECT deck_condition.id FROM deck_condition where deck_condition.code = nbi_raw.deck_condition::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN deck_condition;
 
-DROP TABLE functional_classification_of_inventory_route; 
+-- DROP TABLE functional_classification_of_inventory_route IF EXISTS; 
 CREATE TABLE functional_classification_of_inventory_route (
 id SERIAL, 
  code CHAR(2) UNIQUE, 
@@ -232,7 +233,7 @@ ALTER TABLE nbi_raw ADD COLUMN functional_classification_of_inventory_route_id I
 UPDATE nbi_raw SET functional_classification_of_inventory_route_id = (SELECT functional_classification_of_inventory_route.id FROM functional_classification_of_inventory_route where functional_classification_of_inventory_route.code = nbi_raw.functional_classification_of_inventory_route);
 ALTER TABLE nbi_raw DROP COLUMN functional_classification_of_inventory_route;
 
-DROP TABLE historical_significance; 
+-- DROP TABLE historical_significance IF EXISTS; 
 CREATE TABLE historical_significance (
 id SERIAL, 
  code CHAR(1) UNIQUE, 
@@ -246,7 +247,7 @@ ALTER TABLE nbi_raw ADD COLUMN historical_significance_id INTEGER REFERENCES his
 UPDATE nbi_raw SET historical_significance_id = (SELECT historical_significance.id FROM historical_significance where historical_significance.code = nbi_raw.historical_significance);
 ALTER TABLE nbi_raw DROP COLUMN historical_significance;
 
-DROP TABLE substructure_condition; 
+-- DROP TABLE substructure_condition IF EXISTS;  
 CREATE TABLE substructure_condition (
 id SERIAL, 
  code INTEGER UNIQUE, 
@@ -264,7 +265,7 @@ ALTER TABLE nbi_raw ADD COLUMN substructure_condition_id INTEGER REFERENCES subs
 UPDATE nbi_raw SET substructure_condition_id = (SELECT substructure_condition.id FROM substructure_condition where substructure_condition.code = nbi_raw.substructure_condition::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN substructure_condition;
 
-DROP TABLE traffic_safety_features_bridge_railings; 
+-- DROP TABLE traffic_safety_features_bridge_railings IF EXISTS; 
 CREATE TABLE traffic_safety_features_bridge_railings (
 id SERIAL, 
  code CHAR(1) UNIQUE, 
@@ -278,7 +279,7 @@ ALTER TABLE nbi_raw ADD COLUMN traffic_safety_features_bridge_railings_id INTEGE
 UPDATE nbi_raw SET traffic_safety_features_bridge_railings_id = (SELECT traffic_safety_features_bridge_railings.id FROM traffic_safety_features_bridge_railings where traffic_safety_features_bridge_railings.code = nbi_raw.traffic_safety_features_bridge_railings);
 ALTER TABLE nbi_raw DROP COLUMN traffic_safety_features_bridge_railings;
 
-DROP TABLE superstructure_condition; 
+-- DROP TABLE superstructure_condition IF EXISTS; 
 CREATE TABLE superstructure_condition (
 id SERIAL, 
  code INTEGER UNIQUE, 
@@ -296,7 +297,7 @@ ALTER TABLE nbi_raw ADD COLUMN superstructure_condition_id INTEGER REFERENCES su
 UPDATE nbi_raw SET superstructure_condition_id = (SELECT superstructure_condition.id FROM superstructure_condition where superstructure_condition.code = nbi_raw.superstructure_condition::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN superstructure_condition;
 
-DROP TABLE bridge_median; 
+-- DROP TABLE bridge_median IF EXISTS; 
 CREATE TABLE bridge_median (
 id SERIAL, 
  code CHAR(1) UNIQUE, 
@@ -310,7 +311,7 @@ ALTER TABLE nbi_raw ADD COLUMN bridge_median_id INTEGER REFERENCES bridge_median
 UPDATE nbi_raw SET bridge_median_id = (SELECT bridge_median.id FROM bridge_median where bridge_median.code = nbi_raw.bridge_median);
 ALTER TABLE nbi_raw DROP COLUMN bridge_median;
 
-DROP TABLE lowest_rating; 
+-- DROP TABLE lowest_rating IF EXISTS; 
 CREATE TABLE lowest_rating (
 id SERIAL, 
  code INTEGER UNIQUE, 
@@ -328,7 +329,7 @@ ALTER TABLE nbi_raw ADD COLUMN lowest_rating_id INTEGER REFERENCES lowest_rating
 UPDATE nbi_raw SET lowest_rating_id = (SELECT lowest_rating.id FROM lowest_rating where lowest_rating.code = nbi_raw.lowest_rating::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN lowest_rating;
 
-DROP TABLE owner; 
+-- DROP TABLE owner IF EXISTS; 
 CREATE TABLE owner (
 id SERIAL, 
  code CHAR(2) UNIQUE, 
@@ -342,7 +343,7 @@ ALTER TABLE nbi_raw ADD COLUMN owner_id INTEGER REFERENCES owner(id) ON DELETE C
 UPDATE nbi_raw SET owner_id = (SELECT owner.id FROM owner where owner.code = nbi_raw.owner);
 ALTER TABLE nbi_raw DROP COLUMN owner;
 
-DROP TABLE maintenance_responsibility; 
+-- DROP TABLE maintenance_responsibility IF EXISTS; 
 CREATE TABLE maintenance_responsibility (
 id SERIAL, 
  code CHAR(2) UNIQUE, 
@@ -356,7 +357,7 @@ ALTER TABLE nbi_raw ADD COLUMN maintenance_responsibility_id INTEGER REFERENCES 
 UPDATE nbi_raw SET maintenance_responsibility_id = (SELECT maintenance_responsibility.id FROM maintenance_responsibility where maintenance_responsibility.code = nbi_raw.maintenance_responsibility);
 ALTER TABLE nbi_raw DROP COLUMN maintenance_responsibility;
 
-DROP TABLE culvert_condition; 
+-- DROP TABLE culvert_condition IF EXISTS; 
 CREATE TABLE culvert_condition (
 id SERIAL, 
  code INTEGER UNIQUE, 
@@ -374,7 +375,7 @@ ALTER TABLE nbi_raw ADD COLUMN culvert_condition_id INTEGER REFERENCES culvert_c
 UPDATE nbi_raw SET culvert_condition_id = (SELECT culvert_condition.id FROM culvert_condition where culvert_condition.code = nbi_raw.culvert_condition::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN culvert_condition;
 
-DROP TABLE traffic_safety_features_transitions; 
+-- DROP TABLE traffic_safety_features_transitions IF EXISTS; 
 CREATE TABLE traffic_safety_features_transitions (
 id SERIAL, 
  code CHAR(1) UNIQUE, 
@@ -388,5 +389,7 @@ ALTER TABLE nbi_raw ADD COLUMN traffic_safety_features_transitions_id INTEGER RE
 UPDATE nbi_raw SET traffic_safety_features_transitions_id = (SELECT traffic_safety_features_transitions.id FROM traffic_safety_features_transitions where traffic_safety_features_transitions.code = nbi_raw.traffic_safety_features_transitions);
 ALTER TABLE nbi_raw DROP COLUMN traffic_safety_features_transitions;
 
-DROP TABLE nbi;
+-- DROP TABLE nbi IF EXISTS;
 CREATE TABLE nbi as (select * from nbi_raw);
+
+DROP TABLE nbi_raw;

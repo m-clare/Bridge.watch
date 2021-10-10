@@ -1,5 +1,14 @@
 FROM postgres:13.0-alpine
-ADD ./db/small_nbi.sql /docker-entrypoint-initdb.d
+
+COPY *.sql /docker-entrypoint-initdb.d/
+COPY *.csv /docker-entrypoint-initdb.d/
+
+# ADD fk_csvs /docker-entrypoint-initdb.d
+
+RUN chmod a+r /docker-entrypoint-initdb.d/
+
+# ADD ./db/load_db.sql /docker-entrypoint-initdb.d
+# ADD ./db/small_nbi.sql /docker-entrypoint-initdb.d
 
 # to load from command line
 # docker exec -i ${CONTAINER_NAME} psql -U admin -d nbi_test < small_nbi.sql

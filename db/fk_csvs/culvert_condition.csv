@@ -1,0 +1,11 @@
+code,rating,description
+9,"Excellent",""
+8,"Very Good", "no problems noted"
+7,"Good", "some minor problems"
+6,"Satisfactory","structural elements show some minor deterioration"
+5,"Fair","all primary structural elements are sound, but may have minor section loss, cracking, spalling, or scour"
+4,"Poor","advanced section loss, deterioration, spalling, or scour"
+3,"Serious","loss of section, deterioration, spalling or scour have seriously affected primary structural components. Local failures are possible. Fatigue cracks in steel or shear cracks in concrete may be present."
+2,"Critical","advanced deterioration of primary structural elements. Fatigue cracks in steel or shear cracks in concrete may be present or scour may have removed substructure support.  Unless closely monitored it may be necessary to close the bridge until corrective action is taken."
+1,"Imminent Failure","major deterioration or section loss present in critical structural components or obvious vertical or horizontal movement affecting structure stability. Bridge is closed to traffic but corrective action may put back in light service." 
+0,"Failed Condition","out of service - beyond corrective action."

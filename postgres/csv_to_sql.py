@@ -32,7 +32,7 @@ def create_table(table_name, table_fields):
 
 
 def alter_table(base_table, foreign_key_table, code_id):
-    return "ALTER TABLE {table} ADD COLUMN {fk_table}_id INTEGER REFERENCES {fk_table}(id) ON DELETE CASCADE; \nUPDATE {table} SET {fk_table}_id = (SELECT {fk_table}.id FROM {fk_table} where {fk_table}.{code_id} = {table}.{fk_table})".format(
+    return "ALTER TABLE {table} ADD COLUMN {fk_table}_id INTEGER REFERENCES {fk_table}(id) ON DELETE CASCADE; \nUPDATE {table} SET {fk_table}_id = (SELECT {fk_table}.id FROM {fk_table} where {fk_table}.{code_id} = {table}.{fk_table});\nALTER TABLE {base_table} DROP COLUMN {fk_table};".format(
         table=base_table, fk_table=foreign_key_table, code_id=code_id
     )
 
