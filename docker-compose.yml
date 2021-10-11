@@ -13,14 +13,16 @@ services:
 
   db:
     build:
-      context: ./db/
-      dockerfile: ./Dockerfile.db
+      context: .
+      dockerfile: ./db/Dockerfile.db
     volumes:
       - db-data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=${SQL_USER}
       - POSTGRES_PASSWORD=${SQL_PASSWORD}
       - POSTGRES_DB=${SQL_DATABASE}
+    env_file:
+      - ./.env.dev
 
 volumes:
   db-data:

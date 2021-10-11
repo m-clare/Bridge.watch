@@ -1,4 +1,3 @@
-CREATE DATABASE nbi_2020;
 -- DROP TABLE nbi_raw IF EXISTS;
 CREATE TABLE nbi_raw (
 state TEXT,

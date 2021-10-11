@@ -1,6 +1,8 @@
 #!/bin/sh
 
-if ["$DATABASE" = "postgres"]
+echo $DATABASE
+
+if [ "$DATABASE" = "postgres" ]
 then
     echo "Waiting for postgres..."
 
@@ -11,10 +13,8 @@ then
     echo "PostgreSQL started"
 fi
 
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-
-# flush the database and migrate changes
-python manage.py flush --no-input
+# migrate django changes
+python manage.py makemigrations
 python manage.py migrate
 
 exec "$@"
