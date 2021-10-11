@@ -1,17 +1,15 @@
 FROM postgres:13.0-alpine
 
-ADD ./db/BadCleaned.csv /docker-entrypoint-initdb.d
+RUN mkdir /db
 
-ADD ./db/fk_csvs/*.csv /docker-entrypoint-initdb.d/fk_csvs/
+ADD ./BadCleaned.csv /db
 
-ADD ./db/load_db.sql /docker-entrypoint-initdb.d
+ADD ./fk_csvs/*.csv /db/fk_csvs/
 
-RUN chown postgres:postgres /docker-entrypoint-initdb.d/*
-RUN chown postgres:postgres /docker-entrypoint-initdb.d/fk_csvs/*
+ADD ./load_db.sql /docker-entrypoint-initdb.d
 
-# ADD ./db/load_db.sql /docker-entrypoint-initdb.d
-# ADD ./db/small_nbi.sql /docker-entrypoint-initdb.d
+RUN chown postgres:postgres /db/*
+RUN chown postgres:postgres /db/fk_csvs/*
 
 # to load from command line
 # docker exec -i ${CONTAINER_NAME} psql -U admin -d nbi_test < small_nbi.sql
-# table name is 'small_nbi', schema is 'public'
