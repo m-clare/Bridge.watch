@@ -94,6 +94,7 @@ class MaintenanceResponsibility(models.Model):
 
 
 class Bridge(models.Model):
+    id = models.BigIntegerField(primary_key=True, null=False)
     state = models.TextField(blank=True, null=True)
     structure_number = models.TextField(blank=True, null=True)
     inventory_route_record_type = models.TextField(blank=True, null=True)
@@ -214,11 +215,14 @@ class Bridge(models.Model):
     traffic_safety_features_bridge_railings_id = models.IntegerField(blank=True, null=True)
     superstructure_condition_id = models.IntegerField(blank=True, null=True)
     bridge_median_id = models.IntegerField(blank=True, null=True)
-    lowest_rating_id = models.IntegerField(blank=True, null=True)
+    
     owner_id = models.IntegerField(blank=True, null=True)
     maintenance_responsibility_id = models.IntegerField(blank=True, null=True)
     culvert_condition_id = models.IntegerField(blank=True, null=True)
     traffic_safety_features_transitions_id = models.IntegerField(blank=True, null=True)
+
+    # lowest_rating_id = models.IntegerField(blank=True, null=True)
+    lowest_rating = models.ForeignKey(LowestRating, on_delete=models.CASCADE)
 
     class Meta:
         managed = False
