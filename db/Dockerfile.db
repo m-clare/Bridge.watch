@@ -1,11 +1,13 @@
 FROM postgres:13.0-alpine
 
-COPY BadCleaned.csv /docker-entrypoint-initdb.d
-COPY load_db.sql /docker-entrypoint-initdb.d
-ADD fk_csvs/*.csv /docker-entrypoint-initdb.d/fk_csvs/
+ADD ./db/BadCleaned.csv /docker-entrypoint-initdb.d
 
-RUN chmod 644 /docker-entrypoint-initdb.d/*
-RUN chmod 644 /docker-entrypoint-initdb.d/fk_csvs/*
+ADD ./db/fk_csvs/*.csv /docker-entrypoint-initdb.d/fk_csvs/
+
+ADD ./db/load_db.sql /docker-entrypoint-initdb.d
+
+RUN chown postgres:postgres /docker-entrypoint-initdb.d/*
+RUN chown postgres:postgres /docker-entrypoint-initdb.d/fk_csvs/*
 
 # ADD ./db/load_db.sql /docker-entrypoint-initdb.d
 # ADD ./db/small_nbi.sql /docker-entrypoint-initdb.d
