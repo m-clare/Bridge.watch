@@ -13,8 +13,8 @@ services:
 
   db:
     build:
-      context: .
-      dockerfile: ./db/Dockerfile.db
+      context: ./db
+      dockerfile: ./Dockerfile.db
     volumes:
       - db-data:/var/lib/postgresql/data/
     environment:
