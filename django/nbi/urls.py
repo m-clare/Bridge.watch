@@ -19,13 +19,12 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import re_path
 from django.urls import path
-from states import views
+from national import views
 
 urlpatterns = [
     re_path(r'^api/bridges/national', views.national_bridges_location_and_field),
     re_path(r'^api/bridges/n2', views.national_bridges_lf_serialized),
-    path('states/', include('states.urls')),
-    path('index/', views.index),
+    path('national/', include('national.urls')),
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls))
     ]

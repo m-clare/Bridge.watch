@@ -5,18 +5,14 @@ from .models import *
 from .serializers import *
 from django.core import serializers
 import json
+from django_pandas.io import read_frame
 
 # Create your views here.
-def index(request):
-    return HttpResponse("You're at the NBI index.")
-
 
 # exclude Tunnel=18, Culvert=19, Other=00
 bridges_only = (
     Bridge.objects.exclude(structure_type__in=["00", "18", "19"])
 )
-
-
 
 @api_view(["GET"])
 def national_bridges_location_and_field(request):
@@ -35,8 +31,8 @@ def national_bridges_location_and_field(request):
         # base type of plot
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
-            bridges.exclude(lowest_rating__isnull=True)
-            fields.append("lowest_rating__code")
+            bridges = bridges.exclude(lowest_rating__isnull=True)
+            # fields.append("lowest_rating__rating")
         elif plot_type == "year_built":
             bridges.exclude(year_built__isnull=True)
             fields.append("year_built")
@@ -49,8 +45,8 @@ def national_bridges_location_and_field(request):
         if rating == "True":
             fields.append("rating")
 
-        column_limits = fields
-        column_limits.extend(["latitude", "longitude"])
+        column_limits = []# fields
+        column_limits.extend(["latitude", "longitude", "lowest_rating__code"])
         bridges = bridges.values(*column_limits)
 
         # limit query results for troubleshooting
@@ -59,8 +55,10 @@ def national_bridges_location_and_field(request):
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
-        content = BridgeLocationFieldSerializer(bridges, fields=set(fields), many=True)
-        return Response(content.data)
+        df = read_frame(bridges, fieldnames=["latitude", "longitude", "lowest_rating__code"])
+        print(df)
+        # content = BridgeLocationFieldSerializer(bridges, fields=set(fields), many=True)
+        return Response("")
 
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
@@ -106,6 +104,7 @@ def national_bridges_lf_serialized(request):
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
+        
         content = BridgeLocationSerializer(bridges, many=True)
         return Response(content.data)
 
@@ -129,7 +128,7 @@ def national_bridges_csv(request):
         # base type of plot
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
-            bridges.exclude(lowest_rating__isnull=true)
+            bridges.exclude(lowest_rating__isnull=True)
             fields.append("lowest_rating__code")
         elif plot_type == "year_built":
             bridges.exclude(year_built__isnull=true)

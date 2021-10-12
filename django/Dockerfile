@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.9.6-alpine
+FROM python:3.9-buster
 
 # set work directory
 WORKDIR /usr/src/django
@@ -8,12 +8,11 @@ WORKDIR /usr/src/django
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
-
 # install psycopg2 dependencies
-RUN apk update
+RUN apt-get update && apt-get -y upgrade && apt-get install -y netcat
 
-RUN apk add postgresql-dev gcc musl-dev py3-numpy py3-pandas
+# RUN apt-get install postgresql
+# RUN apk add postgresql-dev gcc musl-dev python3-dev py3-numpy py-pip py3-pandas@community
 
 # copy entrypoint.sh
 COPY ./entrypoint.sh .

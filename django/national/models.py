@@ -9,7 +9,7 @@ from django.db import models
 
 
 class BridgeMedian(models.Model):
-    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=1)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -18,7 +18,7 @@ class BridgeMedian(models.Model):
 
 
 class CulvertCondition(models.Model):
-    code = models.IntegerField(unique=True, blank=True, null=True)
+    code = models.IntegerField(unique=True)
     rating = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
@@ -28,7 +28,7 @@ class CulvertCondition(models.Model):
 
 
 class DeckCondition(models.Model):
-    code = models.IntegerField(unique=True, blank=True, null=True)
+    code = models.IntegerField(unique=True)
     rating = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
@@ -38,7 +38,7 @@ class DeckCondition(models.Model):
 
 
 class DesignLoad(models.Model):
-    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=1)
     metric_description = models.TextField(blank=True, null=True)
     english_description = models.TextField(blank=True, null=True)
 
@@ -48,7 +48,7 @@ class DesignLoad(models.Model):
 
 
 class FunctionalClassificationOfInventoryRoute(models.Model):
-    code = models.CharField(unique=True, max_length=2, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=2)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -57,7 +57,7 @@ class FunctionalClassificationOfInventoryRoute(models.Model):
 
 
 class HistoricalSignificance(models.Model):
-    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=1)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -66,7 +66,7 @@ class HistoricalSignificance(models.Model):
 
 
 class LowestRating(models.Model):
-    code = models.IntegerField(unique=True, blank=True, null=True)
+    code = models.IntegerField(unique=True)
     rating = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
@@ -76,7 +76,7 @@ class LowestRating(models.Model):
 
 
 class Maintenance(models.Model):
-    code = models.CharField(unique=True, max_length=2, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=2)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -85,7 +85,7 @@ class Maintenance(models.Model):
 
 
 class MaintenanceResponsibility(models.Model):
-    code = models.CharField(unique=True, max_length=2, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=2)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -229,7 +229,7 @@ class Bridge(models.Model):
 
 
 class Owner(models.Model):
-    code = models.CharField(unique=True, max_length=2, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=2)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -247,7 +247,7 @@ class State(models.Model):
 
 
 class SubstructureCondition(models.Model):
-    code = models.IntegerField(unique=True, blank=True, null=True)
+    code = models.IntegerField(unique=True)
     rating = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
@@ -257,7 +257,7 @@ class SubstructureCondition(models.Model):
 
 
 class SuperstructureCondition(models.Model):
-    code = models.IntegerField(unique=True, blank=True, null=True)
+    code = models.IntegerField(unique=True)
     rating = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
@@ -267,7 +267,7 @@ class SuperstructureCondition(models.Model):
 
 
 class Toll(models.Model):
-    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=1)
     description = models.TextField(unique=True, blank=True, null=True)
 
     class Meta:
@@ -276,7 +276,7 @@ class Toll(models.Model):
 
 
 class TrafficSafetyFeaturesApproachGuardrail(models.Model):
-    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=1)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -285,7 +285,7 @@ class TrafficSafetyFeaturesApproachGuardrail(models.Model):
 
 
 class TrafficSafetyFeaturesApproachGuardrailEnds(models.Model):
-    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=1)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -294,7 +294,7 @@ class TrafficSafetyFeaturesApproachGuardrailEnds(models.Model):
 
 
 class TrafficSafetyFeaturesBridgeRailings(models.Model):
-    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=1)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -303,7 +303,7 @@ class TrafficSafetyFeaturesBridgeRailings(models.Model):
 
 
 class TrafficSafetyFeaturesTransitions(models.Model):
-    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    code = models.CharField(unique=True, max_length=1)
     description = models.TextField(blank=True, null=True)
 
     class Meta:

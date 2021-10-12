@@ -181,22 +181,22 @@ id SERIAL,
  metric_description TEXT,
  english_description TEXT,
  PRIMARY KEY (id)
- ); 
- 
+ );
+
 \copy design_load(code,metric_description,english_description) FROM '/db/fk_csvs/design_load.csv' WITH DELIMITER ',' CSV HEADER;
 
-ALTER TABLE nbi_raw ADD COLUMN design_load_id INTEGER REFERENCES design_load(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN design_load_id INTEGER REFERENCES design_load(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET design_load_id = (SELECT design_load.id FROM design_load where design_load.code = nbi_raw.design_load);
 ALTER TABLE nbi_raw DROP COLUMN design_load;
 
--- DROP TABLE traffic_safety_features_approach_guardrail IF EXISTS; 
+-- DROP TABLE traffic_safety_features_approach_guardrail IF EXISTS;
 CREATE TABLE traffic_safety_features_approach_guardrail (
-id SERIAL, 
- code CHAR(1) UNIQUE, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code CHAR(1) UNIQUE,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy traffic_safety_features_approach_guardrail(code,description) FROM '/db/fk_csvs/traffic_safety_features_approach_guardrail.csv' WITH DELIMITER ',' CSV HEADER;
 
 ALTER TABLE nbi_raw ADD COLUMN traffic_safety_features_approach_guardrail_id INTEGER REFERENCES traffic_safety_features_approach_guardrail(id) ON DELETE CASCADE;
@@ -210,186 +210,182 @@ id SERIAL,
  rating TEXT,
  description TEXT,
  PRIMARY KEY (id)
- ); 
- 
+ );
+
 \copy deck_condition(code,rating,description) FROM '/db/fk_csvs/deck_condition.csv' WITH DELIMITER ',' CSV HEADER;
 
-UPDATE nbi_raw SET deck_condition = NULL WHERE deck_condition = 'NULL';
 UPDATE nbi_raw SET deck_condition = NULL WHERE deck_condition = 'N';
-ALTER TABLE nbi_raw ADD COLUMN deck_condition_id INTEGER REFERENCES deck_condition(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN deck_condition_id INTEGER REFERENCES deck_condition(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET deck_condition_id = (SELECT deck_condition.id FROM deck_condition where deck_condition.code = nbi_raw.deck_condition::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN deck_condition;
 
--- DROP TABLE functional_classification_of_inventory_route IF EXISTS; 
+-- DROP TABLE functional_classification_of_inventory_route IF EXISTS;
 CREATE TABLE functional_classification_of_inventory_route (
-id SERIAL, 
- code CHAR(2) UNIQUE, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code CHAR(2) UNIQUE,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy functional_classification_of_inventory_route(code,description) FROM '/db/fk_csvs/functional_classification_of_inventory_route.csv' WITH DELIMITER ',' CSV HEADER;
 
-ALTER TABLE nbi_raw ADD COLUMN functional_classification_of_inventory_route_id INTEGER REFERENCES functional_classification_of_inventory_route(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN functional_classification_of_inventory_route_id INTEGER REFERENCES functional_classification_of_inventory_route(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET functional_classification_of_inventory_route_id = (SELECT functional_classification_of_inventory_route.id FROM functional_classification_of_inventory_route where functional_classification_of_inventory_route.code = nbi_raw.functional_classification_of_inventory_route);
 ALTER TABLE nbi_raw DROP COLUMN functional_classification_of_inventory_route;
 
--- DROP TABLE historical_significance IF EXISTS; 
+-- DROP TABLE historical_significance IF EXISTS;
 CREATE TABLE historical_significance (
-id SERIAL, 
- code CHAR(1) UNIQUE, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code CHAR(1) UNIQUE,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy historical_significance(code,description) FROM '/db/fk_csvs/historical_significance.csv' WITH DELIMITER ',' CSV HEADER;
 
-ALTER TABLE nbi_raw ADD COLUMN historical_significance_id INTEGER REFERENCES historical_significance(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN historical_significance_id INTEGER REFERENCES historical_significance(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET historical_significance_id = (SELECT historical_significance.id FROM historical_significance where historical_significance.code = nbi_raw.historical_significance);
 ALTER TABLE nbi_raw DROP COLUMN historical_significance;
 
--- DROP TABLE substructure_condition IF EXISTS;  
+-- DROP TABLE substructure_condition IF EXISTS;
 CREATE TABLE substructure_condition (
-id SERIAL, 
- code INTEGER UNIQUE, 
- rating TEXT, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code INTEGER UNIQUE,
+ rating TEXT,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy substructure_condition(code,rating,description) FROM '/db/fk_csvs/substructure_condition.csv' WITH DELIMITER ',' CSV HEADER;
 
 UPDATE nbi_raw SET substructure_condition = NULL WHERE substructure_condition = 'N';
 
-ALTER TABLE nbi_raw ADD COLUMN substructure_condition_id INTEGER REFERENCES substructure_condition(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN substructure_condition_id INTEGER REFERENCES substructure_condition(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET substructure_condition_id = (SELECT substructure_condition.id FROM substructure_condition where substructure_condition.code = nbi_raw.substructure_condition::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN substructure_condition;
 
--- DROP TABLE traffic_safety_features_bridge_railings IF EXISTS; 
+-- DROP TABLE traffic_safety_features_bridge_railings IF EXISTS;
 CREATE TABLE traffic_safety_features_bridge_railings (
-id SERIAL, 
- code CHAR(1) UNIQUE, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code CHAR(1) UNIQUE,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy traffic_safety_features_bridge_railings(code,description) FROM '/db/fk_csvs/traffic_safety_features_bridge_railings.csv' WITH DELIMITER ',' CSV HEADER;
 
-ALTER TABLE nbi_raw ADD COLUMN traffic_safety_features_bridge_railings_id INTEGER REFERENCES traffic_safety_features_bridge_railings(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN traffic_safety_features_bridge_railings_id INTEGER REFERENCES traffic_safety_features_bridge_railings(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET traffic_safety_features_bridge_railings_id = (SELECT traffic_safety_features_bridge_railings.id FROM traffic_safety_features_bridge_railings where traffic_safety_features_bridge_railings.code = nbi_raw.traffic_safety_features_bridge_railings);
 ALTER TABLE nbi_raw DROP COLUMN traffic_safety_features_bridge_railings;
 
--- DROP TABLE superstructure_condition IF EXISTS; 
+-- DROP TABLE superstructure_condition IF EXISTS;
 CREATE TABLE superstructure_condition (
-id SERIAL, 
- code INTEGER UNIQUE, 
- rating TEXT, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code INTEGER UNIQUE,
+ rating TEXT,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy superstructure_condition(code,rating,description) FROM '/db/fk_csvs/superstructure_condition.csv' WITH DELIMITER ',' CSV HEADER;
 
-UPDATE nbi_raw SET superstructure_condition = NULL WHERE superstructure_condition = 'NULL';
 UPDATE nbi_raw SET superstructure_condition = NULL WHERE superstructure_condition = 'N';
 
-ALTER TABLE nbi_raw ADD COLUMN superstructure_condition_id INTEGER REFERENCES superstructure_condition(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN superstructure_condition_id INTEGER REFERENCES superstructure_condition(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET superstructure_condition_id = (SELECT superstructure_condition.id FROM superstructure_condition where superstructure_condition.code = nbi_raw.superstructure_condition::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN superstructure_condition;
 
--- DROP TABLE bridge_median IF EXISTS; 
+-- DROP TABLE bridge_median IF EXISTS;
 CREATE TABLE bridge_median (
-id SERIAL, 
- code CHAR(1) UNIQUE, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code CHAR(1) UNIQUE,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy bridge_median(code,description) FROM '/db/fk_csvs/bridge_median.csv' WITH DELIMITER ',' CSV HEADER;
 
-ALTER TABLE nbi_raw ADD COLUMN bridge_median_id INTEGER REFERENCES bridge_median(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN bridge_median_id INTEGER REFERENCES bridge_median(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET bridge_median_id = (SELECT bridge_median.id FROM bridge_median where bridge_median.code = nbi_raw.bridge_median);
 ALTER TABLE nbi_raw DROP COLUMN bridge_median;
 
--- DROP TABLE lowest_rating IF EXISTS; 
+-- DROP TABLE lowest_rating IF EXISTS;
 CREATE TABLE lowest_rating (
-id SERIAL, 
- code INTEGER UNIQUE, 
- rating TEXT, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code INTEGER UNIQUE,
+ rating TEXT,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy lowest_rating(code,rating,description) FROM '/db/fk_csvs/lowest_rating.csv' WITH DELIMITER ',' CSV HEADER;
 
-UPDATE nbi_raw SET lowest_rating = NULL WHERE lowest_rating = 'NULL';
 UPDATE nbi_raw SET lowest_rating = NULL WHERE lowest_rating = 'N';
 
-ALTER TABLE nbi_raw ADD COLUMN lowest_rating_id INTEGER REFERENCES lowest_rating(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN lowest_rating_id INTEGER REFERENCES lowest_rating(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET lowest_rating_id = (SELECT lowest_rating.id FROM lowest_rating where lowest_rating.code = nbi_raw.lowest_rating::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN lowest_rating;
 
--- DROP TABLE owner IF EXISTS; 
+-- DROP TABLE owner IF EXISTS;
 CREATE TABLE owner (
-id SERIAL, 
- code CHAR(2) UNIQUE, 
- description TEXT, 
+id SERIAL,
+ code CHAR(2) UNIQUE,
+ description TEXT,
  PRIMARY KEY (id)
- ); 
- 
+ );
+
 \copy owner(code,description) FROM '/db/fk_csvs/owner.csv' WITH DELIMITER ',' CSV HEADER;
 
-ALTER TABLE nbi_raw ADD COLUMN owner_id INTEGER REFERENCES owner(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN owner_id INTEGER REFERENCES owner(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET owner_id = (SELECT owner.id FROM owner where owner.code = nbi_raw.owner);
 ALTER TABLE nbi_raw DROP COLUMN owner;
 
--- DROP TABLE maintenance_responsibility IF EXISTS; 
+-- DROP TABLE maintenance_responsibility IF EXISTS;
 CREATE TABLE maintenance_responsibility (
-id SERIAL, 
- code CHAR(2) UNIQUE, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code CHAR(2) UNIQUE,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy maintenance_responsibility(code,description) FROM '/db/fk_csvs/maintenance_responsibility.csv' WITH DELIMITER ',' CSV HEADER;
 
-ALTER TABLE nbi_raw ADD COLUMN maintenance_responsibility_id INTEGER REFERENCES maintenance_responsibility(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN maintenance_responsibility_id INTEGER REFERENCES maintenance_responsibility(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET maintenance_responsibility_id = (SELECT maintenance_responsibility.id FROM maintenance_responsibility where maintenance_responsibility.code = nbi_raw.maintenance_responsibility);
 ALTER TABLE nbi_raw DROP COLUMN maintenance_responsibility;
 
--- DROP TABLE culvert_condition IF EXISTS; 
+-- DROP TABLE culvert_condition IF EXISTS;
 CREATE TABLE culvert_condition (
-id SERIAL, 
- code INTEGER UNIQUE, 
- rating TEXT, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code INTEGER UNIQUE,
+ rating TEXT,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy culvert_condition(code,rating,description) FROM '/db/fk_csvs/culvert_condition.csv' WITH DELIMITER ',' CSV HEADER;
 
 UPDATE nbi_raw SET culvert_condition = NULL WHERE culvert_condition = 'N';
 UPDATE nbi_raw SET culvert_condition = NULL WHERE culvert_condition = 'n';
 
-ALTER TABLE nbi_raw ADD COLUMN culvert_condition_id INTEGER REFERENCES culvert_condition(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN culvert_condition_id INTEGER REFERENCES culvert_condition(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET culvert_condition_id = (SELECT culvert_condition.id FROM culvert_condition where culvert_condition.code = nbi_raw.culvert_condition::INTEGER);
 ALTER TABLE nbi_raw DROP COLUMN culvert_condition;
 
--- DROP TABLE traffic_safety_features_transitions IF EXISTS; 
+-- DROP TABLE traffic_safety_features_transitions IF EXISTS;
 CREATE TABLE traffic_safety_features_transitions (
-id SERIAL, 
- code CHAR(1) UNIQUE, 
- description TEXT, 
- PRIMARY KEY (id) 
- ); 
- 
+id SERIAL,
+ code CHAR(1) UNIQUE,
+ description TEXT,
+ PRIMARY KEY (id)
+ );
+
 \copy traffic_safety_features_transitions(code,description) FROM '/db/fk_csvs/traffic_safety_features_transitions.csv' WITH DELIMITER ',' CSV HEADER;
 
-ALTER TABLE nbi_raw ADD COLUMN traffic_safety_features_transitions_id INTEGER REFERENCES traffic_safety_features_transitions(id) ON DELETE CASCADE; 
+ALTER TABLE nbi_raw ADD COLUMN traffic_safety_features_transitions_id INTEGER REFERENCES traffic_safety_features_transitions(id) ON DELETE CASCADE;
 UPDATE nbi_raw SET traffic_safety_features_transitions_id = (SELECT traffic_safety_features_transitions.id FROM traffic_safety_features_transitions where traffic_safety_features_transitions.code = nbi_raw.traffic_safety_features_transitions);
 ALTER TABLE nbi_raw DROP COLUMN traffic_safety_features_transitions;
 
+ALTER TABLE nbi_raw RENAME TO nbi;
 -- DROP TABLE nbi IF EXISTS;
-CREATE TABLE nbi as (select * from nbi_raw);
 
-DROP TABLE nbi_raw;

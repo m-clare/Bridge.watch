@@ -32,6 +32,10 @@ class BridgeLocationSerializer(ModelSerializer):
 
         read_only_fields = fields
 
+class BridgeSerializer(ModelSerializer):
+    class Meta:
+        model = Bridge
+        fields = "__all__"
 # class BridgeLocationSimpleSerializer(bridge: Bridge) -> Dict[str, Any]:
 #     return {
 #         'latitude': bridge.latitude,
