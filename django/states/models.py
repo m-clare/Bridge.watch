@@ -65,16 +65,6 @@ class HistoricalSignificance(models.Model):
         db_table = 'historical_significance'
 
 
-class LowestRating(models.Model):
-    code = models.IntegerField(unique=True, blank=True, null=True)
-    rating = models.TextField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'lowest_rating'
-
-
 class Maintenance(models.Model):
     code = models.CharField(unique=True, max_length=2, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -220,8 +210,8 @@ class Bridge(models.Model):
     culvert_condition_id = models.IntegerField(blank=True, null=True)
     traffic_safety_features_transitions_id = models.IntegerField(blank=True, null=True)
 
-    # lowest_rating_id = models.IntegerField(blank=True, null=True)
-    lowest_rating = models.ForeignKey(LowestRating, on_delete=models.CASCADE)
+    lowest_rating = models.TextField(blank=True, null=True)
+    # lowest_rating = models.ForeignKey(LowestRating, on_delete=models.CASCADE)
 
     class Meta:
         managed = False

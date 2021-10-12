@@ -36,7 +36,8 @@ def national_bridges_location_and_field(request):
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
             bridges.exclude(lowest_rating__isnull=True)
-            fields.append("lowest_rating__code")
+            # fields.append("lowest_rating__code")
+            fields.append("lowest_rating")
         elif plot_type == "year_built":
             bridges.exclude(year_built__isnull=True)
             fields.append("year_built")

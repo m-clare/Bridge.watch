@@ -5,6 +5,7 @@ pyrightconfig.json
 
 # ignore cache files
 django/nbi/__pycache__
+django/states/__pycache__
 django/nbi/migrations/__pycache__
 django/nbi-api/__pycache__
 django/nbi-api/migrations/__pycache__

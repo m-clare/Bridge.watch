@@ -320,15 +320,6 @@ id SERIAL,
  PRIMARY KEY (id) 
  ); 
  
-\copy lowest_rating(code,rating,description) FROM '/db/fk_csvs/lowest_rating.csv' WITH DELIMITER ',' CSV HEADER;
-
-UPDATE nbi_raw SET lowest_rating = NULL WHERE lowest_rating = 'NULL';
-UPDATE nbi_raw SET lowest_rating = NULL WHERE lowest_rating = 'N';
-
-ALTER TABLE nbi_raw ADD COLUMN lowest_rating_id INTEGER REFERENCES lowest_rating(id) ON DELETE CASCADE; 
-UPDATE nbi_raw SET lowest_rating_id = (SELECT lowest_rating.id FROM lowest_rating where lowest_rating.code = nbi_raw.lowest_rating::INTEGER);
-ALTER TABLE nbi_raw DROP COLUMN lowest_rating;
-
 -- DROP TABLE owner IF EXISTS; 
 CREATE TABLE owner (
 id SERIAL, 
