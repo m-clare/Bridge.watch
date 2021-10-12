@@ -3,9 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import *
 from .serializers import *
-from django.core import serializers
-import json
 from django_pandas.io import read_frame
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -104,17 +103,16 @@ def national_bridges_lf_serialized(request):
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
-        
         content = BridgeLocationSerializer(bridges, many=True)
         return Response(content.data)
 
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["get"])
+@api_view(["GET"])
 def national_bridges_csv(request):
 
-    if request.method == "get":
+    if request.method == "GET":
         # base query
         fields = []
         bridges = bridges_only
@@ -131,7 +129,7 @@ def national_bridges_csv(request):
             bridges.exclude(lowest_rating__isnull=True)
             fields.append("lowest_rating__code")
         elif plot_type == "year_built":
-            bridges.exclude(year_built__isnull=true)
+            bridges.exclude(year_built__isnull=True)
             fields.append("year_built")
         else:
             raise ValueError("invalid plot type provided")
@@ -152,7 +150,10 @@ def national_bridges_csv(request):
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
-        content = BridgeLocationSerializer(bridges, many=True)
-        return Response(content.data)
+        df = read_frame(bridges, fieldnames=column_limits)
+        df.rename(columns={'lowest_rating__code': 'rating'}, inplace=True)
+        response = HttpResponse(content_type='text/csv')
+        df.to_csv(path_or_buf=response, index=False)
+        return response
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
