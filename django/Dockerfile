@@ -8,9 +8,12 @@ WORKDIR /usr/src/django
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+RUN echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+
 # install psycopg2 dependencies
-RUN apk update \
-    && apk add postgresql-dev gcc python3-dev musl-dev
+RUN apk update
+
+RUN apk add postgresql-dev gcc musl-dev py3-numpy py3-pandas
 
 # copy entrypoint.sh
 COPY ./entrypoint.sh .

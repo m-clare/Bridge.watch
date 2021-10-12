@@ -15,7 +15,7 @@ services:
     build:
       context: .
       dockerfile: ./db/Dockerfile.db
-    command: postgres -c log_statement=all
+    command: postgres -c log_statement=all -c max_wal_size=2GB
     volumes:
       - db-data:/var/lib/postgresql/data/
     environment:
