@@ -15,6 +15,7 @@ services:
     build:
       context: .
       dockerfile: ./db/Dockerfile.db
+    command: postgres -c log_statement=all
     volumes:
       - db-data:/var/lib/postgresql/data/
     environment:

@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import debug_toolbar
 from django.contrib import admin
 from django.urls import include
 from django.urls import re_path
@@ -22,7 +23,9 @@ from states import views
 
 urlpatterns = [
     re_path(r'^api/bridges/national', views.national_bridges_location_and_field),
+    re_path(r'^api/bridges/n2', views.national_bridges_lf_serialized),
     path('states/', include('states.urls')),
     path('index/', views.index),
     path('admin/', admin.site.urls),
-]
+    path('__debug__/', include(debug_toolbar.urls))
+    ]

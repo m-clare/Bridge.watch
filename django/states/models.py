@@ -95,7 +95,6 @@ class MaintenanceResponsibility(models.Model):
 
 class Bridge(models.Model):
     id = models.BigIntegerField(primary_key=True, null=False)
-    state = models.TextField(blank=True, null=True)
     structure_number = models.TextField(blank=True, null=True)
     inventory_route_record_type = models.TextField(blank=True, null=True)
     inventory_route_route_signing_prefix = models.TextField(blank=True, null=True)
@@ -117,7 +116,6 @@ class Bridge(models.Model):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     bypass_detour_length = models.TextField(blank=True, null=True)
-    toll = models.TextField(blank=True, null=True)
     year_bult = models.TextField(blank=True, null=True)
     traffic_lanes_on_structure = models.TextField(blank=True, null=True)
     traffic_lanes_under_structure = models.TextField(blank=True, null=True)
@@ -203,6 +201,8 @@ class Bridge(models.Model):
     submitted_by = models.TextField(blank=True, null=True)
     bridge_condition = models.TextField(blank=True, null=True)
     deck_area = models.TextField(blank=True, null=True)
+
+
     state_id = models.IntegerField(blank=True, null=True)
     toll_id = models.IntegerField(blank=True, null=True)
     traffic_safety_features_approach_guardrail_ends_id = models.IntegerField(blank=True, null=True)
@@ -214,8 +214,7 @@ class Bridge(models.Model):
     substructure_condition_id = models.IntegerField(blank=True, null=True)
     traffic_safety_features_bridge_railings_id = models.IntegerField(blank=True, null=True)
     superstructure_condition_id = models.IntegerField(blank=True, null=True)
-    bridge_median_id = models.IntegerField(blank=True, null=True)
-    
+    bridge_median_id = models.IntegerField(blank=True, null=True)   
     owner_id = models.IntegerField(blank=True, null=True)
     maintenance_responsibility_id = models.IntegerField(blank=True, null=True)
     culvert_condition_id = models.IntegerField(blank=True, null=True)

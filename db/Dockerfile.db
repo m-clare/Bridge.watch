@@ -2,7 +2,7 @@ FROM postgres:13.0-alpine
 
 RUN mkdir /db
 
-ADD ./db/BadCleaned.csv /db
+ADD ./db/2020AllRecordsDelimitedAllStatesClean.csv /db
 
 ADD ./db/fk_csvs/*.csv /db/fk_csvs/
 
