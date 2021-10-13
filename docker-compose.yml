@@ -36,8 +36,6 @@ services:
 
   express:
     build: ./express-redis
-    links:
-      - redis
     command: npm start
     volumes:
       - ./express-redis/:/usr/src/app
