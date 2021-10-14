@@ -136,6 +136,7 @@ CREATE TABLE nbi AS (SELECT * from nbi_raw);
 -- Drop unneeded structure types - no culverts or tunnels
 DELETE FROM nbi WHERE structure_type IN ('18', '19');
 DELETE FROM nbi WHERE structure_type IS NULL;
+ALTER TABLE nbi DROP COLUMN culvert_condition;
 
 ALTER TABLE nbi ALTER COLUMN latitude TYPE DOUBLE PRECISION USING latitude::double precision;
 ALTER TABLE nbi ALTER COLUMN longitude TYPE DOUBLE PRECISION USING longitude::double precision;
@@ -370,15 +371,6 @@ id SERIAL,
  description TEXT,
  PRIMARY KEY (id)
  );
-
-\copy culvert_condition(code,rating,description) FROM './db/fk_csvs/culvert_condition.csv' WITH DELIMITER ',' CSV HEADER;
-
-UPDATE nbi SET culvert_condition = NULL WHERE culvert_condition = 'N';
-UPDATE nbi SET culvert_condition = NULL WHERE culvert_condition = 'n';
-
-ALTER TABLE nbi ADD COLUMN culvert_condition_id INTEGER REFERENCES culvert_condition(id) ON DELETE CASCADE;
-UPDATE nbi SET culvert_condition_id = (SELECT culvert_condition.id FROM culvert_condition where culvert_condition.code = nbi.culvert_condition::INTEGER);
-ALTER TABLE nbi DROP COLUMN culvert_condition;
 
 DROP TABLE IF EXISTS traffic_safety_features_transitions;
 CREATE TABLE traffic_safety_features_transitions (
