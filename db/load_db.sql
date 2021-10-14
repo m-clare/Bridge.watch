@@ -389,3 +389,8 @@ ALTER TABLE nbi_raw DROP COLUMN traffic_safety_features_transitions;
 ALTER TABLE nbi_raw RENAME TO nbi;
 -- DROP TABLE nbi IF EXISTS;
 
+CREATE TABLE abbrev_rating AS SELECT (structure_number, state_id, latitude, longitude, structure_type, lowest_rating) from nbi;
+DELETE FROM abbrev_rating WHERE not (abbrev_rating IS NOT NULL);
+ALTER TABLE abbrev_rating ADD COLUMN id SERIAL PRIMARY KEY;
+
+

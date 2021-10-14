@@ -4,6 +4,7 @@ services:
   web:
     build: ./django
     command: python manage.py runserver 0.0.0.0:8000
+    container_name: web
     volumes:
       - ./django/:/usr/src/django/
     ports:
@@ -16,6 +17,7 @@ services:
       context: .
       dockerfile: ./db/Dockerfile.db
     command: postgres -c log_statement=all -c max_wal_size=2GB
+    container_name: db
     volumes:
       - db-data:/var/lib/postgresql/data/
     environment:
@@ -37,13 +39,13 @@ services:
   express:
     build: ./express-redis
     command: npm start
+    container_name: express
     volumes:
       - ./express-redis/:/usr/src/app
     ports:
       - 3000:3000
-    environment:
-      - HOST='redis'
-      - PORT=6379
+    env_file:
+      - ./.env.dev
 
 volumes:
   db-data:

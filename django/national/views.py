@@ -116,6 +116,7 @@ def national_bridges_csv(request):
         # base query
         fields = []
         bridges = bridges_only
+        # bridges = AbbrevBridges.objects.all()
 
         # todo: more general way of retrieving query params?
         # store as dictionary, then parse into:

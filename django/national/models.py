@@ -7,6 +7,17 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
+class AbbrevBridges(models.Model):
+    structure_number = models.TextField(blank=True, null=True)
+    state = models.ForeignKey('State', models.DO_NOTHING, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+    structure_type = models.TextField(blank=True, null=True)
+    lowest_rating = models.ForeignKey('LowestRating', models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'abbrev_rating'
 
 class BridgeMedian(models.Model):
     code = models.CharField(unique=True, max_length=1)
@@ -202,26 +213,23 @@ class Bridge(models.Model):
     bridge_condition = models.TextField(blank=True, null=True)
     deck_area = models.TextField(blank=True, null=True)
 
-
-    state_id = models.IntegerField(blank=True, null=True)
-    toll_id = models.IntegerField(blank=True, null=True)
-    traffic_safety_features_approach_guardrail_ends_id = models.IntegerField(blank=True, null=True)
-    design_load_id = models.IntegerField(blank=True, null=True)
-    traffic_safety_features_approach_guardrail_id = models.IntegerField(blank=True, null=True)
-    deck_condition_id = models.IntegerField(blank=True, null=True)
-    functional_classification_of_inventory_route_id = models.IntegerField(blank=True, null=True)
-    historical_significance_id = models.IntegerField(blank=True, null=True)
-    substructure_condition_id = models.IntegerField(blank=True, null=True)
-    traffic_safety_features_bridge_railings_id = models.IntegerField(blank=True, null=True)
-    superstructure_condition_id = models.IntegerField(blank=True, null=True)
-    bridge_median_id = models.IntegerField(blank=True, null=True)   
-    owner_id = models.IntegerField(blank=True, null=True)
-    maintenance_responsibility_id = models.IntegerField(blank=True, null=True)
-    culvert_condition_id = models.IntegerField(blank=True, null=True)
-    traffic_safety_features_transitions_id = models.IntegerField(blank=True, null=True)
-
-    # lowest_rating_id = models.IntegerField(blank=True, null=True)
-    lowest_rating = models.ForeignKey(LowestRating, on_delete=models.CASCADE)
+    state = models.ForeignKey('State', models.DO_NOTHING, blank=True, null=True)
+    toll = models.ForeignKey('Toll', models.DO_NOTHING, blank=True, null=True)
+    traffic_safety_features_approach_guardrail_ends = models.ForeignKey('TrafficSafetyFeaturesApproachGuardrailEnds', models.DO_NOTHING, blank=True, null=True)
+    design_load = models.ForeignKey(DesignLoad, models.DO_NOTHING, blank=True, null=True)
+    traffic_safety_features_approach_guardrail = models.ForeignKey('TrafficSafetyFeaturesApproachGuardrail', models.DO_NOTHING, blank=True, null=True)
+    deck_condition = models.ForeignKey(DeckCondition, models.DO_NOTHING, blank=True, null=True)
+    functional_classification_of_inventory_route = models.ForeignKey(FunctionalClassificationOfInventoryRoute, models.DO_NOTHING, blank=True, null=True)
+    historical_significance = models.ForeignKey(HistoricalSignificance, models.DO_NOTHING, blank=True, null=True)
+    substructure_condition = models.ForeignKey('SubstructureCondition', models.DO_NOTHING, blank=True, null=True)
+    traffic_safety_features_bridge_railings = models.ForeignKey('TrafficSafetyFeaturesBridgeRailings', models.DO_NOTHING, blank=True, null=True)
+    superstructure_condition = models.ForeignKey('SuperstructureCondition', models.DO_NOTHING, blank=True, null=True)
+    bridge_median = models.ForeignKey(BridgeMedian, models.DO_NOTHING, blank=True, null=True)
+    lowest_rating = models.ForeignKey(LowestRating, models.DO_NOTHING, blank=True, null=True)
+    owner = models.ForeignKey('Owner', models.DO_NOTHING, blank=True, null=True)
+    maintenance_responsibility = models.ForeignKey(MaintenanceResponsibility, models.DO_NOTHING, blank=True, null=True)
+    culvert_condition = models.ForeignKey(CulvertCondition, models.DO_NOTHING, blank=True, null=True)
+    traffic_safety_features_transitions = models.ForeignKey('TrafficSafetyFeaturesTransitions', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -309,3 +317,5 @@ class TrafficSafetyFeaturesTransitions(models.Model):
     class Meta:
         managed = False
         db_table = 'traffic_safety_features_transitions'
+
+
