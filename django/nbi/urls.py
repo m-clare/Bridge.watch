@@ -22,8 +22,7 @@ from django.urls import path
 from national import views
 
 urlpatterns = [
-    re_path(r'^api/bridges/national', views.national_bridges_location_and_field),
-    re_path(r'^api/bridges/n2', views.national_bridges_csv),
+    re_path(r'^api/bridges/national', views.national_bridges_csv),
     path('national/', include('national.urls')),
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls))

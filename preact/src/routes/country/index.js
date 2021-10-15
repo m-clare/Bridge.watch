@@ -28,7 +28,7 @@ import style from "./style.css";
 
 const html = htm.bind(h);
 
-const plotOptions = ["Rating", "Year Built"];
+const plotOptions = ["rating", "year built"];
 
 const materialFilterOptions = [
   "Reinforced Concrete",
@@ -67,8 +67,10 @@ export default function Country() {
   const [isLoading, setIsLoading] = useState(true);
   const [bridges, setBridges] = useState({});
   const [material, setMaterial] = useState([]);
-  const [plotType, setPlotType] = useState("Rating");
-  const [uriString, setUriString] = useState("");
+  const [plotType, setPlotType] = useState("rating");
+
+  // set default plot type for page to load
+  const [uriString, setUriString] = useState("plot_type=rating");
   const [submitted, setSubmitted] = useState(false);
 
   const handleMaterialChange = (event) => {
@@ -95,7 +97,7 @@ export default function Country() {
     if (material.length !== 0) {
       searchParams.set('material', materialValues)
     }
-    setUriString(searchParams.toString())
+    setUriString(searchParams.toString().toLowerCase())
 }, [material, plotType])
 
   
@@ -169,7 +171,7 @@ export default function Country() {
             </${Grid}>
           </${Paper}>
         </${Grid} >
-        ${!isEmpty(bridges) ?
+        ${!isEmpty(bridges)  ?
         (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
                                      field: bridges.field,
                                      count: bridges.natData.count,

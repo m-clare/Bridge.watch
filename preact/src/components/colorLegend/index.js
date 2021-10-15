@@ -1,7 +1,7 @@
 // per @d3/color-legend from Observable
 // https://observablehq.com/@d3/color-legend
 import * as d3 from "d3";
-import {isEmpty} from "lodash";
+import { isEmpty } from "lodash-es";
 
 export function legend({
   color,

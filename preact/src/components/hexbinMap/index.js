@@ -56,6 +56,10 @@ const barChartColor = d3
   .range(["darkred", "red", "yellow", "green", "darkgreen"])
   .interpolate(d3.interpolateRgb.gamma(2.2));
 
+export function initializeHexbinChart(svg, bridgeData) {
+  
+}
+
 export function HexbinChart({ bridgeData }) {
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
@@ -103,9 +107,15 @@ export function HexbinChart({ bridgeData }) {
         [0, myHexbin.radius() * Math.SQRT2]
       );
 
+      console.log("hexmap redrawn")
+
       // add legend
+      const thing = d3.select('#legend')
+      console.log(isEmpty(thing))
+
       svg
         .append("g")
+        .attr('id', 'legend')
         .attr("transform", `translate(${0.6 * width}, ${stdMargin})`)
         .append(() =>
           legend({

@@ -230,6 +230,7 @@ class Bridge(models.Model):
     maintenance_responsibility = models.ForeignKey(MaintenanceResponsibility, models.DO_NOTHING, blank=True, null=True)
     culvert_condition = models.ForeignKey(CulvertCondition, models.DO_NOTHING, blank=True, null=True)
     traffic_safety_features_transitions = models.ForeignKey('TrafficSafetyFeaturesTransitions', models.DO_NOTHING, blank=True, null=True)
+    structure_kind = models.ForeignKey('StructureKind', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -252,6 +253,15 @@ class State(models.Model):
     class Meta:
         managed = False
         db_table = 'state'
+
+
+class StructureKind(models.Model):
+    code = models.IntegerField(unique=True, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'structure_kind'
 
 
 class SubstructureCondition(models.Model):
