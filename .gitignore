@@ -11,6 +11,7 @@ django/nbi-api/migrations/__pycache__
 
 # ignore frontend package files
 preact/node_modules
+preact/build
 preact/public/build
 express-redis/node_modules
 express-redis/data

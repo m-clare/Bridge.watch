@@ -4,6 +4,8 @@ import { getNationalBridges } from "../../utils/bdi-api";
 import { useEffect, useState, useRef } from "preact/hooks";
 import { HexbinChart } from "../../components/hexbinMap";
 import { isEmpty } from "lodash";
+
+
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -12,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
 
 // form only imports...
+import { useTheme } from "@mui/material/styles";
 import Chip from "@mui/material/Chip";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormControl from "@mui/material/FormControl";
@@ -52,6 +55,24 @@ const startDecadeOptions = [];
 
 const endDecadeOptions = [];
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+}}}
+
+function getStyles(materialName, material, theme) {
+  return {
+    fontWeight:
+      material.indexOf(materialName) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
+
 export default function Country() {
   const [isLoading, setIsLoading] = useState(true);
   const [bridges, setBridges] = useState({});
@@ -59,7 +80,13 @@ export default function Country() {
   const [plotType, setPlotType] = useState("");
 
   const handleMaterialChange = (event) => {
-    setMaterial(event.target.value);
+    const {
+      target: { value },
+    } = event;
+    setMaterial(
+      typeof value === 'string' ? value.split(',') : value,
+    );
+    console.log(material);
   };
 
   const handlePlotChange = (event) => {
@@ -98,30 +125,29 @@ export default function Country() {
                     return html`<${MenuItem} key=${name}
                                              value=${name}
 
-                                             >
-                      ${name}</${MenuItem}>`
+  >
+  ${name}</${MenuItem}>`
                     })};
                   </${Select}>
                 </${FormControl}>
               </${Grid}>
               <${Grid} item>
-                <${FormControl} sx=${{ minWidth: 240}} style=${"margin: 0px"}>
+                <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
                   <${InputLabel}>Material</${InputLabel}>
                   <${Select}
                     value=${material}
                     label="Material"
                     onChange=${handleMaterialChange}
                     multiple
-                    input=${ html`<${OutlinedInput} id="select-multiple-chip" label="chip" />` }
+                    input=${ html`<${OutlinedInput} id="select-multiple-chip" label="material" />` }
                     renderValue=${(selected) => (
                     html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-                      )}{selected.map((value) => (
-                      <${Chip} key=${value} label=${balue} />
-                      ))}
-                    </${Box}>`
-                    )}
-                    >
-                    ${materialFilterOptions.map((name, index) => {
+  ${selected.map(value => (
+    html`<${Chip} key=${value} label=${value} />`
+  ))}
+  </${Box}>`)}
+                  >
+                  ${materialFilterOptions.map((name, index) => {
                     return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
                     })};
                   </${Select}>
