@@ -79,10 +79,10 @@ def national_bridges_lf_serialized(request):
         # base type of plot
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
-            bridges.exclude(lowest_rating__isnull=True)
+            bridges = bridges.exclude(lowest_rating__isnull=True)
             fields.append("lowest_rating__code")
         elif plot_type == "year_built":
-            bridges.exclude(year_built__isnull=True)
+            bridges = bridges.exclude(year_built__isnull=True)
             fields.append("year_built")
         else:
             raise ValueError("Invalid plot type provided")
@@ -125,25 +125,25 @@ def national_bridges_csv(request):
         # filter params (lists or single values?)
 
         # base type of plot
+        # rating base
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
-            bridges.exclude(lowest_rating__isnull=True)
+            bridges = bridges.exclude(lowest_rating_id__isnull=True)
             fields.append("lowest_rating__code")
+        # year built base
         elif plot_type == "year_built":
-            bridges.exclude(year_built__isnull=True)
+            bridges = bridges.exclude(year_built__isnull=True)
             fields.append("year_built")
         else:
             raise ValueError("invalid plot type provided")
 
-        # boolean field retrieval
-        # todo: generalize retrieval
-        rating = request.query_params.get("rating")
-        if rating == "True":
-            fields.append("rating")
+        # material type
+        material = request.query_params.get("material")
+        if material is not None:
+            bridges = bridges.filter(material_code__in=material)
 
-        column_limits = fields
-        column_limits.extend(["latitude", "longitude"])
-        bridges = bridges.values_list(*column_limits)
+        fields.extend(["latitude", "longitude"])
+        bridges = bridges.values_list(*fields)
 
         # limit query results for troubleshooting
         limit = request.query_params.get("limit")
@@ -151,8 +151,9 @@ def national_bridges_csv(request):
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
-        df = read_frame(bridges, fieldnames=column_limits)
-        df.rename(columns={'lowest_rating__code': 'rating'}, inplace=True)
+        df = read_frame(bridges, fieldnames=fields)
+        if ('lowest_rating__code' in fields):
+            df.rename(columns={'lowest_rating__code': 'rating'}, inplace=True)
         response = HttpResponse(content_type='text/csv')
         df.to_csv(path_or_buf=response, index=False)
         return response

@@ -1,0 +1,58 @@
+{
+  "private": true,
+  "name": "bdi-preact",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "preact build",
+    "serve": "sirv build --port 8080 --cors --single",
+    "dev": "preact watch",
+    "lint": "eslint src",
+    "test": "jest"
+  },
+  "eslintConfig": {
+    "extends": "preact",
+    "ignorePatterns": [
+      "build/"
+    ]
+  },
+  "devDependencies": {
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-preact-pure": "^2.0.0",
+    "eslint": "^6.0.1",
+    "eslint-config-preact": "^1.1.0",
+    "htm": "^3.1.0",
+    "jest": "^24.9.0",
+    "jest-preset-preact": "^1.0.0",
+    "preact-cli": "^3.0.0",
+    "preact-cli-plugin-env-vars": "^1.2.1",
+    "sirv-cli": "1.0.3"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@mui/icons-material": "^5.0.1",
+    "@mui/material": "^5.0.2",
+    "axios": "^0.21.1",
+    "d3": "^7.0.1",
+    "d3-hexbin": "^0.2.2",
+    "object-to-xml": "^2.0.0",
+    "preact": "^10.3.2",
+    "preact-render-to-string": "^5.1.4",
+    "preact-router": "^3.2.1",
+    "prettier": "^2.4.1",
+    "topojson-client": "^3.1.0",
+    "ts-lit-plugin": "^1.2.1",
+    "typeface-roboto": "^1.1.13",
+    "underscore": "^1.13.1",
+    "us-atlas": "^3.0.0"
+  },
+  "jest": {
+    "preset": "jest-preset-preact",
+    "setupFiles": [
+      "<rootDir>/tests/__mocks__/browserMocks.js",
+      "<rootDir>/tests/__mocks__/setupTests.js"
+    ]
+  },
+  "proxy": "http://localhost:5000"
+}
