@@ -37,36 +37,34 @@ const myHexbin = hexbin()
   .radius(10);
 
 const ratings = {
-  3: 'Serious',
+  0: 'Failed',
   9: 'Excellent'
 }
 
 // Color settings (initial hardcode for ratings data)
 // potential color scales - numerical range, categorical, categorical/numerical
 
-const ratingModeColor = d3
+const ratingColor = d3
   .scaleLinear()
-  .domain([3, 6, 9])
-  .range(["red", "yellow", "green"])
+      .domain([0, 3, 6, 9])
+      .range(["darkred", "red", "yellow", "darkgreen"])
   .interpolate(d3.interpolateRgb.gamma(2.2));
 
 const barChartColor = d3
   .scaleLinear()
-  .domain([0, 3, 6, 9, 10])
-  .range(["darkred", "red", "yellow", "green", "darkgreen"])
+  .domain([0, 3, 6, 9])
+  .range(["darkred", "red", "yellow", "darkgreen"])
   .interpolate(d3.interpolateRgb.gamma(2.2));
 
 const colorDict = {
-  rating: ratingModeColor,
-  "rating": ratingModeColor
+  "rating": ratingColor
 }
 
 export function HexbinChart({ bridgeData }) {
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
-  const [natData, setNatData] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
-  const [field, setField] = useState("  ");
+  const [colorPalette, setColorPalette] = useState("rating")
 
   const d3Container = useRef(null);
 
@@ -89,10 +87,14 @@ export function HexbinChart({ bridgeData }) {
   useEffect(() => {
     if (!isEmpty(bridgeData)) {
       setTotalValues(bridgeData.ratingValues);
-      setNatData(bridgeData.natData);
-      setField(bridgeData.field);
     }
   }, [bridgeData]);
+
+  useEffect(() => {
+    if (!isEmpty(bridgeData)) {
+      setColorPalette(bridgeData.field)
+    }
+  }, [bridgeData])
 
   useEffect(() => {
     if (!isEmpty(bridgeData) && d3Container.current) {
@@ -108,15 +110,7 @@ export function HexbinChart({ bridgeData }) {
         [0, myHexbin.radius() * Math.SQRT2]
       );
 
-      const newColor = colorDict[field]
-      const testColor = colorDict["rating"]
-      const color = colorDict.rating
-      console.log(typeof(field))
-      console.log(typeof(newColor))
-      console.log(typeof(testColor))
-      console.log(typeof(color))
-
-      console.log("hexmap redrawn")
+      const color = colorDict[bridgeData.field]
 
       //TODO:  add legend only once... probe this further
       if (!document.getElementById("legend")) {
@@ -126,12 +120,12 @@ export function HexbinChart({ bridgeData }) {
         .attr("transform", `translate(${0.6 * width}, ${stdMargin})`)
         .append(() =>
           legend({
-            color: ratingModeColor,
+            color: color,
             width: width * 0.3,
             tickFormat: ".0f",
             tickSize: 0,
             ticks: 8,
-            tickExtremes: [ratings[3], ratings[9]]
+            tickExtremes: [ratings[0], ratings[9]]
           })
         );
       }
@@ -206,9 +200,9 @@ export function HexbinChart({ bridgeData }) {
             selected=${hexSelected}
             objData=${activeHex.objHistogram}
             initialData=${totalValues}
-            colorPalette=${barChartColor}
+            colorPalette=${colorDict[colorPalette]}
             barHeight=${barHeight}
-            field=${field}
+            field=${bridgeData.field}
             />
         </div>
       </${Grid}>
@@ -216,8 +210,8 @@ export function HexbinChart({ bridgeData }) {
         <${HexTextSummary}
           selected=${hexSelected}
           objData=${activeHex.objKeyValues}
-          natData=${natData}
-          field=${field[0].toUpperCase()}${field.slice(1)}
+          natData=${bridgeData.natData}
+          field=${bridgeData.field[0].toUpperCase()}${bridgeData.field.slice(1)}
           />
       </${Grid}>
     </${Paper}>
