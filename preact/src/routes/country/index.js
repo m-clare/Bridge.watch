@@ -14,7 +14,6 @@ import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
 
 // form only imports...
-import { useTheme } from "@mui/material/styles";
 import Chip from "@mui/material/Chip";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormControl from "@mui/material/FormControl";
@@ -50,34 +49,26 @@ const structureTypeOptions = [
   "Box Beam or Girders - Single",
 ];
 
+const materialToKey = {
+  "Reinforced Concrete": "1,2",
+  "Steel": "3,4",
+  "Prestressed or Post-tensioned Concrete": "5,6",
+  "Wood or Timber": "7",
+  "Masonry": "8",
+  "Aluminum, Wrought Iron, or Cast Iron": "9",
+  "Other": "0",
+}
 // only visible if Rating Selected
 const startDecadeOptions = [];
 
 const endDecadeOptions = [];
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-}}}
-
-function getStyles(materialName, material, theme) {
-  return {
-    fontWeight:
-      material.indexOf(materialName) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
-
 export default function Country() {
   const [isLoading, setIsLoading] = useState(true);
   const [bridges, setBridges] = useState({});
   const [material, setMaterial] = useState([]);
-  const [plotType, setPlotType] = useState("");
+  const [plotType, setPlotType] = useState("Rating");
+  const [uriString, setUriString] = useState("");
 
   const handleMaterialChange = (event) => {
     const {
@@ -86,8 +77,18 @@ export default function Country() {
     setMaterial(
       typeof value === 'string' ? value.split(',') : value,
     );
-    console.log(material);
   };
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams()
+    const materialValues = material.map(mat => materialToKey[mat])
+    searchParams.set('plot_type', plotType)
+    if (material.length !== 0) {
+      searchParams.set('material', materialValues)
+    }
+    setUriString(searchParams.toString())
+    console.log(searchParams.toString())
+}, [material, plotType])
 
   const handlePlotChange = (event) => {
     setPlotType(event.target.value);
@@ -124,9 +125,8 @@ export default function Country() {
                     ${plotOptions.map((name, index) => {
                     return html`<${MenuItem} key=${name}
                                              value=${name}
-
-  >
-  ${name}</${MenuItem}>`
+                                             >
+                      ${name}</${MenuItem}>`
                     })};
                   </${Select}>
                 </${FormControl}>
@@ -142,12 +142,12 @@ export default function Country() {
                     input=${ html`<${OutlinedInput} id="select-multiple-chip" label="material" />` }
                     renderValue=${(selected) => (
                     html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-  ${selected.map(value => (
-    html`<${Chip} key=${value} label=${value} />`
-  ))}
-  </${Box}>`)}
-                  >
-                  ${materialFilterOptions.map((name, index) => {
+                      ${selected.map(value => (
+                      html`<${Chip} key=${value} label=${value} />`
+                      ))}
+                    </${Box}>`)}
+                    >
+                    ${materialFilterOptions.map((name, index) => {
                     return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
                     })};
                   </${Select}>
@@ -157,10 +157,11 @@ export default function Country() {
             </${Grid}>
           </${Paper}>
         </${Grid} >
-        ${!isEmpty(bridges) ? (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
-                                                           field: bridges.field,
-                                                           count: bridges.natData.count,
-                                                           }}/><${HexbinChart} bridgeData=${bridges} />`) :
+        ${!isEmpty(bridges) ?
+        (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
+                                     field: bridges.field,
+                                     count: bridges.natData.count,
+                                     }}/><${HexbinChart} bridgeData=${bridges} />`) :
         (html`<${Grid} item xs=${12}>
           <${Paper} variant=${"outlined"} style=${"padding: 15px; "}>
             <${Grid} container>
