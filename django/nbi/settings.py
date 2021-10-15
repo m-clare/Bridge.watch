@@ -136,7 +136,7 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 # Primary key set in Postgres as field "id"
-#DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DJANGO_CPROFILE_MIDDLEWARE_REQUIRE_STAFF = False
 

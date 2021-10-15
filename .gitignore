@@ -2,6 +2,7 @@
 django/env/
 .env.dev
 pyrightconfig.json
+*/.env
 
 # ignore cache files
 django/nbi/__pycache__
