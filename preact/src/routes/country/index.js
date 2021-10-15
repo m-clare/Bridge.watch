@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from "preact/hooks";
 import { HexbinChart } from "../../components/hexbinMap";
 import { isEmpty } from "lodash";
 
-
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -21,6 +20,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Button from "@mui/material/Button";
 
 import { CountryDescription } from "../../components/countryDescription";
 
@@ -69,6 +69,7 @@ export default function Country() {
   const [material, setMaterial] = useState([]);
   const [plotType, setPlotType] = useState("Rating");
   const [uriString, setUriString] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const handleMaterialChange = (event) => {
     const {
@@ -79,6 +80,14 @@ export default function Country() {
     );
   };
 
+  const handlePlotChange = (event) => {
+    setPlotType(event.target.value);
+  };
+
+  const submitQuery = (event) => {
+    setSubmitted(true);
+}
+
   useEffect(() => {
     const searchParams = new URLSearchParams()
     const materialValues = material.map(mat => materialToKey[mat])
@@ -87,18 +96,16 @@ export default function Country() {
       searchParams.set('material', materialValues)
     }
     setUriString(searchParams.toString())
-    console.log(searchParams.toString())
 }, [material, plotType])
 
-  const handlePlotChange = (event) => {
-    setPlotType(event.target.value);
-  };
+  
 
   useEffect(async () => {
-    const bridgeData = await getNationalBridges();
+    const bridgeData = await getNationalBridges(uriString);
     setBridges(bridgeData);
     setIsLoading(false);
-  }, []);
+    setSubmitted(false);
+  }, [submitted]);
 
   return html`
     <div class=${style.country}>
@@ -152,6 +159,11 @@ export default function Country() {
                     })};
                   </${Select}>
                 </${FormControl}>
+              </${Grid}>
+              <${Grid} item>
+                <${Button}
+                  onClick=${submitQuery}
+                  variant="contained">Submit</${Button}>
               </${Grid}>
               </${Grid}>
             </${Grid}>

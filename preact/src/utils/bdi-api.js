@@ -1,7 +1,8 @@
 import axios from "axios";
 
-function getNationalBridges() {
-  const url = `http://{process.env.EXPRESS_HOST}:{process.env.EXPRESS_PORT}/`;
+function getNationalBridges(uriString) {
+  const url = `http://${process.env.EXPRESS_HOST}:${process.env.EXPRESS_PORT}/?${uriString}`;
+  console.log(url);
   return axios
     .get(url)
     .then((response) => response.data)
