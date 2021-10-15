@@ -42,10 +42,16 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
   const height = dimensions.height;
   const margins = dimensions.margins;
 
+  const getBars = () => {
+    if (!document.getElementById("bars")) {
+      svg.append("g").attr("id", "bars")
+    }
+    return svg.select('#bars');
+  }
+  const barNode = getBars()
 
   // add bars
-  svg
-    .append("g")
+  barNode
     .selectAll("rect")
     .data(data)
     .join("rect")
@@ -55,9 +61,16 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
     .attr("height", (d) => y(0) - y(d.count))
     .attr("fill", (d) => color(d[field]));
 
+  const getXAxis = () => {
+    if (!document.getElementById("xAxis")) {
+      svg.append("g").attr("id", "xAxis")
+    }
+    return svg.select('#xAxis');
+  }
+  const xAxisNode = getXAxis()
+
   //add x axis
-  svg
-    .append("g")
+  xAxisNode
     .attr("transform", `translate(0, ${height - margins.bottom})`)
     .call(d3.axisBottom(x).tickSizeOuter(0))
     .attr("font-size", "1.2em");

@@ -56,8 +56,9 @@ const barChartColor = d3
   .range(["darkred", "red", "yellow", "green", "darkgreen"])
   .interpolate(d3.interpolateRgb.gamma(2.2));
 
-export function initializeHexbinChart(svg, bridgeData) {
-  
+const colorDict = {
+  rating: ratingModeColor,
+  "rating": ratingModeColor
 }
 
 export function HexbinChart({ bridgeData }) {
@@ -107,12 +108,18 @@ export function HexbinChart({ bridgeData }) {
         [0, myHexbin.radius() * Math.SQRT2]
       );
 
+      const newColor = colorDict[field]
+      const testColor = colorDict["rating"]
+      const color = colorDict.rating
+      console.log(typeof(field))
+      console.log(typeof(newColor))
+      console.log(typeof(testColor))
+      console.log(typeof(color))
+
       console.log("hexmap redrawn")
 
-      // add legend
-      const thing = d3.select('#legend')
-      console.log(isEmpty(thing))
-
+      //TODO:  add legend only once... probe this further
+      if (!document.getElementById("legend")) {
       svg
         .append("g")
         .attr('id', 'legend')
@@ -127,19 +134,25 @@ export function HexbinChart({ bridgeData }) {
             tickExtremes: [ratings[3], ratings[9]]
           })
         );
+      }
+
+      const getHex = () => {
+        if (!document.getElementById("hexes")) {
+          svg.append("g").attr("id", "hexes")
+        }
+        return svg.select('#hexes');
+        }
+      const hexNode = getHex()
 
       // add hexes
-      svg
-        .append("g")
-        .attr("id", "hexes")
+      hexNode
         .selectAll("path")
         .data(hexBridge.hexBin)
         .join("path")
-        .attr("class", "hex")
         .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
         .attr("d", (d) => myHexbin.hexagon(d3.max([radius(d.count), 2])))
-        .attr("fill", (d) => ratingModeColor(d.commonValue))
-        .attr("stroke", (d) => d3.lab(ratingModeColor(d.commonValue)).darker())
+        .attr("fill", (d) => color(d.commonValue))
+        .attr("stroke", (d) => d3.lab(color(d.commonValue)).darker())
         .attr("stroke-width", "0.1em")
         .on("mouseover", function (d) {
           // Set state to pass to barChart
