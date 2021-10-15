@@ -82,13 +82,14 @@ export default function Country() {
     );
   };
 
+  const handleMaterialClose = (event) => {
+    setSubmitted(true);
+  }
+
   const handlePlotChange = (event) => {
     setPlotType(event.target.value);
+    setSubmitted(true)
   };
-
-  const submitQuery = (event) => {
-    setSubmitted(true);
-}
 
   useEffect(() => {
     const searchParams = new URLSearchParams()
@@ -100,7 +101,6 @@ export default function Country() {
     setUriString(searchParams.toString().toLowerCase())
 }, [material, plotType])
 
-  
 
   useEffect(async () => {
     const bridgeData = await getNationalBridges(uriString);
@@ -129,6 +129,7 @@ export default function Country() {
                   <${Select}
                     value=${plotType}
                     label="Plot Type"
+                    disabled=${submitted}
                     onChange=${handlePlotChange}
                     >
                     ${plotOptions.map((name, index) => {
@@ -147,7 +148,9 @@ export default function Country() {
                     value=${material}
                     label="Material"
                     onChange=${handleMaterialChange}
+                    onClose=${handleMaterialClose}
                     multiple
+                    disabled=${submitted}
                     input=${ html`<${OutlinedInput} id="select-multiple-chip" label="material" />` }
                     renderValue=${(selected) => (
                     html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
@@ -161,11 +164,6 @@ export default function Country() {
                     })};
                   </${Select}>
                 </${FormControl}>
-              </${Grid}>
-              <${Grid} item>
-                <${Button}
-                  onClick=${submitQuery}
-                  variant="contained">Submit</${Button}>
               </${Grid}>
               </${Grid}>
             </${Grid}>
