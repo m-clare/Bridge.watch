@@ -40,10 +40,10 @@ const myHexbin = hexbin()
   ])
   .radius(10);
 
-const ratings = {
-  0: "Failed",
-  9: "Excellent",
-};
+const tickExtremes = {
+  "rating": ["Failed", "Excellent"],
+  "year_built": [],
+}
 
 // Color settings (initial hardcode for ratings data)
 // potential color scales - numerical range, categorical, categorical/numerical
@@ -56,7 +56,7 @@ const ratingColor = d3
 
 const yearBuiltColor = d3
   .scaleLinear()
-  .domain([1900, 2022])
+      .domain([1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2022])
   .range([
     "#f7fcf0",
     "#e0f3db",
@@ -88,9 +88,9 @@ const ratingColorblind = d3
   .interpolate(d3.interpolateRgb.gamma(2.2));
 
 const colorDict = {
-  rating: ratingColor,
+  "rating": ratingColor,
   ratingCB: ratingColorblind,
-  "year built": yearBuiltColor,
+  "year_built": yearBuiltColor,
 };
 
 export function HexbinChart({ bridgeData }) {
@@ -132,7 +132,7 @@ export function HexbinChart({ bridgeData }) {
 
   useEffect(() => {
     if (!isEmpty(bridgeData)) {
-      setTotalValues(bridgeData.ratingValues);
+      setTotalValues(bridgeData.totalValues);
     }
   }, [bridgeData]);
 
@@ -144,11 +144,14 @@ export function HexbinChart({ bridgeData }) {
 
   useEffect(() => {
     if (!isEmpty(bridgeData) && d3Container.current) {
+      console.log(bridgeData.field)
+      console.log(colorPalette)
+
       const svg = d3.select(d3Container.current);
 
       const hexBridge = {
         hexBin: bridgeData.hexBin,
-        ratingValues: bridgeData.ratingValues,
+        totalValues: bridgeData.totalValues,
       };
 
       const radius = d3.scaleSqrt(
@@ -180,7 +183,7 @@ export function HexbinChart({ bridgeData }) {
             tickFormat: ".0f",
             tickSize: 0,
             ticks: 8,
-            tickExtremes: [ratings[0], ratings[9]],
+            tickExtremes: tickExtremes[bridgeData.field],
           })
         );
 
@@ -225,7 +228,7 @@ export function HexbinChart({ bridgeData }) {
             .attr("stroke-width", "0.1em");
         });
     }
-  }, [bridgeData]);
+  }, [bridgeData, colorPalette]);
 
   return html`
 <${Grid} item container spacing=${2}>

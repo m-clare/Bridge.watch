@@ -127,7 +127,7 @@ class Bridge(models.Model):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     bypass_detour_length = models.TextField(blank=True, null=True)
-    year_bult = models.TextField(blank=True, null=True)
+    year_built = models.TextField(blank=True, null=True)
     traffic_lanes_on_structure = models.TextField(blank=True, null=True)
     traffic_lanes_under_structure = models.TextField(blank=True, null=True)
     average_daily_traffic = models.TextField(blank=True, null=True)

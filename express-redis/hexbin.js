@@ -35,7 +35,12 @@ function difference(setA, setB) {
 function getKeyProps(dataArray, field) {
   const min = d3.min(dataArray, (d) => d[field]);
   const max = d3.max(dataArray, (d) => d[field]);
-  const avg = d3.mean(dataArray, (d) => d[field]).toPrecision(2);
+  let avg;
+  if (field === "year_built") {
+    avg = +d3.mean(dataArray, (x) => x[field]).toPrecision(4);
+  } else if (field === "rating") {
+    avg = +d3.mean(dataArray, (x) => x[field]).toPrecision(2);
+  } else { throw new Error('Invalid field')}
   const median = d3.median(dataArray, (d) => d[field]);
   const mode = d3.mode(dataArray, (d) => d[field]);
   return { min: min, max: max, avg: avg, median: median, mode: mode };
@@ -75,10 +80,6 @@ function getHexbinData(data) {
   let hexBin = customHexbin(bridgeInfo).map(function (d, i) {
     const index = i;
     const commonValue = d3.mode(d, (x) => x[field]);
-    const min = d3.min(d, (x) => x[field]);
-    const max = d3.max(d, (x) => x[field]);
-    const avg = d3.mean(d, (x) => x[field]).toPrecision(2);
-    const median = d3.median(d, (x) => x[field]);
     const x = d.x;
     const y = d.y;
     const hexLocation = projection
@@ -97,7 +98,7 @@ function getHexbinData(data) {
   });
 
   const hexBridge = {
-    ratingValues: allHistogram,
+    totalValues: allHistogram,
     natData: allKeyData,
     hexBin: hexBin,
     field: field,

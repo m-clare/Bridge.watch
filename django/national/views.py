@@ -25,11 +25,12 @@ def national_bridges_csv(request):
         # base type of plot
         # rating base
         plot_type = request.query_params.get("plot_type")
+        print(plot_type)
         if plot_type == "rating":
             bridges = bridges.exclude(lowest_rating_id__isnull=True)
             fields.append("lowest_rating__code")
         # year built base
-        elif plot_type == "year_built":
+        elif plot_type == "year built":
             bridges = bridges.exclude(year_built__isnull=True)
             fields.append("year_built")
         else:
