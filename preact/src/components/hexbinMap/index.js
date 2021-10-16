@@ -15,6 +15,10 @@ import { isEmpty } from "lodash";
 import { BarChart } from "../../components/barChart";
 import { HexTextSummary } from "../../components/hexTextSummary";
 
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+
 import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
 
@@ -50,6 +54,22 @@ const ratingColor = d3
   .range(["darkred", "red", "yellow", "darkgreen"])
   .interpolate(d3.interpolateRgb.gamma(2.2));
 
+const yearBuiltColor = d3
+  .scaleLinear()
+  .domain([1900, 2022])
+  .range([
+    "#f7fcf0",
+    "#e0f3db",
+    "#ccebc5",
+    "#a8ddb5",
+    "#7bccc4",
+    "#4eb3d3",
+    "#2b8cbe",
+    "#0868ac",
+    "#084081",
+  ])
+  .interpolate(d3.interpolateRgb.gamma(2.2));
+
 const ratingColorblind = d3
   .scaleLinear()
   .domain(d3.range(0, 10))
@@ -64,12 +84,13 @@ const ratingColorblind = d3
     "#74add1",
     "#4575b4",
     "#313695",
-  ]).interpolate(d3.interpolateRgb.gamma(2.2));
-
+  ])
+  .interpolate(d3.interpolateRgb.gamma(2.2));
 
 const colorDict = {
   rating: ratingColor,
-  ratingCB: ratingColorblind
+  ratingCB: ratingColorblind,
+  "year built": yearBuiltColor,
 };
 
 export function HexbinChart({ bridgeData }) {
@@ -77,6 +98,7 @@ export function HexbinChart({ bridgeData }) {
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
   const [colorPalette, setColorPalette] = useState("rating");
+  const [cbEnabled, setCbEnabled] = useState(false);
 
   const d3Container = useRef(null);
 
@@ -95,6 +117,18 @@ export function HexbinChart({ bridgeData }) {
   } else {
     locality = "National Bridge";
   }
+
+  const togglePalette = () => setCbEnabled(!cbEnabled);
+
+  /* useEffect(() => {
+   *   if (cbEnabled) {
+   *     setColorPalette("rating")
+   *   } else {
+   *     setColorPalette("ratingCB")
+   *   }
+   *   console.log(cbEnabled);
+   *   console.log(colorPalette);
+   * }, [togglePalette]) */
 
   useEffect(() => {
     if (!isEmpty(bridgeData)) {
@@ -124,23 +158,31 @@ export function HexbinChart({ bridgeData }) {
 
       const color = colorDict[colorPalette];
 
+      const getLegend = () => {
+        if (!document.getElementById("legendContainer")) {
+          svg.append("g").attr("id", "legendContainer");
+        }
+        return svg.select("#legendContainer");
+      };
+
+      const legendNode = getLegend();
       //TODO:  add legend only once... probe this further
-      if (!document.getElementById("legend")) {
-        svg
-          .append("g")
-          .attr("id", "legend")
-          .attr("transform", `translate(${0.6 * width}, ${stdMargin})`)
-          .append(() =>
-            legend({
-              color: color,
-              width: width * 0.3,
-              tickFormat: ".0f",
-              tickSize: 0,
-              ticks: 8,
-              tickExtremes: [ratings[0], ratings[9]],
-            })
-          );
-      }
+      legendNode
+        .select('#legend')
+        .remove()
+
+      legendNode
+        .attr("transform", `translate(${0.6 * width}, ${stdMargin})`)
+        .append(() =>
+          legend({
+            color: color,
+            width: width * 0.3,
+            tickFormat: ".0f",
+            tickSize: 0,
+            ticks: 8,
+            tickExtremes: [ratings[0], ratings[9]],
+          })
+        );
 
       const getHex = () => {
         if (!document.getElementById("hexes")) {
@@ -188,6 +230,17 @@ export function HexbinChart({ bridgeData }) {
   return html`
 <${Grid} item container spacing=${2}>
   <${Grid} item xs=${12} sm=${8}>
+   <${Grid} container>
+    <${Grid} item>
+    <${FormGroup}>
+      <${FormControlLabel} style=${"font-variant: small-caps"}
+                           control=${html`<${Switch}
+                             checked=${cbEnabled}
+                             onChange=${togglePalette}
+                           />`} label="Colorblind palette" />
+    </${FormGroup}>
+    </${Grid}>
+    <${Grid} item>
     <svg
       class="d3-component"
       viewBox="0 0 ${width} ${height}"
@@ -202,6 +255,8 @@ export function HexbinChart({ bridgeData }) {
         d=${d3.geoPath()(mesh(us, us.objects.states))}
         />
     </svg>
+     </${Grid}>
+    </${Grid}>
   </${Grid}>
   <${Grid} item xs=${12} sm=${4}>
     <${Paper} variant=${"outlined"} style=${"padding: 15px"}>
@@ -229,5 +284,5 @@ export function HexbinChart({ bridgeData }) {
     </${Paper}>
   </${Grid}>
 </${Grid}>
-`;
+  `;
 }

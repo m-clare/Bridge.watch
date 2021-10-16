@@ -120,7 +120,7 @@ export default function Country() {
                 <${Typography} variant="h3" component="h1">National Bridge Inventory 2020</${Typography}>
               </${Grid}>
               <${Grid} item xs=${12}>
-                <${Typography} variant="h6" component="h2" color="${grey[500]}"><i>Display Options</i></${Typography}>
+                <${Typography} style=${"padding-bottom: 8px"} variant="h6" component="h2" color="${grey[500]}"><i>Display Options</i></${Typography}>
               </${Grid}>
               <${Grid} container spacing=${3}>
               <${Grid} item>
@@ -166,16 +166,17 @@ export default function Country() {
                 </${FormControl}>
               </${Grid}>
               </${Grid}>
+              
             </${Grid}>
           </${Paper}>
-        </${Grid} >
+        </${Grid}>
         ${!isEmpty(bridges)  ?
         (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
                                      field: bridges.field,
                                      count: bridges.natData.count,
                                      }}/><${HexbinChart} bridgeData=${bridges} />`) :
         (html`<${Grid} item xs=${12}>
-          <${Paper} variant=${"outlined"} style=${"padding: 15px; "}>
+          <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
             <${Grid} container>
               <${Grid} item xs=${12}>
                 <${Typography} style=${"text-align: center"}
