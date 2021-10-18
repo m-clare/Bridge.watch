@@ -117,7 +117,7 @@ export default function Country() {
           <${Paper} variant=${"outlined"} style=${"padding: 15px; "}>
             <${Grid} container>
               <${Grid} item xs=${12}>
-                <${Typography} variant="h3" component="h1">National Bridge Inventory 2020</${Typography}>
+                <${Typography} variant="h3" component="h1">National Bridge Inventory</${Typography}>
               </${Grid}>
               <${Grid} item xs=${12}>
                 <${Typography} style=${"padding-bottom: 8px"} variant="h6" component="h2" color="${grey[500]}"><i>Display Options</i></${Typography}>

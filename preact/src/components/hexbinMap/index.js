@@ -41,9 +41,9 @@ const myHexbin = hexbin()
   .radius(10);
 
 const tickExtremes = {
-  "rating": ["Failed", "Excellent"],
-  "year_built": [],
-}
+  rating: ["Failed", "Excellent"],
+  year_built: [],
+};
 
 // Color settings (initial hardcode for ratings data)
 // potential color scales - numerical range, categorical, categorical/numerical
@@ -56,7 +56,7 @@ const ratingColor = d3
 
 const yearBuiltColor = d3
   .scaleLinear()
-      .domain([1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2022])
+  .domain([1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2022])
   .range([
     "#f7fcf0",
     "#e0f3db",
@@ -88,9 +88,9 @@ const ratingColorblind = d3
   .interpolate(d3.interpolateRgb.gamma(2.2));
 
 const colorDict = {
-  "rating": ratingColor,
+  rating: ratingColor,
   ratingCB: ratingColorblind,
-  "year_built": yearBuiltColor,
+  year_built: yearBuiltColor,
 };
 
 export function HexbinChart({ bridgeData }) {
@@ -144,9 +144,6 @@ export function HexbinChart({ bridgeData }) {
 
   useEffect(() => {
     if (!isEmpty(bridgeData) && d3Container.current) {
-      console.log(bridgeData.field)
-      console.log(colorPalette)
-
       const svg = d3.select(d3Container.current);
 
       const hexBridge = {
@@ -170,9 +167,7 @@ export function HexbinChart({ bridgeData }) {
 
       const legendNode = getLegend();
       //TODO:  add legend only once... probe this further
-      legendNode
-        .select('#legend')
-        .remove()
+      legendNode.select("#legend").remove();
 
       legendNode
         .attr("transform", `translate(${0.6 * width}, ${stdMargin})`)
