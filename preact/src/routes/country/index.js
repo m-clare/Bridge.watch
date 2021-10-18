@@ -130,7 +130,7 @@ export default function Country() {
                       return html`<${MenuItem} key=${name}
                                                value=${name}
                                                >
-                        ${name}</${MenuItem}>`
+                        ${name.charAt(0).toUpperCase() + name.slice(1)}</${MenuItem}>`
                       })};
                   </${Select}>
                 </${FormControl}>

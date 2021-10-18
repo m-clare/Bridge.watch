@@ -16,7 +16,7 @@ export function HexTextSummary({ selected, objData, natData, field }) {
     data = natData
   }
   return html`
-      <div style=${"min-height: 220px"}>
+      <div style=${"min-height: 240px"}>
         <${Typography} variant="h5" component="h2">
           ${selected ? 'Selected Hex Properties' : 'National Bridge Properties'}
         </${Typography}> 
@@ -27,9 +27,10 @@ export function HexTextSummary({ selected, objData, natData, field }) {
         <${ListItem}>${field} average: ${data.avg}</${ListItem}>
         <${ListItem}>${field} median: ${data.median}</${ListItem}>
         <${ListItem}>${field} mode: ${data.mode}</${ListItem}>
-         ${selected ? html`<${ListItem}>
-          Center Coordinate: ${data.hexLocation[1]}°N, ${-data.hexLocation[0]}°W
-  </${ListItem}>` : null}
+        <${ListItem}>
+         ${selected ? 
+          html`Center Coordinate: ${data.hexLocation[1]}°N, ${-data.hexLocation[0]}°W` : null}
+        </${ListItem}>
         </${List}>
     </div>
     `;
