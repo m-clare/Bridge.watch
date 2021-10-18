@@ -15,11 +15,11 @@ export function HexTextSummary({ selected, objData, natData, field }) {
         <${Typography} variant="h5" component="h2">Selected Hex Properties</${Typography}> 
         <${List} dense=${true}>
         <${ListItem}>Number of Bridges: ${objData.count}</${ListItem}>
-        <${ListItem}>${field} Minimum: ${objData.min}</${ListItem}>
-        <${ListItem}>${field} Maximum: ${objData.max}</${ListItem}>
-        <${ListItem}>${field} Average: ${objData.avg}</${ListItem}>
-        <${ListItem}>${field} Median: ${objData.median}</${ListItem}>
-        <${ListItem}>${field} Mode: ${objData.mode}</${ListItem}>
+        <${ListItem}>${field} minimum: ${objData.min}</${ListItem}>
+        <${ListItem}>${field} maximum: ${objData.max}</${ListItem}>
+        <${ListItem}>${field} average: ${objData.avg}</${ListItem}>
+        <${ListItem}>${field} median: ${objData.median}</${ListItem}>
+        <${ListItem}>${field} mode: ${objData.mode}</${ListItem}>
         <${ListItem}>
           Center Coordinate: ${objData.hexLocation[1]}°N, ${-objData.hexLocation[0]}°W
         </${ListItem}>
@@ -32,11 +32,11 @@ export function HexTextSummary({ selected, objData, natData, field }) {
         <${Typography} variant="h5" component="h2">National Bridge Properties</${Typography}>
         <${List} dense=${true}>
         <${ListItem}>Number of Bridges: ${natData.count}</${ListItem}>
-        <${ListItem}>${field} Minimum: ${natData.min}</${ListItem}>
-        <${ListItem}>${field} Maximum: ${natData.max}</${ListItem}>
-        <${ListItem}>${field} Average: ${natData.avg}</${ListItem}>
-        <${ListItem}>${field} Median: ${natData.median}</${ListItem}>
-        <${ListItem}>${field} Mode: ${natData.mode}</${ListItem}>
+        <${ListItem}>${field} minimum: ${natData.min}</${ListItem}>
+        <${ListItem}>${field} maximum: ${natData.max}</${ListItem}>
+        <${ListItem}>${field} average: ${natData.avg}</${ListItem}>
+        <${ListItem}>${field} median: ${natData.median}</${ListItem}>
+        <${ListItem}>${field} mode: ${natData.mode}</${ListItem}>
         <${ListItem}>  </${ListItem}>
         </${List}>
       </div>`;

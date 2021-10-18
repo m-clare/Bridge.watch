@@ -183,8 +183,8 @@ export function HexbinChart({ bridgeData }) {
         .join("path")
         .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
         .attr("d", (d) => myHexbin.hexagon(d3.max([radius(d.count), 2])))
-        .attr("fill", (d) => color(d.medianValue))
-        .attr("stroke", (d) => d3.lab(color(d.medianValue)).darker())
+        .attr("fill", (d) => color(d.interestValue))
+        .attr("stroke", (d) => d3.lab(color(d.interestValue)).darker())
         .attr("stroke-width", "0.1em")
         .on("mouseover", function (d) {
           // Set state to pass to barChart

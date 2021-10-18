@@ -102,7 +102,7 @@ function getHexbinData(data) {
   // simplified information from calculated hexbins
   let hexBin = customHexbin(bridgeInfo).map(function (d, i) {
     const index = i;
-    const medianValue = d3.median(d, (x) => x[field]);
+    const interestValue = d3.median(d, (x) => x[field]);
     const x = d.x;
     const y = d.y;
     const hexLocation = projection
@@ -129,7 +129,7 @@ function getHexbinData(data) {
     const objKeyValues = getKeyProps(d, field);
     objKeyValues.hexLocation = hexLocation;
     const count = objKeyValues.count
-    return { medianValue, x, y, objHistogram, objKeyValues, count };
+    return { interestValue, x, y, objHistogram, objKeyValues, count };
   });
 
   const hexBridge = {

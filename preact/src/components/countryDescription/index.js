@@ -28,39 +28,24 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-export function CountryDescription({ summaryType, keyValues }) {
-  const [expanded, setExpanded] = useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-
+const textSummary = function(summaryType, count) {
   if (summaryType === "rating") {
-    const field = keyValues.field;
-    const count = keyValues.count;
-    return html`
-    <${Grid} item container>
-      <${Card} variant=${"outlined"}>
-        <${Grid} item xs=${12}>
-          <${CardContent}>
-            <${Typography} variant="h5" component="h2">Plot Summary</${Typography}>
+  return  html`<${Typography} variant="h5" component="h2">Rating - Plot Summary</${Typography}>
             <p>This map aggregates the locations of ${Number(
               Math.round(count / 100) * 100
-            ).toLocaleString()} bridges in the U.S. with their overall "rating" as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}> on a scale of 0 to 9. Bridges that are missing ratings are omitted from the plot. The hexagon size represents the number of bridges in the vicinity, while the color represents the most common rating in the corresponding histogram. Additional filtering can be performed using the options above. </p>
-          </${CardContent}>
-          <${CardActions} disableSpacing>
-            <${Button} variant="text" onClick=${handleExpandClick} fullWidth>More information</${Button}>
-            <${ExpandMore}
-              expand=${expanded}
-              onClick=${handleExpandClick}
-              aria-expanded=${expanded}
-              aria-label="more information"
-              >
-              <${ExpandMoreIcon} />
-            </${ExpandMore}>
-          </${CardActions}>
-          <${Collapse} in=${expanded} timeout="auto" unmountOnExit>
-            <${CardContent}>
+            ).toLocaleString()} bridges in the U.S. with their overall "rating" as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}> on a scale of 0 to 9. Bridges that are missing ratings are omitted from the plot. The hexagon size represents the number of bridges in the vicinity, while the color represents the median rating in the corresponding histogram. Additional filtering can be performed using the options above. </p>`}
+  else if (summaryType === "year built") {
+    return  html`<${Typography} variant="h5" component="h2">Year Built - Plot Summary</${Typography}>
+            <p>This map aggregates the locations of ${Number(
+              Math.round(count / 100) * 100
+            ).toLocaleString()} bridges in the U.S. with their year built as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. The hexagon size represents the number of bridges in the vicinity, while the color represents the median year built in the corresponding histogram. Additional filtering can be performed using the options above. </p>`}
+  else return html`<div></div>`
+}
+
+const textMoreInfo = function(summaryType) {
+  if (summaryType === "rating") {
+    return html`
+           <${CardContent}>
               <${Grid} container spacing=${2}>
                 <${Grid} item xs=${12}>
                   <${Typography} variant="h5" component="h3">Rating Guide:</${Typography}>
@@ -102,13 +87,46 @@ export function CountryDescription({ summaryType, keyValues }) {
                 </${Grid}>
               </${Grid}>
             </${CardContent}>
-          </${Collapse}>
+`
+  }
+}
+
+const moreInfo = ['rating']
+
+export function CountryDescription({ summaryType, keyValues }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
+
+  const field = keyValues.field
+  const count = keyValues.count
+  const hasMoreInfo = moreInfo.includes(field)
+
+  return html`
+    <${Grid} item container>
+      <${Card} variant=${"outlined"}>
+        <${Grid} item xs=${12}>
+          <${CardContent}>
+            ${textSummary(summaryType, count)}
+          </${CardContent}>
+          ${hasMoreInfo ?
+          (html`<${CardActions} disableSpacing>
+            <${Button} variant="text" onClick=${handleExpandClick} fullWidth>More information</${Button}>
+            <${ExpandMore}
+              expand=${expanded}
+              onClick=${handleExpandClick}
+              aria-expanded=${expanded}
+              aria-label="more information"
+              >
+              <${ExpandMoreIcon} />
+            </${ExpandMore}>
+          </${CardActions}>
+          <${Collapse} in=${expanded} timeout="auto" unmountOnExit>
+            ${textMoreInfo(summaryType)}
+    </${Collapse}>`) : (html`<div></div>`)}
         </${Grid}>
       </${Card}>
     </${Grid}>`;
-  } else if (summaryType === "year built") {
-    return;
-  } else {
-    return;
-  }
 }
