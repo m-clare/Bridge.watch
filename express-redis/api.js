@@ -1,3 +1,4 @@
+
 // helpers for express server
 import fetch from "node-fetch";
 import dotenv from 'dotenv';
@@ -14,7 +15,6 @@ const getBridgeData = async (qs) => {
     .then((response) => response.text())
     .then((text) => {
       let values = getHexbinData(text);
-      console.log(values)
       return values;
     });
 };

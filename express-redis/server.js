@@ -25,6 +25,7 @@ async function returnBridgeData(req, res) {
 
 app.use(cors())
 
+// app.get("/", returnBridgeData);
 app.get("/", cache.route(), returnBridgeData);
 
 app.listen(port, () => {
