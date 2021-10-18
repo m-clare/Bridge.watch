@@ -54,6 +54,8 @@ def national_bridges_csv(request):
         df = read_frame(bridges, fieldnames=fields)
         if ('lowest_rating__code' in fields):
             df.rename(columns={'lowest_rating__code': 'rating'}, inplace=True)
+        if ('year_built' in fields):
+            df.rename(columns={'year_built': 'year built'}, inplace=True)
         response = HttpResponse(content_type='text/csv')
         df.to_csv(path_or_buf=response, index=False)
         return response

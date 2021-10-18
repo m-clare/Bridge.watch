@@ -44,11 +44,11 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
 
   const getBars = () => {
     if (!document.getElementById("bars")) {
-      svg.append("g").attr("id", "bars")
+      svg.append("g").attr("id", "bars");
     }
-    return svg.select('#bars');
-  }
-  const barNode = getBars()
+    return svg.select("#bars");
+  };
+  const barNode = getBars();
 
   // add bars
   barNode
@@ -63,17 +63,32 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
 
   const getXAxis = () => {
     if (!document.getElementById("xAxis")) {
-      svg.append("g").attr("id", "xAxis")
+      svg.append("g").attr("id", "xAxis");
     }
-    return svg.select('#xAxis');
-  }
-  const xAxisNode = getXAxis()
+    return svg.select("#xAxis");
+  };
+  const xAxisNode = getXAxis();
 
   //add x axis
-  xAxisNode
-    .attr("transform", `translate(0, ${height - margins.bottom})`)
-    .call(d3.axisBottom(x).tickSizeOuter(0))
-    .attr("font-size", "1.2em");
+  xAxisNode.attr("transform", `translate(0, ${height - margins.bottom})`);
+
+  // limit number of labels based on bins
+  if (data.map((d) => d.field).length <= 16) {
+    xAxisNode
+      .call(d3.axisBottom(x).tickSizeOuter(0))
+      .attr("font-size", "1.2em");
+  } else {
+    xAxisNode
+      .call(
+        d3
+          .axisBottom(x)
+          .tickFormat((interval, i) => {
+            return i % 2 !== 0 ? " " : interval;
+          })
+          .ticks(x.domain().length + 1)
+      )
+      .attr("font-size", "1.2em");
+  }
 
   // add labels
   svg
@@ -101,7 +116,7 @@ export function BarChart({
 }) {
   // xDomain may not be necessary since barChart does not update domains
   // for transitions between datasets
-  const [xDomain, setXDomain] = useState({});
+  // const [xDomain, setXDomain] = useState({});
   const d3Container = useRef(null);
 
   const width = 800;
@@ -113,25 +128,18 @@ export function BarChart({
     bottom: 0.08 * height,
   };
 
-  const dimensions = {width: width, height: height, margins: margins}
-
-  // run once to get xDomain
-  useEffect(() => {
-    if (!isEmpty(initialData)) {
-      setXDomain({ domain: initialData.map((d) => d[field]) });
-    }
-  }, [initialData]);
+  const dimensions = { width: width, height: height, margins: margins };
 
   // Initial setup
   useEffect(() => {
-    if (!isEmpty(xDomain) && !isEmpty(initialData) && d3Container.current) {
+    if (!isEmpty(initialData) && d3Container.current) {
       const svg = d3.select(d3Container.current);
 
       const data = initialData;
 
       const x = d3
         .scaleBand()
-        .domain(xDomain.domain)
+        .domain(initialData.map((d) => d[field]))
         .range([margins.left, width - margins.right])
         .padding(0.1);
 
@@ -145,7 +153,7 @@ export function BarChart({
 
       initializeBarChart(svg, data, domain, colorPalette, field, dimensions);
     }
-  }, [xDomain, initialData]);
+  }, [initialData]);
 
   // Refresh setup
   useEffect(() => {

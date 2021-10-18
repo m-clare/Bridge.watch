@@ -36,7 +36,7 @@ function getKeyProps(dataArray, field) {
   const min = d3.min(dataArray, (d) => d[field]);
   const max = d3.max(dataArray, (d) => d[field]);
   let avg;
-  if (field === "year_built") {
+  if (field === "year built") {
     avg = +d3.mean(dataArray, (x) => x[field]).toPrecision(4);
   } else if (field === "rating") {
     avg = +d3.mean(dataArray, (x) => x[field]).toPrecision(2);
@@ -80,14 +80,14 @@ function getHexbinData(data) {
   let rawHistogram;
   let allCount;
   let allHistogram;
-  if (field === "year_built") {
+  if (field === "year built") {
     min = 1900;
     max = +d3.max(bridgeInfo.map((d) => d[field]));
     domain = d3.range(min, max + 1, 5);
     rawHistogram = d3.histogram().domain([min, max]).thresholds(domain.length)(
       bridgeInfo.map((d) => d[field])
     );
-    allHistogram = rawHistogram.map(d => ({'count': d.length, 'year_built': d.x0, 'year_excluded': d.x1}))
+    allHistogram = rawHistogram.map(d => ({'count': d.length, 'year built': d.x0, 'year excluded': d.x1}))
   } else {
     allCount = countBy(bridgeInfo.map((d) => d[field]));
     allKeyData["count"] = bridgeInfo.map((d) => d[field]).length;
@@ -102,22 +102,22 @@ function getHexbinData(data) {
   // simplified information from calculated hexbins
   let hexBin = customHexbin(bridgeInfo).map(function (d, i) {
     const index = i;
-    const commonValue = d3.mode(d, (x) => x[field]);
+    const medianValue = d3.median(d, (x) => x[field]);
     const x = d.x;
     const y = d.y;
     const hexLocation = projection
       .invert([d.x, d.y])
       .map((d) => d.toPrecision(4));
     let histogram;
-    if (field === "year_built") {
+    if (field === "year built") {
       let min = 1900;
       let max = +d3.max(bridgeInfo.map((d) => d[field]));
       let domain = d3.range(min, max + 1, 5);
       let rawHistogram = d3.histogram().domain([min, max]).thresholds(domain.length)(
         d.map((d) => d[field])
       );
-      let rawobjHistogram = rawHistogram.map(d => ({'count': d.length, 'year_built': d.x0, 'year_excluded': d.x1}))
-      histogram = object(rawobjHistogram.map(d => d.year_built), rawobjHistogram.map(d => d.count))
+      let rawobjHistogram = rawHistogram.map(d => ({'count': d.length, 'year built': d.x0, 'year excluded': d.x1}))
+      histogram = object(rawobjHistogram.map(d => d["year built"]), rawobjHistogram.map(d => d.count))
     } else {
       histogram = countBy(d.map((x) => x[field]));
     }
@@ -129,7 +129,7 @@ function getHexbinData(data) {
     const objKeyValues = getKeyProps(d, field);
     objKeyValues.hexLocation = hexLocation;
     const count = objKeyValues.count
-    return { commonValue, x, y, objHistogram, objKeyValues, count };
+    return { medianValue, x, y, objHistogram, objKeyValues, count };
   });
 
   const hexBridge = {

@@ -82,6 +82,8 @@ eastern_hemisphere = (df.STATE_CODE_001 == "69") | (df.STATE_CODE_001 == "66")
 
 df.loc[(~eastern_hemisphere), "LONG_017"] = "-" + df.loc[~eastern_hemisphere, "LONG_017"] 
 
+# remove lat/long for terrible set of Maryland data
+# lat = 38, 39, 40, long = -70
 print("Writing cleaned file to csv...")
 df.to_csv("2020AllRecordsDelimitedAllStatesClean.csv", na_rep="NULL", index=False)
 # df.to_csv("BadCleaned.csv", na_rep="NULL", index=False)

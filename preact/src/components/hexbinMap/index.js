@@ -41,8 +41,8 @@ const myHexbin = hexbin()
   .radius(10);
 
 const tickExtremes = {
-  rating: ["Failed", "Excellent"],
-  year_built: [],
+  "rating": ["Failed", "Excellent"],
+  "year built": [],
 };
 
 // Color settings (initial hardcode for ratings data)
@@ -88,9 +88,8 @@ const ratingColorblind = d3
   .interpolate(d3.interpolateRgb.gamma(2.2));
 
 const colorDict = {
-  rating: ratingColor,
-  ratingCB: ratingColorblind,
-  year_built: yearBuiltColor,
+  "rating": ratingColor,
+  "year built": yearBuiltColor,
 };
 
 export function HexbinChart({ bridgeData }) {
@@ -98,7 +97,6 @@ export function HexbinChart({ bridgeData }) {
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
   const [colorPalette, setColorPalette] = useState("rating");
-  const [cbEnabled, setCbEnabled] = useState(false);
 
   const d3Container = useRef(null);
 
@@ -117,18 +115,6 @@ export function HexbinChart({ bridgeData }) {
   } else {
     locality = "National Bridge";
   }
-
-  const togglePalette = () => setCbEnabled(!cbEnabled);
-
-  /* useEffect(() => {
-   *   if (cbEnabled) {
-   *     setColorPalette("rating")
-   *   } else {
-   *     setColorPalette("ratingCB")
-   *   }
-   *   console.log(cbEnabled);
-   *   console.log(colorPalette);
-   * }, [togglePalette]) */
 
   useEffect(() => {
     if (!isEmpty(bridgeData)) {
@@ -197,8 +183,8 @@ export function HexbinChart({ bridgeData }) {
         .join("path")
         .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
         .attr("d", (d) => myHexbin.hexagon(d3.max([radius(d.count), 2])))
-        .attr("fill", (d) => color(d.commonValue))
-        .attr("stroke", (d) => d3.lab(color(d.commonValue)).darker())
+        .attr("fill", (d) => color(d.medianValue))
+        .attr("stroke", (d) => d3.lab(color(d.medianValue)).darker())
         .attr("stroke-width", "0.1em")
         .on("mouseover", function (d) {
           // Set state to pass to barChart
@@ -228,17 +214,6 @@ export function HexbinChart({ bridgeData }) {
   return html`
 <${Grid} item container spacing=${2}>
   <${Grid} item xs=${12} sm=${8}>
-   <${Grid} container>
-    <${Grid} item>
-    <${FormGroup}>
-      <${FormControlLabel} style=${"font-variant: small-caps"}
-                           control=${html`<${Switch}
-                             checked=${cbEnabled}
-                             onChange=${togglePalette}
-                           />`} label="Colorblind palette" />
-    </${FormGroup}>
-    </${Grid}>
-    <${Grid} item>
     <svg
       class="d3-component"
       viewBox="0 0 ${width} ${height}"
@@ -253,8 +228,6 @@ export function HexbinChart({ bridgeData }) {
         d=${d3.geoPath()(mesh(us, us.objects.states))}
         />
     </svg>
-     </${Grid}>
-    </${Grid}>
   </${Grid}>
   <${Grid} item xs=${12} sm=${4}>
     <${Paper} variant=${"outlined"} style=${"padding: 15px"}>

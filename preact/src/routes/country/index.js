@@ -64,50 +64,43 @@ const startDecadeOptions = [];
 const endDecadeOptions = [];
 
 export default function Country() {
-  const [isLoading, setIsLoading] = useState(true);
   const [bridges, setBridges] = useState({});
-  const [material, setMaterial] = useState([]);
-  const [plotType, setPlotType] = useState("rating");
-
-  // set default plot type for page to load
-  const [uriString, setUriString] = useState("plot_type=rating");
-  const [submitted, setSubmitted] = useState(false);
+  const [queryObj, setQueryObj] = useState({'plot_type': 'rating',
+                                            'material': [],
+                                            })
+  const [submitted, setSubmitted] = useState(true);
 
   const handleMaterialChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setMaterial(
-      typeof value === 'string' ? value.split(',') : value,
-    );
+    const value = event.target.value
+    const getMaterial = () => (
+      typeof(value) === 'string' ? value.split(',') : value)
+    const materials = getMaterial()
+    const {oldMaterials, ...props} = {...queryObj}
+    setQueryObj({...props, 'material': materials})
   };
 
-  const handleMaterialClose = (event) => {
+  const handleFormClose = (event) => {
     setSubmitted(true);
   }
 
   const handlePlotChange = (event) => {
-    setPlotType(event.target.value);
-    setSubmitted(true)
+    const {oldPlot, ...props} = {...queryObj}
+    setQueryObj({...props, 'plot_type': event.target.value})
   };
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams()
-    const materialValues = material.map(mat => materialToKey[mat])
-    searchParams.set('plot_type', plotType)
-    if (material.length !== 0) {
-      searchParams.set('material', materialValues)
-    }
-    setUriString(searchParams.toString().toLowerCase())
-}, [material, plotType])
-
-
   useEffect(async () => {
+    const searchParams = new URLSearchParams()
+    searchParams.set('plot_type', queryObj['plot_type'])
+    if (queryObj['material'].length !== 0) {
+      searchParams.set('material', queryObj['material'].map(d => materialToKey[d]))
+    }
+    const uriString = searchParams.toString().toLowerCase()
     const bridgeData = await getNationalBridges(uriString);
     setBridges(bridgeData);
-    setIsLoading(false);
     setSubmitted(false);
   }, [submitted]);
+
+  const renderSubmitted = submitted;
 
   return html`
     <div class=${style.country}>
@@ -123,21 +116,22 @@ export default function Country() {
                 <${Typography} style=${"padding-bottom: 8px"} variant="h6" component="h2" color="${grey[500]}"><i>Display Options</i></${Typography}>
               </${Grid}>
               <${Grid} container spacing=${3}>
-              <${Grid} item>
-                <${FormControl} sx=${{ minWidth: 240}} style=${"margin: 0px"}>
-                  <${InputLabel}>Plot Type</${InputLabel}>
-                  <${Select}
-                    value=${plotType}
-                    label="Plot Type"
-                    disabled=${submitted}
-                    onChange=${handlePlotChange}
-                    >
-                    ${plotOptions.map((name, index) => {
-                    return html`<${MenuItem} key=${name}
-                                             value=${name}
-                                             >
-                      ${name}</${MenuItem}>`
-                    })};
+                <${Grid} item>
+                  <${FormControl} sx=${{ minWidth: 240}} style=${"margin: 0px"}>
+                    <${InputLabel}>Plot Type</${InputLabel}>
+                    <${Select}
+                      value=${queryObj.plot_type}
+                      label="Plot Type"
+                      disabled=${renderSubmitted}
+                      onChange=${handlePlotChange}
+                      onClose=${handleFormClose}
+                      >
+                      ${plotOptions.map((name, index) => {
+                      return html`<${MenuItem} key=${name}
+                                               value=${name}
+                                               >
+                        ${name}</${MenuItem}>`
+                      })};
                   </${Select}>
                 </${FormControl}>
               </${Grid}>
@@ -145,50 +139,50 @@ export default function Country() {
                 <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
                   <${InputLabel}>Material</${InputLabel}>
                   <${Select}
-                    value=${material}
+                    value=${queryObj.material}
                     label="Material"
                     onChange=${handleMaterialChange}
-                    onClose=${handleMaterialClose}
+                    onClose=${handleFormClose}
                     multiple
-                    disabled=${submitted}
+                    disabled=${renderSubmitted}
                     input=${ html`<${OutlinedInput} id="select-multiple-chip" label="material" />` }
                     renderValue=${(selected) => (
                     html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
                       ${selected.map(value => (
                       html`<${Chip} key=${value} label=${value} />`
                       ))}
-                    </${Box}>`)}
-                    >
+                  </${Box}>`)}
+                  >
                     ${materialFilterOptions.map((name, index) => {
                     return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
                     })};
                   </${Select}>
                 </${FormControl}>
               </${Grid}>
-              </${Grid}>
-              
             </${Grid}>
-          </${Paper}>
-        </${Grid}>
-        ${!isEmpty(bridges)  ?
+          </${Grid}>
+        </${Paper}>
+      </${Grid}>
+      ${renderSubmitted ? (
+      html`<${Grid} item xs=${12}>
+        <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
+          <${Grid} container>
+            <${Grid} item xs=${12}>
+              <${Typography} style=${"text-align: center"}
+                             variant="h6"
+                             color=${grey[500]}>
+                <i>Loading query...</i>
+              </${Typography}>
+              <${LinearProgress} />
+            </${Grid}>
+          </${Grid}>
+        </${Paper}>
+      </${Grid}>`) : (html`<div></div>`)}
+      ${!isEmpty(bridges)  ?
         (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
                                      field: bridges.field,
                                      count: bridges.natData.count,
-                                     }}/><${HexbinChart} bridgeData=${bridges} />`) :
-        (html`<${Grid} item xs=${12}>
-          <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
-            <${Grid} container>
-              <${Grid} item xs=${12}>
-                <${Typography} style=${"text-align: center"}
-                               variant="h6"
-                               color=${grey[500]}>
-                  <i>Loading query...</i>
-                </${Typography}>
-                <${LinearProgress} />
-              </${Grid}>
-            </${Grid}>
-          </${Paper}>
-        </${Grid}>`)}
+        }}/><${HexbinChart} bridgeData=${bridges} />`) : (html`<div></div>`)}
       </${Grid}>
       </${Box}>
     </div> `;
