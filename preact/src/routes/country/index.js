@@ -147,6 +147,7 @@ export default function Country() {
       searchParams.set('service', queryObj['service'].map(d => serviceTypeOptions[d]))
     }
     const uriString = searchParams.toString().toLowerCase()
+    console.log(uriString);
     const bridgeData = await getNationalBridges(uriString);
     setBridges(bridgeData);
     setSubmitted(false);
@@ -278,7 +279,7 @@ export default function Country() {
             </${Grid}>
           </${Paper}>
         </${Grid}>`) : (html`<div></div>`)}
-        ${(!renderSubmitted && !bridges.message)  ?
+        ${(!isEmpty(bridges) && !bridges.message)  ?
         (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
                                      field: bridges.field,
                                      count: bridges.natData.count,
