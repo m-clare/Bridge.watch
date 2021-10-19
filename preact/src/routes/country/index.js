@@ -40,16 +40,29 @@ const materialFilterOptions = [
   "Other",
 ];
 
-const structureTypeOptions = [
-  "Slab",
-  "Stringer/Multi-beam or Girder",
-  "Girder and Floorbeam System",
-  "Tee Beam",
-  "Box Beam or Girders - Multiple",
-  "Box Beam or Girders - Single",
-];
+const structureTypeOptions = {
+  "Slab": "1",
+  "Stringer/Multi-beam or Girder": "2",
+  "Girder and Floorbeam System": "3",
+  "Tee Beam": "4",
+  "Box Beam or Girders - Multiple": "5",
+  "Box Beam or Girders - Single or Spread": "6",
+  "Frame": "7",
+  "Orthotropic": "8",
+  "Truss - Deck": "9",
+  "Truss - Thru": "10",
+  "Arch - Deck": "11",
+  "Arch - Thru": "12",
+  "Suspension": "13",
+  "Stayed Girder": "14",
+  "Movable - Lift": "15",
+  "Movable - Bascule": "16",
+  "Movable - Swing": "17",
+  "Segmental Box Girder": "21",
+  "Channel Beam": "22"
+};
 
-const materialToKey = {
+const materialOptions = {
   "Reinforced Concrete": "1,2",
   "Steel": "3,4",
   "Prestressed or Post-tensioned Concrete": "5,6",
@@ -67,6 +80,7 @@ export default function Country() {
   const [bridges, setBridges] = useState({});
   const [queryObj, setQueryObj] = useState({'plot_type': 'rating',
                                             'material': [],
+                                            'type': []
                                             })
   const [submitted, setSubmitted] = useState(true);
 
@@ -77,6 +91,15 @@ export default function Country() {
     const materials = getMaterial()
     const {oldMaterials, ...props} = {...queryObj}
     setQueryObj({...props, 'material': materials})
+  };
+
+  const handleTypeChange = (event) => {
+    const value = event.target.value
+    const getType = () => (
+      typeof(value) === 'string' ? value.split(',') : value)
+    const type = getType()
+    const {oldTypes, ...props} = {...queryObj}
+    setQueryObj({...props, 'type': type})
   };
 
   const handleFormClose = (event) => {
@@ -92,7 +115,10 @@ export default function Country() {
     const searchParams = new URLSearchParams()
     searchParams.set('plot_type', queryObj['plot_type'])
     if (queryObj['material'].length !== 0) {
-      searchParams.set('material', queryObj['material'].map(d => materialToKey[d]))
+      searchParams.set('material', queryObj['material'].map(d => materialOptions[d]))
+    }
+    if (queryObj['type'].length !== 0) {
+      searchParams.set('type', queryObj['type'].map(d => structureTypeOptions[d]))
     }
     const uriString = searchParams.toString().toLowerCase()
     const bridgeData = await getNationalBridges(uriString);
@@ -137,7 +163,7 @@ export default function Country() {
               </${Grid}>
               <${Grid} item>
                 <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
-                  <${InputLabel}>Material</${InputLabel}>
+                  <${InputLabel}>Bridge Material</${InputLabel}>
                   <${Select}
                     value=${queryObj.material}
                     label="Material"
@@ -145,7 +171,7 @@ export default function Country() {
                     onClose=${handleFormClose}
                     multiple
                     disabled=${renderSubmitted}
-                    input=${ html`<${OutlinedInput} id="select-multiple-chip" label="material" />` }
+                    input=${ html`<${OutlinedInput} id="select-multiple-chip" label="bridge material" />` }
                     renderValue=${(selected) => (
                     html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
                       ${selected.map(value => (
@@ -153,7 +179,31 @@ export default function Country() {
                       ))}
                   </${Box}>`)}
                   >
-                    ${materialFilterOptions.map((name, index) => {
+                    ${Object.keys(materialOptions).map((name, index) => {
+                    return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
+                    })};
+                  </${Select}>
+                </${FormControl}>
+              </${Grid}>
+              <${Grid} item>
+                <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
+                  <${InputLabel}>Bridge Type</${InputLabel}>
+                  <${Select}
+                    value=${queryObj.type}
+                    label="Bridge Type"
+                    onChange=${handleTypeChange}
+                    onClose=${handleFormClose}
+                    multiple
+                    disabled=${renderSubmitted}
+                    input=${ html`<${OutlinedInput} id="select-multiple-chip" label="bridge type" />` }
+                    renderValue=${(selected) => (
+                    html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
+                      ${selected.map(value => (
+                      html`<${Chip} key=${value} label=${value} />`
+                      ))}
+                  </${Box}>`)}
+                  >
+                    ${Object.keys(structureTypeOptions).map((name, index) => {
                     return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
                     })};
                   </${Select}>
@@ -165,26 +215,26 @@ export default function Country() {
       </${Grid}>
       ${renderSubmitted ? (
       html`<${Grid} item xs=${12}>
-        <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
-          <${Grid} container>
-            <${Grid} item xs=${12}>
-              <${Typography} style=${"text-align: center"}
-                             variant="h6"
-                             color=${grey[500]}>
-                <i>Loading query...</i>
-              </${Typography}>
-              <${LinearProgress} />
-            </${Grid}>
-          </${Grid}>
-        </${Paper}>
-      </${Grid}>`) : (html`<div></div>`)}
+  <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
+  <${Grid} container>
+  <${Grid} item xs=${12}>
+  <${Typography} style=${"text-align: center"}
+  variant="h6"
+  color=${grey[500]}>
+  <i>Loading query...</i>
+  </${Typography}>
+  <${LinearProgress} />
+  </${Grid}>
+  </${Grid}>
+  </${Paper}>
+  </${Grid}>`) : (html`<div></div>`)}
       ${!isEmpty(bridges)  ?
         (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
                                      field: bridges.field,
                                      count: bridges.natData.count,
+                                     filters: queryObj
         }}/><${HexbinChart} bridgeData=${bridges} />`) : (html`<div></div>`)}
       </${Grid}>
       </${Box}>
     </div> `;
 }
-

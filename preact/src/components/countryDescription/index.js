@@ -28,21 +28,21 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-const textSummary = function(summaryType, count) {
+const textSummary = function (summaryType, count) {
   if (summaryType === "rating") {
-  return  html`<${Typography} variant="h5" component="h2">Rating - Plot Summary</${Typography}>
+    return html`
             <p>This map aggregates the locations of ${Number(
               Math.round(count / 100) * 100
-            ).toLocaleString()} bridges in the U.S. with their overall "rating" as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}> on a scale of 0 to 9. Bridges that are missing ratings are omitted from the plot. The hexagon size represents the number of bridges in the vicinity, while the color represents the median rating in the corresponding histogram. Additional filtering can be performed using the options above. </p>`}
-  else if (summaryType === "year built") {
-    return  html`<${Typography} variant="h5" component="h2">Year Built - Plot Summary</${Typography}>
+            ).toLocaleString()} bridges in the U.S. with their overall "rating" as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}> on a scale of 0 to 9. Bridges that are missing ratings are omitted from the plot. The hexagon size represents the number of bridges in the vicinity, while the color represents the median rating in the corresponding histogram. Additional filtering can be performed using the options above. </p>`;
+  } else if (summaryType === "year built") {
+    return html`
             <p>This map aggregates the locations of ${Number(
               Math.round(count / 100) * 100
-            ).toLocaleString()} bridges in the U.S. with their year built as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. The hexagon size represents the number of bridges in the vicinity, while the color represents the median year built in the corresponding histogram. Additional filtering can be performed using the options above. </p>`}
-  else return html`<div></div>`
-}
+            ).toLocaleString()} bridges in the U.S. with their year built as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. The hexagon size represents the number of bridges in the vicinity, while the color represents the median year built in the corresponding histogram. Additional filtering can be performed using the options above. </p>`;
+  } else return html`<div></div>`;
+};
 
-const textMoreInfo = function(summaryType) {
+const textMoreInfo = function (summaryType) {
   if (summaryType === "rating") {
     return html`
            <${CardContent}>
@@ -87,11 +87,27 @@ const textMoreInfo = function(summaryType) {
                 </${Grid}>
               </${Grid}>
             </${CardContent}>
-`
+`;
   }
-}
+};
 
-const moreInfo = ['rating']
+const moreInfo = ["rating"];
+
+function getFiltersAsString(filters) {
+  let filterStringArray = [];
+  for (const prop in filters) {
+    if (filters[prop].length !== 0) {
+      const propCapped = prop
+        .split(" ")
+        .map((word) => {
+          return word[0].toUpperCase() + word.substring(1);
+        })
+        .join(" ");
+      filterStringArray.push(`${propCapped}: ${filters[prop].join(", ")}`);
+    }
+  }
+  return filterStringArray;
+}
 
 export function CountryDescription({ summaryType, keyValues }) {
   const [expanded, setExpanded] = useState(false);
@@ -100,19 +116,36 @@ export function CountryDescription({ summaryType, keyValues }) {
     setExpanded(!expanded);
   };
 
-  const field = keyValues.field
-  const count = keyValues.count
-  const hasMoreInfo = moreInfo.includes(field)
+  const field = keyValues.field;
+  const count = keyValues.count;
+  const { plot_type, ...filters } = keyValues.filters;
+  console.log(filters);
+  const hasMoreInfo = moreInfo.includes(field);
+  const fieldCapped = field
+    .split(" ")
+    .map((word) => {
+      return word[0].toUpperCase() + word.substring(1);
+    })
+    .join(" ");
 
   return html`
     <${Grid} item container>
       <${Card} variant=${"outlined"}>
         <${Grid} item xs=${12}>
           <${CardContent}>
+            <${Typography} variant="h5" component="h2">${fieldCapped} - Plot Summary</${Typography}>
+            ${getFiltersAsString(filters).map(
+              (d) =>
+                html`<${Typography} variant="h6"
+                                    component="h3"
+                                    style=${"font-weight:400, text-variant: small-caps"}>
+              ${d}</${Typography}>`
+            )}
             ${textSummary(summaryType, count)}
           </${CardContent}>
-          ${hasMoreInfo ?
-          (html`<${CardActions} disableSpacing>
+          ${
+            hasMoreInfo
+              ? html`<${CardActions} disableSpacing>
             <${Button} variant="text" onClick=${handleExpandClick} fullWidth>More information</${Button}>
             <${ExpandMore}
               expand=${expanded}
@@ -125,7 +158,9 @@ export function CountryDescription({ summaryType, keyValues }) {
           </${CardActions}>
           <${Collapse} in=${expanded} timeout="auto" unmountOnExit>
             ${textMoreInfo(summaryType)}
-    </${Collapse}>`) : (html`<div></div>`)}
+    </${Collapse}>`
+              : html`<div></div>`
+          }
         </${Grid}>
       </${Card}>
     </${Grid}>`;

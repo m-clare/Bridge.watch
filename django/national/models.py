@@ -141,8 +141,6 @@ class Bridge(models.Model):
     structure_open_posted_closed_to_traffic = models.TextField(blank=True, null=True)
     type_of_service_on_bridge = models.TextField(blank=True, null=True)
     type_of_service_under_bridge = models.TextField(blank=True, null=True)
-    structure_kind = models.TextField(blank=True, null=True)
-    structure_type = models.TextField(blank=True, null=True)
     structure_type_approach_spans_material = models.TextField(blank=True, null=True)
     structure_type_approach_design = models.TextField(blank=True, null=True)
     main_unit_span_number = models.TextField(blank=True, null=True)
@@ -231,6 +229,7 @@ class Bridge(models.Model):
     culvert_condition = models.ForeignKey(CulvertCondition, models.DO_NOTHING, blank=True, null=True)
     traffic_safety_features_transitions = models.ForeignKey('TrafficSafetyFeaturesTransitions', models.DO_NOTHING, blank=True, null=True)
     structure_kind = models.ForeignKey('StructureKind', models.DO_NOTHING, blank=True, null=True)
+    structure_type = models.ForeignKey('StructureType', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -262,6 +261,15 @@ class StructureKind(models.Model):
     class Meta:
         managed = False
         db_table = 'structure_kind'
+
+
+class StructureType(models.Model):
+    code = models.IntegerField(unique=True, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'structure_type'
 
 
 class SubstructureCondition(models.Model):

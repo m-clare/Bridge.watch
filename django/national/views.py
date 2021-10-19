@@ -25,7 +25,6 @@ def national_bridges_csv(request):
         # base type of plot
         # rating base
         plot_type = request.query_params.get("plot_type")
-        print(plot_type)
         if plot_type == "rating":
             bridges = bridges.exclude(lowest_rating_id__isnull=True)
             fields.append("lowest_rating__code")
@@ -41,6 +40,11 @@ def national_bridges_csv(request):
         if material is not None:
             material_list = material.split(',')
             bridges = bridges.filter(structure_kind__code__in=material_list)
+        # bridge type
+        type = request.query_params.get("type")
+        if type is not None:
+            type_list = type.split(',')
+            bridges = bridges.filter(structure_type__code__in=type_list)
 
         fields.extend(["latitude", "longitude"])
         bridges = bridges.values_list(*fields)
