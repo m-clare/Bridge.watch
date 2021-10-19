@@ -407,6 +407,20 @@ ALTER TABLE nbi ADD COLUMN structure_type_id INTEGER REFERENCES structure_type(i
 UPDATE nbi SET structure_type_id = (SELECT structure_type.id FROM structure_type where structure_type.code = nbi.structure_type::INTEGER);
 ALTER TABLE nbi DROP COLUMN structure_type;
 
+DROP TABLE IF EXISTS type_of_service_on_bridge;
+CREATE TABLE type_of_service_on_bridge (
+  id SERIAL,
+  code INTEGER UNIQUE,
+  description TEXT,
+  PRIMARY KEY (id)
+);
+
+\copy type_of_service_on_bridge(code,description) FROM './db/fk_csvs/type_of_service_on_bridge.csv' WITH DELIMITER ',' CSV HEADER;
+
+ALTER TABLE nbi ADD COLUMN type_of_service_on_bridge_id INTEGER REFERENCES type_of_service_on_bridge(id) ON DELETE CASCADE;
+UPDATE nbi SET type_of_service_on_bridge_id = (SELECT type_of_service_on_bridge.id FROM type_of_service_on_bridge where type_of_service_on_bridge.code = nbi.type_of_service_on_bridge::INTEGER);
+ALTER TABLE nbi DROP COLUMN type_of_service_on_bridge;
+
 -- Fix data types
 ALTER TABLE nbi ALTER COLUMN features_intersected SET DATA TYPE VARCHAR(28);
 ALTER TABLE nbi ALTER COLUMN year_built SET DATA TYPE INTEGER USING year_built::integer;

@@ -45,6 +45,11 @@ def national_bridges_csv(request):
         if type is not None:
             type_list = type.split(',')
             bridges = bridges.filter(structure_type__code__in=type_list)
+        # bridge service
+        service = request.query_params.get("service")
+        if service is not None:
+            service_list = service.split(',')
+            bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
 
         fields.extend(["latitude", "longitude"])
         bridges = bridges.values_list(*fields)

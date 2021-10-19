@@ -139,7 +139,6 @@ class Bridge(models.Model):
     navigation_vertical_clearance = models.TextField(blank=True, null=True)
     navigation_horizontal_clearance = models.TextField(blank=True, null=True)
     structure_open_posted_closed_to_traffic = models.TextField(blank=True, null=True)
-    type_of_service_on_bridge = models.TextField(blank=True, null=True)
     type_of_service_under_bridge = models.TextField(blank=True, null=True)
     structure_type_approach_spans_material = models.TextField(blank=True, null=True)
     structure_type_approach_design = models.TextField(blank=True, null=True)
@@ -230,6 +229,8 @@ class Bridge(models.Model):
     traffic_safety_features_transitions = models.ForeignKey('TrafficSafetyFeaturesTransitions', models.DO_NOTHING, blank=True, null=True)
     structure_kind = models.ForeignKey('StructureKind', models.DO_NOTHING, blank=True, null=True)
     structure_type = models.ForeignKey('StructureType', models.DO_NOTHING, blank=True, null=True)
+    type_of_service_on_bridge = models.ForeignKey('TypeOfServiceOnBridge', models.DO_NOTHING, blank=True, null=True)
+
 
     class Meta:
         managed = False
@@ -336,4 +337,10 @@ class TrafficSafetyFeaturesTransitions(models.Model):
         managed = False
         db_table = 'traffic_safety_features_transitions'
 
+class TypeOfServiceOnBridge(models.Model):
+    code = models.IntegerField(unique=True, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
 
+    class Meta:
+        managed = False
+        db_table = 'type_of_service_on_bridge'

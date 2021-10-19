@@ -71,6 +71,19 @@ const materialOptions = {
   "Aluminum, Wrought Iron, or Cast Iron": "9",
   "Other": "0",
 }
+
+const serviceTypeOptions = {
+  "Highway": "1",
+  "Railroad": "2",
+  "Pedestrian-bicycle": "3",
+  "Highway-railroad": "4",
+  "Highway-pedestrian": "5",
+  "Overpass structure at an interchange": "6",
+  "Third level (interchange)": "7",
+  "Fourth level (interchange)": "8",
+  "Building or plaza": "9",
+  "Other": "0"
+}
 // only visible if Rating Selected
 const startDecadeOptions = [];
 
@@ -80,7 +93,8 @@ export default function Country() {
   const [bridges, setBridges] = useState({});
   const [queryObj, setQueryObj] = useState({'plot_type': 'rating',
                                             'material': [],
-                                            'type': []
+                                            'type': [],
+                                            'service': []
                                             })
   const [submitted, setSubmitted] = useState(true);
 
@@ -102,6 +116,15 @@ export default function Country() {
     setQueryObj({...props, 'type': type})
   };
 
+  const handleServiceChange = (event) => {
+    const value = event.target.value
+    const getService = () => (
+      typeof(value) === 'string' ? value.split(',') : value)
+    const service = getService()
+    const {oldService, ...props} = {...queryObj}
+    setQueryObj({...props, 'service': service})
+  };
+
   const handleFormClose = (event) => {
     setSubmitted(true);
   }
@@ -119,6 +142,9 @@ export default function Country() {
     }
     if (queryObj['type'].length !== 0) {
       searchParams.set('type', queryObj['type'].map(d => structureTypeOptions[d]))
+    }
+    if (queryObj['service'].length !== 0) {
+      searchParams.set('service', queryObj['service'].map(d => serviceTypeOptions[d]))
     }
     const uriString = searchParams.toString().toLowerCase()
     const bridgeData = await getNationalBridges(uriString);
@@ -208,6 +234,30 @@ export default function Country() {
                     })};
                   </${Select}>
                 </${FormControl}>
+                </${Grid}>
+                <${Grid} item>
+                  <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
+                    <${InputLabel}>Service Type</${InputLabel}>
+                    <${Select}
+                      value=${queryObj.service}
+                      label="Service Type"
+                      onChange=${handleServiceChange}
+                      onClose=${handleFormClose}
+                      multiple
+                      disabled=${renderSubmitted}
+                      input=${ html`<${OutlinedInput} id="select-multiple-chip" label="service type" />` }
+                      renderValue=${(selected) => (
+                      html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
+                        ${selected.map(value => (
+                        html`<${Chip} key=${value} label=${value} />`
+                        ))}
+                      </${Box}>`)}
+                      >
+                      ${Object.keys(serviceTypeOptions).map((name, index) => {
+                      return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
+                    })};
+                  </${Select}>
+                </${FormControl}>
               </${Grid}>
             </${Grid}>
           </${Grid}>
@@ -215,26 +265,40 @@ export default function Country() {
       </${Grid}>
       ${renderSubmitted ? (
       html`<${Grid} item xs=${12}>
-  <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
-  <${Grid} container>
-  <${Grid} item xs=${12}>
-  <${Typography} style=${"text-align: center"}
-  variant="h6"
-  color=${grey[500]}>
-  <i>Loading query...</i>
-  </${Typography}>
-  <${LinearProgress} />
-  </${Grid}>
-  </${Grid}>
-  </${Paper}>
-  </${Grid}>`) : (html`<div></div>`)}
-      ${!isEmpty(bridges)  ?
+          <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
+            <${Grid} container>
+              <${Grid} item xs=${12}>
+                <${Typography} style=${"text-align: center"}
+                               variant="h6"
+                               color=${grey[500]}>
+                  <i>Loading query...</i>
+                </${Typography}>
+                <${LinearProgress} />
+              </${Grid}>
+            </${Grid}>
+          </${Paper}>
+        </${Grid}>`) : (html`<div></div>`)}
+        ${(!renderSubmitted && !bridges.message)  ?
         (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
                                      field: bridges.field,
                                      count: bridges.natData.count,
                                      filters: queryObj
         }}/><${HexbinChart} bridgeData=${bridges} />`) : (html`<div></div>`)}
+        ${(!renderSubmitted && bridges.message)  ?
+        (html`<${Grid} item xs=${12}>
+          <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
+            <${Grid} container>
+              <${Grid} item xs=${12}>
+                <${Typography} style=${"text-align: center"}
+                               variant="h6"
+                               color=${grey[500]}>
+                  <i>No bridges found for custom query!</i>
+                </${Typography}>
+              </${Grid}>
+            </${Grid}>
+          </${Paper}>
+        </${Grid}>`) : (html`<div></div>`)}
       </${Grid}>
-      </${Box}>
-    </div> `;
+     </${Box}>
+    </div>`;
 }
