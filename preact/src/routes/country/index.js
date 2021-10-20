@@ -99,41 +99,15 @@ export default function Country() {
   const [submitted, setSubmitted] = useState(true);
 
   // TODO: Find way to consolidate these event handlers
-  const handleMaterialChange = (event) => {
+  const handleChange = (event, type) => {
     const value = event.target.value
-    const getMaterial = () => (
-      typeof(value) === 'string' ? value.split(',') : value)
-    const materials = getMaterial()
-    const {oldMaterials, ...props} = {...queryObj}
-    setQueryObj({...props, 'material': materials})
-  };
-
-  const handleTypeChange = (event) => {
-    const value = event.target.value
-    const getType = () => (
-      typeof(value) === 'string' ? value.split(',') : value)
-    const type = getType()
-    const {oldTypes, ...props} = {...queryObj}
-    setQueryObj({...props, 'type': type})
-  };
-
-  const handleServiceChange = (event) => {
-    const value = event.target.value
-    const getService = () => (
-      typeof(value) === 'string' ? value.split(',') : value)
-    const service = getService()
-    const {oldService, ...props} = {...queryObj}
-    setQueryObj({...props, 'service': service})
+    const valueArray = typeof(value) === 'string' ? value.split(',') : value
+    setQueryObj({...queryObj, [type]: valueArray})
   };
 
   const handleFormClose = (event) => {
     setSubmitted(true);
   }
-
-  const handlePlotChange = (event) => {
-    const {oldPlot, ...props} = {...queryObj}
-    setQueryObj({...props, 'plot_type': event.target.value})
-  };
 
   useEffect(async () => {
     const searchParams = new URLSearchParams()
@@ -177,7 +151,7 @@ export default function Country() {
                       value=${queryObj.plot_type}
                       label="Plot Type"
                       disabled=${renderSubmitted}
-                      onChange=${handlePlotChange}
+                      onChange=${(e) => handleChange(e, 'plot_type')}
                       onClose=${handleFormClose}
                       >
                       ${plotOptions.map((name, index) => {
@@ -195,7 +169,7 @@ export default function Country() {
                   <${Select}
                     value=${queryObj.material}
                     label="Material"
-                    onChange=${handleMaterialChange}
+                    onChange=${(e) => handleChange(e, 'material')}
                     onClose=${handleFormClose}
                     multiple
                     disabled=${renderSubmitted}
@@ -219,7 +193,7 @@ export default function Country() {
                   <${Select}
                     value=${queryObj.type}
                     label="Bridge Type"
-                    onChange=${handleTypeChange}
+                    onChange=${(e) => handleChange(e, 'type')}
                     onClose=${handleFormClose}
                     multiple
                     disabled=${renderSubmitted}
@@ -243,7 +217,7 @@ export default function Country() {
                     <${Select}
                       value=${queryObj.service}
                       label="Service Type"
-                      onChange=${handleServiceChange}
+                      onChange=${(e) => handleChange(e, 'service')}
                       onClose=${handleFormClose}
                       multiple
                       disabled=${renderSubmitted}

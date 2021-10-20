@@ -12,8 +12,7 @@ const App = () => (
   <div id="app">
     <Header />
     <Router>
-      <Home path="/" />
-      <Country path="/country/" />
+      <Country path="/" />
     </Router>
   </div>
 );

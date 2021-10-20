@@ -20,10 +20,6 @@ export default function Header() {
        sx=${{ mr: 2 }}>
       <${MenuIcon} />
       </${IconButton}>
-      <${Typography} variant="h6" component="div" sx=${{ flexGrow: 1 }}>
-      Bridge.watch
-    </${Typography}>
-      <${Button} color="inherit"><${Link} href="/country">Country</${Link}></${Button}>
       </${Toolbar}>
       </${AppBar}>
       </${Box}>`;
