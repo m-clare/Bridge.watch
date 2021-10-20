@@ -30,16 +30,6 @@ const html = htm.bind(h);
 
 const plotOptions = ["rating", "year built"];
 
-const materialFilterOptions = [
-  "Reinforced Concrete",
-  "Steel",
-  "Prestressed or Post-tensioned Concrete",
-  "Wood or Timber",
-  "Masonry",
-  "Aluminum, Wrought Iron, or Cast Iron",
-  "Other",
-];
-
 const structureTypeOptions = {
   "Slab": "1",
   "Stringer/Multi-beam or Girder": "2",
@@ -84,6 +74,13 @@ const serviceTypeOptions = {
   "Building or plaza": "9",
   "Other": "0"
 }
+
+const filters = [
+  {'filter': 'material', 'label': 'Bridge Material', 'options': materialOptions},
+  {'filter': 'type', 'label': 'Bridge Type', 'options': structureTypeOptions},
+  {'filter': 'service', 'label': 'Service Type', 'options': serviceTypeOptions}
+]
+
 // only visible if Rating Selected
 const startDecadeOptions = [];
 
@@ -128,153 +125,115 @@ export default function Country() {
     setSubmitted(false);
   }, [submitted]);
 
+  function filter(filterObj) {
+    return html
+`<${Grid} item>
+  <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
+    <${InputLabel}>${filterObj.label}</${InputLabel}>
+    <${Select}
+      value=${queryObj[filterObj.filter]}
+      label=${filterObj.filter}
+      onChange=${(e) => handleChange(e, filterObj.filter)}
+      onClose=${handleFormClose}
+      multiple
+      disabled=${renderSubmitted}
+      input=${ html`<${OutlinedInput} id="select-multiple-chip" label=${filterObj.label} />` }
+      renderValue=${(selected) => (
+      html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
+        ${selected.map(value => (
+        html`<${Chip} key=${value} label=${value} />`
+        ))}
+      </${Box}>`)}
+      >
+      ${Object.keys(filterObj.options).map((name, index) => {
+      return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
+      })};
+    </${Select}>
+  </${FormControl}>
+</${Grid}>
+`}
+
   const renderSubmitted = submitted;
 
   return html`
     <div class=${style.country}>
       <${Box} sx=${{ flexShrink: 1 }}>
-      <${Grid} container spacing=${2}>
-        <${Grid} item xs=${12}>
-          <${Paper} variant=${"outlined"} style=${"padding: 15px; "}>
-            <${Grid} container>
-              <${Grid} item xs=${12}>
-                <${Typography} variant="h3" component="h1">National Bridge Inventory</${Typography}>
-              </${Grid}>
-              <${Grid} item xs=${12}>
-                <${Typography} style=${"padding-bottom: 8px"} variant="h6" component="h2" color="${grey[500]}"><i>Display Options</i></${Typography}>
-              </${Grid}>
-              <${Grid} container spacing=${3}>
-                <${Grid} item>
-                  <${FormControl} sx=${{ minWidth: 240}} style=${"margin: 0px"}>
-                    <${InputLabel}>Plot Type</${InputLabel}>
-                    <${Select}
-                      value=${queryObj.plot_type}
-                      label="Plot Type"
-                      disabled=${renderSubmitted}
-                      onChange=${(e) => handleChange(e, 'plot_type')}
-                      onClose=${handleFormClose}
-                      >
-                      ${plotOptions.map((name, index) => {
-                      return html`<${MenuItem} key=${name}
-                                               value=${name}
-                                               >
-                        ${name.charAt(0).toUpperCase() + name.slice(1)}</${MenuItem}>`
-                      })};
-                  </${Select}>
-                </${FormControl}>
-              </${Grid}>
-              <${Grid} item>
-                <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
-                  <${InputLabel}>Bridge Material</${InputLabel}>
-                  <${Select}
-                    value=${queryObj.material}
-                    label="Material"
-                    onChange=${(e) => handleChange(e, 'material')}
-                    onClose=${handleFormClose}
-                    multiple
-                    disabled=${renderSubmitted}
-                    input=${ html`<${OutlinedInput} id="select-multiple-chip" label="bridge material" />` }
-                    renderValue=${(selected) => (
-                    html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-                      ${selected.map(value => (
-                      html`<${Chip} key=${value} label=${value} />`
-                      ))}
-                  </${Box}>`)}
-                  >
-                    ${Object.keys(materialOptions).map((name, index) => {
-                    return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
-                    })};
-                  </${Select}>
-                </${FormControl}>
-              </${Grid}>
-              <${Grid} item>
-                <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
-                  <${InputLabel}>Bridge Type</${InputLabel}>
-                  <${Select}
-                    value=${queryObj.type}
-                    label="Bridge Type"
-                    onChange=${(e) => handleChange(e, 'type')}
-                    onClose=${handleFormClose}
-                    multiple
-                    disabled=${renderSubmitted}
-                    input=${ html`<${OutlinedInput} id="select-multiple-chip" label="bridge type" />` }
-                    renderValue=${(selected) => (
-                    html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-                      ${selected.map(value => (
-                      html`<${Chip} key=${value} label=${value} />`
-                      ))}
-                  </${Box}>`)}
-                  >
-                    ${Object.keys(structureTypeOptions).map((name, index) => {
-                    return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
-                    })};
-                  </${Select}>
-                </${FormControl}>
+        <${Grid} container spacing=${2}>
+          <${Grid} item xs=${12}>
+            <${Paper} variant=${"outlined"} style=${"padding: 15px; "}>
+              <${Grid} container>
+                <${Grid} item xs=${12}>
+                  <${Typography} variant="h3" component="h1">National Bridge Inventory</${Typography}>
                 </${Grid}>
-                <${Grid} item>
-                  <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
-                    <${InputLabel}>Service Type</${InputLabel}>
-                    <${Select}
-                      value=${queryObj.service}
-                      label="Service Type"
-                      onChange=${(e) => handleChange(e, 'service')}
-                      onClose=${handleFormClose}
-                      multiple
-                      disabled=${renderSubmitted}
-                      input=${ html`<${OutlinedInput} id="select-multiple-chip" label="service type" />` }
-                      renderValue=${(selected) => (
-                      html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-                        ${selected.map(value => (
-                        html`<${Chip} key=${value} label=${value} />`
-                        ))}
-                      </${Box}>`)}
-                      >
-                      ${Object.keys(serviceTypeOptions).map((name, index) => {
-                      return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
-                    })};
-                  </${Select}>
-                </${FormControl}>
+                <${Grid} item xs=${12}>
+                  <${Typography} style=${"padding-bottom: 8px"}
+                                 variant="h6"
+                                 component="h2"
+                                 color="${grey[500]}">
+                    <i>Display Options</i>
+                  </${Typography}>
+                </${Grid}>
+                <${Grid} container spacing=${3}>
+                  <${Grid} item>
+                    <${FormControl} sx=${{ minWidth: 240}} style=${"margin: 0px"}>
+                      <${InputLabel}>Plot Type</${InputLabel}>
+                      <${Select} value=${queryObj.plot_type}
+                                 label="Plot Type"
+                                 disabled=${renderSubmitted}
+                                 onChange=${(e) => handleChange(e, 'plot_type')}
+                                 onClose=${handleFormClose}
+                        >
+                        ${plotOptions.map((name, index) => {
+                        return html`<${MenuItem} key=${name}
+                                                 value=${name}
+                                                 >
+                          ${name.charAt(0).toUpperCase() + name.slice(1)}</${MenuItem}>`
+                        })};
+                      </${Select}>
+                    </${FormControl}>
+                  </${Grid}>
+                  ${filters.map(value => (filter(value)))}
+                </${Grid}>
               </${Grid}>
-            </${Grid}>
+            </${Paper}>
           </${Grid}>
-        </${Paper}>
-      </${Grid}>
-      ${renderSubmitted ? (
-      html`<${Grid} item xs=${12}>
-          <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
-            <${Grid} container>
-              <${Grid} item xs=${12}>
-                <${Typography} style=${"text-align: center"}
-                               variant="h6"
-                               color=${grey[500]}>
-                  <i>Loading query...</i>
-                </${Typography}>
-                <${LinearProgress} />
+          ${renderSubmitted ? (
+          html`<${Grid} item xs=${12}>
+            <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
+              <${Grid} container>
+                <${Grid} item xs=${12}>
+                  <${Typography} style=${"text-align: center"}
+                                 variant="h6"
+                                 color=${grey[500]}>
+                    <i>Loading query...</i>
+                  </${Typography}>
+                  <${LinearProgress} />
+                </${Grid}>
               </${Grid}>
-            </${Grid}>
-          </${Paper}>
-        </${Grid}>`) : (html`<div></div>`)}
-        ${(!isEmpty(bridges) || (!bridges) && !bridges.message)  ?
-        (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
-                                     field: bridges.field,
-                                     count: bridges.natData.count,
-                                     filters: queryObj
-        }}/><${HexbinChart} bridgeData=${bridges} />`) : (html`<div></div>`)}
-        ${(!renderSubmitted && bridges.message)  ?
-        (html`<${Grid} item xs=${12}>
-          <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
-            <${Grid} container>
-              <${Grid} item xs=${12}>
-                <${Typography} style=${"text-align: center"}
-                               variant="h6"
-                               color=${grey[500]}>
-                  <i>No bridges found for custom query!</i>
-                </${Typography}>
+            </${Paper}>
+          </${Grid}>`) : (html`<div></div>`)}
+          ${(!isEmpty(bridges) || (!bridges) && !bridges.message)  ?
+          (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
+                                       field: bridges.field,
+                                       count: bridges.natData.count,
+                                       filters: queryObj
+                                       }}/><${HexbinChart} bridgeData=${bridges} />`) : null}
+          ${(!renderSubmitted && bridges.message)  ?
+          (html`<${Grid} item xs=${12}>
+            <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
+              <${Grid} container>
+                <${Grid} item xs=${12}>
+                  <${Typography} style=${"text-align: center"}
+                                 variant="h6"
+                                 color=${grey[500]}>
+                    <i>No bridges found for custom query!</i>
+                  </${Typography}>
+                </${Grid}>
               </${Grid}>
-            </${Grid}>
-          </${Paper}>
-        </${Grid}>`) : (html`<div></div>`)}
-      </${Grid}>
-     </${Box}>
+            </${Paper}>
+          </${Grid}>`) : null}
+        </${Grid}>
+      </${Box}>
     </div>`;
-}
+    }
+    

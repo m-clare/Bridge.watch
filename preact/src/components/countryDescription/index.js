@@ -32,6 +32,7 @@ const textSummary = function (summaryType, count) {
   if (summaryType === "rating") {
     return html`
             <p>This map aggregates the locations of ${Number(
+
               Math.round(count / 100) * 100
             ).toLocaleString()} bridges in the U.S. with their overall "rating" as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}> on a scale of 0 to 9. Bridges that are missing ratings are omitted from the plot. The hexagon size represents the number of bridges in the vicinity, while the color represents the median rating in the corresponding histogram. Additional filtering can be performed using the options above. </p>`;
   } else if (summaryType === "year built") {

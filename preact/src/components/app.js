@@ -13,6 +13,7 @@ const App = () => (
     <Header />
     <Router>
       <Country path="/" />
+      <Country path="/country" />
     </Router>
   </div>
 );
