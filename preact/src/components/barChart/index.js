@@ -2,7 +2,7 @@ import { h } from "preact";
 import htm from "htm";
 import * as d3 from "d3";
 import { useEffect, useState, useRef } from "preact/hooks";
-import { isEmpty } from "underscore";
+import { isEmpty } from "lodash-es";
 import Typography from "@mui/material/Typography";
 const html = htm.bind(h);
 

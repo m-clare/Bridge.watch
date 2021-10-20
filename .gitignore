@@ -1,14 +1,14 @@
 # ignore environment variables and local dev settings
-django/env/
+app/env/
 .env.dev
 pyrightconfig.json
 */.env
 
 # ignore cache files
-django/nbi/__pycache__
-django/nbi/migrations/__pycache__
-django/nbi-api/__pycache__
-django/nbi-api/migrations/__pycache__
+app/nbi/__pycache__
+app/nbi/migrations/__pycache__
+app/national/__pycache__
+app/national/migrations/__pycache__
 
 # ignore frontend package files
 preact/node_modules

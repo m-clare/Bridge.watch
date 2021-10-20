@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   web:
-    build: ./django
+    build: ./app
     command: python manage.py runserver 0.0.0.0:8000
     container_name: web
     volumes:
-      - ./django/:/usr/src/django/
+      - ./app/:/usr/src/app/
     ports:
       - 8000:8000
     env_file:

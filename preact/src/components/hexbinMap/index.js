@@ -11,7 +11,8 @@ import { hexbin } from "d3-hexbin";
 import { mesh } from "topojson-client";
 import { legend } from "../colorLegend/index";
 import us from "us-atlas/states-albers-10m.json";
-import { isEmpty } from "lodash";
+import { isEmpty } from "lodash-es";
+
 import { BarChart } from "../../components/barChart";
 import { HexTextSummary } from "../../components/hexTextSummary";
 

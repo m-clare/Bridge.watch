@@ -1,9 +1,9 @@
 import { h } from "preact";
 import htm from "htm";
-import { getNationalBridges } from "../../utils/bdi-api";
+import { getNationalBridges } from "../../utils/nbi-api";
 import { useEffect, useState, useRef } from "preact/hooks";
 import { HexbinChart } from "../../components/hexbinMap";
-import { isEmpty } from "lodash";
+import { isEmpty } from "lodash-es";
 
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -98,6 +98,7 @@ export default function Country() {
                                             })
   const [submitted, setSubmitted] = useState(true);
 
+  // TODO: Find way to consolidate these event handlers
   const handleMaterialChange = (event) => {
     const value = event.target.value
     const getMaterial = () => (
@@ -279,7 +280,7 @@ export default function Country() {
             </${Grid}>
           </${Paper}>
         </${Grid}>`) : (html`<div></div>`)}
-        ${(!isEmpty(bridges) && !bridges.message)  ?
+        ${(!isEmpty(bridges) || (!bridges) && !bridges.message)  ?
         (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
                                      field: bridges.field,
                                      count: bridges.natData.count,
