@@ -128,7 +128,7 @@ export default function Country() {
   function filter(filterObj) {
     return html
 `<${Grid} item>
-  <${FormControl} sx=${{ m: 1, width: 300}} style=${"margin: 0px"}>
+  <${FormControl} sx=${{ m: 1, minWidth: 240}} style=${"margin: 0px"}>
     <${InputLabel}>${filterObj.label}</${InputLabel}>
     <${Select}
       value=${queryObj[filterObj.filter]}

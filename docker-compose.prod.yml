@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.prod
+    command: gunicorn nbi.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    expose:
+      - 8000
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: .
+      dockerfile: ./db/Dockerfile.prod.db
+    command: postgres -c log_statement=all -c max_wal_size=2GB
+    volumes:
+      - nbi_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/hom/app/web/staticfiles
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+volumes:
+  nbi_data:
+  static_volume:
+
