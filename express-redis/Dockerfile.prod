@@ -1,20 +1,13 @@
-#------------------>Build image
-FROM node:bullseye-slim AS base
-WORKDIR /usr/src/app
-COPY package.json /usr/src/app
-RUN npm install --only=production
-RUN cp -R node_modules prod_node_modules
-RUN npm install
-
 #------------------>Production image
 FROM node:lts-alpine
 RUN apk add dumb-init
 RUN apk add sudo
 RUN apk add curl
+COPY package.json /usr/src/app
 ENV NODE_ENV production
 USER node
 WORKDIR /usr/src/app
-COPY --chown=node:node --from=base /usr/src/app/node_modules /usr/src/app/node_modules
+RUN npm install --only=production
 COPY --chown=node:node . /usr/src/app
 RUN npm install
 CMD ["dumb-init", "node", "server.js"]
