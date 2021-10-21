@@ -9,7 +9,4 @@ RUN apk add sudo
 RUN apk add curl
 RUN npm install
 
-ENV NODE_ENV production
-USER node
-COPY --chown=node:node . /usr/src/app
 CMD ["dumb-init", "node", "server.js"]
