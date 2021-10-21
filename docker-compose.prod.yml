@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile.prod
     command: gunicorn nbi.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - static_volume:/home/app/web/staticfiles
-    expose:
-      - 8000
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:8000
     env_file:
       - ./.env.prod
     depends_on:
@@ -21,19 +21,37 @@ services:
       dockerfile: ./db/Dockerfile.prod.db
     command: postgres -c log_statement=all -c max_wal_size=2GB
     volumes:
-      - nbi_data:/var/lib/postgresql/data/
+      - nbi-data:/var/lib/postgresql/data/
     env_file:
       - ./.env.prod
 
-  nginx:
-    build: ./nginx
-    volumes:
-      - static_volume:/hom/app/web/staticfiles
+  redis:
+    image: redis:bullseye
+    command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru 
+    container_name: cache
     ports:
-      - 1337:80
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+
+  express:
+    build:
+      context: ./express-redis
+      dockerfile: Dockerfile.prod
+    container_name: express
+    volumes:
+      - ./express-redis/:/usr/src/app
+    ports:
+      - 3000:3000
+    env_file:
+      - ./.env.prod
+    restart: always
     depends_on:
-      - web
+      - "redis"
+
+
 volumes:
-  nbi_data:
-  static_volume:
+  nbi-data:
+  redis-data:
+
 

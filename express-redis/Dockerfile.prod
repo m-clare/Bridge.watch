@@ -5,7 +5,7 @@ COPY package*.json /usr/src/app/
 RUN npm ci --only=production
 
 #------------------>Production image
-FROM node:bullseye-slim AS build
+FROM node:lts-alpine
 RUN apk add dumb-init
 ENV NODE_ENV production
 USER node
