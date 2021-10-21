@@ -7,7 +7,7 @@ COPY ./package*.json ./
 RUN apk add dumb-init
 RUN apk add sudo
 RUN apk add curl
-RUN npm install --only=production
+RUN npm install
 
 ENV NODE_ENV production
 USER node
