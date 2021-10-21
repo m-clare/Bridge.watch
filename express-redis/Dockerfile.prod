@@ -9,11 +9,6 @@ RUN npm install --only=production
 RUN cp -R node_modules prod_node_modules
 RUN npm install
 
-FROM dependencies AS test
-COPY . .
-RUN npm run lint && npm run setup && npm run test
-
-
 #------------------>Production image
 FROM base AS release
 RUN apk add dumb-init
