@@ -7,6 +7,7 @@ COPY ./package*.json ./
 RUN apk add dumb-init
 RUN apk add sudo
 RUN apk add curl
+RUN npm install -g express
 RUN npm install
 
 CMD ["dumb-init", "node", "server.js"]
