@@ -1,13 +1,15 @@
 #------------------>Production image
 FROM node:lts-alpine
+
+WORKDIR /usr/src/app
+COPY ./package*.json ./
+
 RUN apk add dumb-init
 RUN apk add sudo
 RUN apk add curl
-COPY package.json /usr/src/app
+RUN npm install --only=production
+
 ENV NODE_ENV production
 USER node
-WORKDIR /usr/src/app
-RUN npm install --only=production
 COPY --chown=node:node . /usr/src/app
-RUN npm install
 CMD ["dumb-init", "node", "server.js"]
