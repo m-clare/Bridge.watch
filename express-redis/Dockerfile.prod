@@ -7,6 +7,8 @@ RUN npm ci --only=production
 #------------------>Production image
 FROM node:lts-alpine
 RUN apk add dumb-init
+RUN apk add sudo
+RUN apk add curl
 ENV NODE_ENV production
 USER node
 WORKDIR /usr/src/app

@@ -35,14 +35,15 @@ function difference(setA, setB) {
 function getKeyProps(dataArray, field) {
   const min = d3.min(dataArray, (d) => d[field]);
   const max = d3.max(dataArray, (d) => d[field]);
-  let avg;
-  if (field === "year built") {
-    avg = +d3.mean(dataArray, (x) => x[field]).toPrecision(4);
-  } else if (field === "rating") {
-    avg = +d3.mean(dataArray, (x) => x[field]).toPrecision(2);
-  } else {
-    throw new Error("Invalid field");
-  }
+  const avg = +d3.mean(dataArray, (x) => x[field]).toPrecision(4);
+  // if (field === "year built") {
+  //   avg = +d3.mean(dataArray, (x) => x[field]).toPrecision(4);
+  // } else if (field === "rating") {
+  //   avg = +d3.mean(dataArray, (x) => x[field]).toPrecision(2);
+  // } else {
+  //   console.log("poop")
+  //   throw new Error("Invalid field");
+  // }
   const median = d3.median(dataArray, (d) => d[field]);
   const mode = d3.mode(dataArray, (d) => d[field]);
   const count = dataArray.length
@@ -50,6 +51,7 @@ function getKeyProps(dataArray, field) {
 }
 
 function getHexbinData(data) {
+  console.log(data)
   let parsedData = d3.csvParse(data);
 
   if (parsedData.length !== 0 ) {
@@ -69,6 +71,7 @@ function getHexbinData(data) {
         })
         .filter((el) => el != null);
 
+    console.log(field)
     // aggregate data for all points before binning
     const allKeyData = getKeyProps(bridgeInfo, field);
 

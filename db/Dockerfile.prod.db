@@ -1,7 +1,5 @@
 FROM postgis/postgis:14-master
 
-# FROM postgres:13.0-alpine
-
 RUN mkdir /db
 
 ADD ./db/2020AllRecordsDelimitedAllStatesClean.csv /db

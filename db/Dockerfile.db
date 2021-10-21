@@ -1,4 +1,4 @@
-FROM postgres:13.0-alpine
+FROM postgis/postgis:14-master
 
 RUN mkdir /db
 
@@ -6,7 +6,7 @@ ADD ./db/2020AllRecordsDelimitedAllStatesClean.csv /db
 
 ADD ./db/fk_csvs/*.csv /db/fk_csvs/
 
-ADD ./db/load_db.sql /docker-entrypoint-initdb.d
+ADD ./db/01-load_db.sql /docker-entrypoint-initdb.d
 
 RUN chown postgres:postgres /db/*
 RUN chown postgres:postgres /db/fk_csvs/*

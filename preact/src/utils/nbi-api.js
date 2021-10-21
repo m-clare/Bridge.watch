@@ -1,7 +1,10 @@
 import axios from "axios";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 function getNationalBridges(uriString) {
-  const url = `http://${process.env.PREACT_APP_EXPRESS_HOST}:${process.env.PREACT_APP_EXPRESS_PORT}?${uriString}`;
+  const url = `${process.env.PREACT_APP_API_URL}?${uriString}`;
   console.log(url);
   return axios
     .get(url)

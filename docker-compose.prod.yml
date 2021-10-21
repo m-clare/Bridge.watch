@@ -49,7 +49,7 @@ services:
       - ./.env.prod
     restart: always
     depends_on:
-      - "redis"
+      - cache
 
 
 volumes:
