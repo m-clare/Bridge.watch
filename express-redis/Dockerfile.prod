@@ -1,17 +1,27 @@
 #------------------>Build image
-FROM node:bullseye-slim AS build
+FROM node:bullseye-slim AS base
 WORKDIR /usr/src/app
-COPY package*.json /usr/src/app/
-RUN npm ci --only=production
+COPY package.json .
+
+FROM base AS dependencies
+RUN npm set progress=false && npm config set depth 0
+RUN npm install --only=production
+RUN cp -R node_modules prod_node_modules
+RUN npm install
+
+FROM dependencies AS test
+COPY . .
+RUN npm run lint && npm run setup && npm run test
+
 
 #------------------>Production image
-FROM node:lts-alpine
+FROM base AS release
 RUN apk add dumb-init
 RUN apk add sudo
 RUN apk add curl
 ENV NODE_ENV production
 USER node
 WORKDIR /usr/src/app
-COPY --chown=node:node --from=build /usr/src/app/node_modules /usr/src/app/node_modules
+COPY --chown=node:node --from=dependencies /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --chown=node:node . /usr/src/app
 CMD ["dumb-init", "node", "server.js"]
