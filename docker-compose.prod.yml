@@ -6,6 +6,7 @@ services:
       context: ./app
       dockerfile: Dockerfile.prod
     command: gunicorn nbi.wsgi:application --bind 0.0.0.0:8000
+    container_name: django
     volumes:
       - ./app/:/usr/src/app/
     ports:
@@ -20,6 +21,7 @@ services:
       context: .
       dockerfile: ./db/Dockerfile.prod.db
     command: postgres -c log_statement=all -c max_wal_size=2GB
+    container_name: db
     volumes:
       - nbi-data:/var/lib/postgresql/data/
     env_file:
@@ -54,4 +56,6 @@ volumes:
   nbi-data:
   redis-data:
 
-
+networks:
+  default:
+    name: nbi
