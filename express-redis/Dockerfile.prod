@@ -7,7 +7,7 @@ RUN cp -R node_modules prod_node_modules
 RUN npm install
 
 #------------------>Production image
-FROM node:bullseye-slim 
+FROM node:lts-alpine
 RUN apk add dumb-init
 RUN apk add sudo
 RUN apk add curl
