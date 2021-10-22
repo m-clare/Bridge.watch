@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "PREACT_APP_API_URL='https://bridge.watch/api' preact build",
+    "build": "PREACT_APP_API_URL='https://bridge.watch/api/' preact build",
     "serve": "sirv build --port 8080 --cors --single",
     "dev": "preact watch",
     "lint": "eslint src",

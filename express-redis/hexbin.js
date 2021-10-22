@@ -51,7 +51,6 @@ function getKeyProps(dataArray, field) {
 }
 
 function getHexbinData(data) {
-  console.log(data)
   let parsedData = d3.csvParse(data);
 
   if (parsedData.length !== 0 ) {
@@ -71,7 +70,6 @@ function getHexbinData(data) {
         })
         .filter((el) => el != null);
 
-    console.log(field)
     // aggregate data for all points before binning
     const allKeyData = getKeyProps(bridgeInfo, field);
 
