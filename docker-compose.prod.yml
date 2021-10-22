@@ -47,7 +47,6 @@ services:
       - 3000:3000
     env_file:
       - ./.env.prod
-    restart: always
     depends_on:
       - redis
 
