@@ -3,13 +3,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import *
 from .serializers import *
+from django.db.models import F
+from .writers import get_streaming_response
 from django_pandas.io import read_frame
 from django.http import HttpResponse
-from django.http import StreamingHttpResponse
-from django.db.models import F
-import csv
-
-
 # Create your views here.
 
 @api_view(["GET"])
@@ -31,11 +28,11 @@ def national_bridges_csv(request):
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
             bridges = bridges.exclude(lowest_rating_id__isnull=True)
-            fields.append("rating")
+            fields.append(plot_type)
         # year built base
-        elif plot_type == "year built":
+        elif plot_type == "year_built":
             bridges = bridges.exclude(year_built__isnull=True)
-            fields.append("year_built")
+            fields.append(plot_type)
         else:
             raise ValueError("invalid plot type provided")
 
@@ -66,9 +63,11 @@ def national_bridges_csv(request):
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
-        df = read_frame(bridges, fieldnames=fields)
-        response = HttpResponse(content_type='text/csv')
-        df.to_csv(path_or_buf=response, index=False)
-        return response
+        # df = read_frame(bridges, fieldnames=fields)
+        # response = HttpResponse(content_type='text/csv')
+        # df.to_csv(path_or_buf=response, index=False)
+        # return response
+
+        return get_streaming_response(bridges, fields)
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
