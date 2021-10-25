@@ -99,7 +99,7 @@ function getHexbinData(data) {
       allHistogram = rawHistogram.map((d) => ({
         count: d.length,
         year_built: d.x0,
-        "year excluded": d.x1,
+        year_excluded: d.x1,
       }));
     } else {
       allCount = countBy(bridgeInfo.map((d) => d[field]));
@@ -136,7 +136,7 @@ function getHexbinData(data) {
         let rawobjHistogram = rawHistogram.map((d) => ({
           count: d.length,
           year_built: d.x0,
-          "year excluded": d.x1,
+          year_excluded: d.x1,
         }));
         histogram = object(
           rawobjHistogram.map((d) => d["year_built"]),

@@ -4,7 +4,9 @@ import * as d3 from "d3";
 import { useEffect, useState, useRef } from "preact/hooks";
 import { isEmpty } from "lodash-es";
 import Typography from "@mui/material/Typography";
+import { colorDict } from "../colorPalette";
 const html = htm.bind(h);
+
 
 function updateBarChart(svg, data, dimensions) {
   const height = dimensions.height;
@@ -135,6 +137,7 @@ export function BarChart({
     if (!isEmpty(initialData) && d3Container.current) {
       const svg = d3.select(d3Container.current);
 
+      const color = colorDict[field]
       const data = initialData;
 
       const x = d3
@@ -151,7 +154,7 @@ export function BarChart({
 
       const domain = { x: x, y: y };
 
-      initializeBarChart(svg, data, domain, colorPalette, field, dimensions);
+      initializeBarChart(svg, data, domain, color, field, dimensions);
     }
   }, [initialData]);
 

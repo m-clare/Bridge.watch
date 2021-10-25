@@ -28,7 +28,7 @@ import style from "./style.css";
 
 const html = htm.bind(h);
 
-const plotOptions = ["rating", "year built"];
+const plotOptions = ["rating", "year_built"];
 
 const structureTypeOptions = {
   "Slab": "1",
@@ -102,6 +102,11 @@ export default function Country() {
     setQueryObj({...queryObj, [type]: valueArray})
   };
 
+  const handleSingleSelectChange = (event, type) => {
+    const value = event.target.value.replace(' ', '_')
+    setQueryObj({...queryObj, [type]: value})
+  }
+
   const handleFormClose = (event) => {
     setSubmitted(true);
   }
@@ -119,7 +124,6 @@ export default function Country() {
       searchParams.set('service', queryObj['service'].map(d => serviceTypeOptions[d]))
     }
     const uriString = searchParams.toString().toLowerCase()
-    console.log(uriString);
     const bridgeData = await getNationalBridges(uriString);
     setBridges(bridgeData);
     setSubmitted(false);
@@ -180,14 +184,14 @@ export default function Country() {
                       <${Select} value=${queryObj.plot_type}
                                  label="Plot Type"
                                  disabled=${renderSubmitted}
-                                 onChange=${(e) => handleChange(e, 'plot_type')}
+                                 onChange=${(e) => handleSingleSelectChange(e, 'plot_type')}
                                  onClose=${handleFormClose}
                         >
                         ${plotOptions.map((name, index) => {
                         return html`<${MenuItem} key=${name}
                                                  value=${name}
                                                  >
-                          ${name.charAt(0).toUpperCase() + name.slice(1)}</${MenuItem}>`
+                        ${(name.charAt(0).toUpperCase() + name.slice(1)).replace('_', ' ')}</${MenuItem}>`
                         })};
                       </${Select}>
                     </${FormControl}>

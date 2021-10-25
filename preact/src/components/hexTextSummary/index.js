@@ -15,6 +15,7 @@ export function HexTextSummary({ selected, objData, natData, field }) {
   } else {
     data = natData
   }
+  field = field.replace(/_/g, ' ');
   return html`
       <div style=${"min-height: 240px"}>
         <${Typography} variant="h5" component="h2">

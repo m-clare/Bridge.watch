@@ -9,9 +9,10 @@ import Typography from "@mui/material/Typography";
 import * as d3 from "d3";
 import { hexbin } from "d3-hexbin";
 import { mesh } from "topojson-client";
-import { legend } from "../colorLegend/index";
+import { legend } from "../colorLegend";
 import us from "us-atlas/states-albers-10m.json";
 import { isEmpty } from "lodash-es";
+import { colorDict } from "../colorPalette";
 
 import { BarChart } from "../../components/barChart";
 import { HexTextSummary } from "../../components/hexTextSummary";
@@ -43,61 +44,13 @@ const myHexbin = hexbin()
 
 const tickExtremes = {
   "rating": ["Failed", "Excellent"],
-  "year built": [],
-};
-
-// Color settings (initial hardcode for ratings data)
-// potential color scales - numerical range, categorical, categorical/numerical
-
-const ratingColor = d3
-  .scaleLinear()
-  .domain([0, 3, 6, 9])
-  .range(["darkred", "red", "yellow", "darkgreen"])
-  .interpolate(d3.interpolateRgb.gamma(2.2));
-
-const yearBuiltColor = d3
-  .scaleLinear()
-  .domain([1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2022])
-  .range([
-    "#f7fcf0",
-    "#e0f3db",
-    "#ccebc5",
-    "#a8ddb5",
-    "#7bccc4",
-    "#4eb3d3",
-    "#2b8cbe",
-    "#0868ac",
-    "#084081",
-  ])
-  .interpolate(d3.interpolateRgb.gamma(2.2));
-
-const ratingColorblind = d3
-  .scaleLinear()
-  .domain(d3.range(0, 10))
-  .range([
-    "#a50026",
-    "#d73027",
-    "#f46d43",
-    "#fdae61",
-    "#fee090",
-    "#e0f3f8",
-    "#abd9e9",
-    "#74add1",
-    "#4575b4",
-    "#313695",
-  ])
-  .interpolate(d3.interpolateRgb.gamma(2.2));
-
-const colorDict = {
-  "rating": ratingColor,
-  "year built": yearBuiltColor,
+  "year_built": [],
 };
 
 export function HexbinChart({ bridgeData }) {
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
-  const [colorPalette, setColorPalette] = useState("rating");
 
   const d3Container = useRef(null);
 
@@ -124,12 +77,6 @@ export function HexbinChart({ bridgeData }) {
   }, [bridgeData]);
 
   useEffect(() => {
-    if (!isEmpty(bridgeData)) {
-      setColorPalette(bridgeData.field);
-    }
-  }, [bridgeData]);
-
-  useEffect(() => {
     if (!isEmpty(bridgeData) && d3Container.current) {
       const svg = d3.select(d3Container.current);
 
@@ -143,7 +90,7 @@ export function HexbinChart({ bridgeData }) {
         [0, myHexbin.radius() * Math.SQRT2]
       );
 
-      const color = colorDict[colorPalette];
+      const color = colorDict[bridgeData.field]
 
       const getLegend = () => {
         if (!document.getElementById("legendContainer")) {
@@ -210,7 +157,7 @@ export function HexbinChart({ bridgeData }) {
             .attr("stroke-width", "0.1em");
         });
     }
-  }, [bridgeData, colorPalette]);
+  }, [bridgeData]);
 
   return html`
 <${Grid} item container spacing=${2}>
@@ -239,7 +186,6 @@ export function HexbinChart({ bridgeData }) {
             selected=${hexSelected}
             objData=${activeHex.objHistogram}
             initialData=${totalValues}
-            colorPalette=${colorDict[colorPalette]}
             barHeight=${barHeight}
             field=${bridgeData.field}
             />
