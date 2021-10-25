@@ -28,16 +28,6 @@ class BridgeMedian(models.Model):
         db_table = 'bridge_median'
 
 
-class CulvertCondition(models.Model):
-    code = models.IntegerField(unique=True)
-    rating = models.TextField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'culvert_condition'
-
-
 class DeckCondition(models.Model):
     code = models.IntegerField(unique=True)
     rating = models.TextField(blank=True, null=True)
@@ -225,7 +215,6 @@ class Bridge(models.Model):
     lowest_rating = models.ForeignKey(LowestRating, models.DO_NOTHING, blank=True, null=True)
     owner = models.ForeignKey('Owner', models.DO_NOTHING, blank=True, null=True)
     maintenance_responsibility = models.ForeignKey(MaintenanceResponsibility, models.DO_NOTHING, blank=True, null=True)
-    culvert_condition = models.ForeignKey(CulvertCondition, models.DO_NOTHING, blank=True, null=True)
     traffic_safety_features_transitions = models.ForeignKey('TrafficSafetyFeaturesTransitions', models.DO_NOTHING, blank=True, null=True)
     structure_kind = models.ForeignKey('StructureKind', models.DO_NOTHING, blank=True, null=True)
     structure_type = models.ForeignKey('StructureType', models.DO_NOTHING, blank=True, null=True)

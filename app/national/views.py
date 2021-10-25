@@ -5,6 +5,10 @@ from .models import *
 from .serializers import *
 from django_pandas.io import read_frame
 from django.http import HttpResponse
+from django.http import StreamingHttpResponse
+from django.db.models import F
+import csv
+
 
 # Create your views here.
 
@@ -27,7 +31,7 @@ def national_bridges_csv(request):
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
             bridges = bridges.exclude(lowest_rating_id__isnull=True)
-            fields.append("lowest_rating__code")
+            fields.append("rating")
         # year built base
         elif plot_type == "year built":
             bridges = bridges.exclude(year_built__isnull=True)
@@ -52,6 +56,8 @@ def national_bridges_csv(request):
             bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
 
         fields.extend(["latitude", "longitude"])
+        if ('rating' in fields):
+            bridges = bridges.annotate(rating=F('lowest_rating__code'))
         bridges = bridges.values_list(*fields)
 
         # limit query results for troubleshooting
@@ -61,10 +67,6 @@ def national_bridges_csv(request):
             bridges = bridges[:num_limit]
 
         df = read_frame(bridges, fieldnames=fields)
-        if ('lowest_rating__code' in fields):
-            df.rename(columns={'lowest_rating__code': 'rating'}, inplace=True)
-        if ('year_built' in fields):
-            df.rename(columns={'year_built': 'year built'}, inplace=True)
         response = HttpResponse(content_type='text/csv')
         df.to_csv(path_or_buf=response, index=False)
         return response
