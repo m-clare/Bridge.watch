@@ -35,6 +35,7 @@ const projection = d3
   .geoAlbersUsa()
   .scale(scaleValue)
   .translate([width * 0.5, height * 0.5]);
+
 const myHexbin = hexbin()
   .extent([
     [0, 0],
@@ -63,7 +64,20 @@ const getInterestValue = (plotType, hexValues) => {
   }
 };
 
-export function HexbinChart({ bridgeData, plotType }) {
+const getHexSize = (hexSize, radius, count) => {
+  if (hexSize) {
+    return d3.max([radius(count), 2])
+  } else {
+    return 9;
+  }
+}
+
+const getRadius = (hexBin) => {
+  return d3.scaleSqrt([0, d3.max(hexBin, (d) => d.count)],
+                      [0, myHexbin.radius() * Math.SQRT2])
+}
+
+export function HexbinChart({ bridgeData, plotType, hexSize }) {
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
@@ -101,10 +115,7 @@ export function HexbinChart({ bridgeData, plotType }) {
         totalValues: bridgeData.totalValues,
       };
 
-      const radius = d3.scaleSqrt(
-        [0, d3.max(hexBridge.hexBin, (d) => d.count)],
-        [0, myHexbin.radius() * Math.SQRT2]
-      );
+      const radius = getRadius(hexBridge.hexBin)
 
       const color = colorDict[plotType];
 
@@ -146,7 +157,7 @@ export function HexbinChart({ bridgeData, plotType }) {
         .data(hexBridge.hexBin)
         .join("path")
         .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
-        .attr("d", (d) => myHexbin.hexagon(d3.max([radius(d.count), 2])))
+        .attr("d", (d) => myHexbin.hexagon(getHexSize(hexSize, radius, d.count)))
         .attr("fill", (d) => color(getInterestValue(plotType, d)))
         .attr("stroke", (d) =>
           d3.lab(color(getInterestValue(plotType, d))).darker()
@@ -162,7 +173,7 @@ export function HexbinChart({ bridgeData, plotType }) {
             .transition()
             .duration(200)
             .attr("d", (d) =>
-              myHexbin.hexagon(d3.max([radius(d.count) * 1.5, 12]))
+               myHexbin.hexagon(d3.max([radius(d.count) * 1.5, 12]))
             )
             .attr("stroke-width", "0.2em");
         })
@@ -171,11 +182,11 @@ export function HexbinChart({ bridgeData, plotType }) {
           d3.select(this)
             .transition()
             .duration(200)
-            .attr("d", (d) => myHexbin.hexagon(d3.max([radius(d.count), 2])))
+            .attr("d", (d) => myHexbin.hexagon(getHexSize(hexSize, radius, d.count)))
             .attr("stroke-width", "0.1em");
         });
     }
-  }, [bridgeData]);
+  }, [bridgeData, hexSize]);
 
   return html`
 <${Grid} item container spacing=${2}>

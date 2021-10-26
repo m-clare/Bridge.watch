@@ -22,6 +22,8 @@ import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Button from "@mui/material/Button";
 
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import { CountryDescription } from "../../components/countryDescription";
 
 import style from "./style.css";
@@ -100,6 +102,7 @@ export default function Country() {
                                             'service': []
                                             })
   const [submitted, setSubmitted] = useState(true);
+  const [hexSize, setHexSize] = useState(true)
 
   // TODO: Find way to consolidate these event handlers
   const handleChange = (event, type) => {
@@ -111,6 +114,10 @@ export default function Country() {
   const handleSingleSelectChange = (event, type) => {
     const value = event.target.value.replace(' ', '_')
     setQueryObj({...queryObj, [type]: value})
+  }
+
+  const handleSwitchChange = (event) => {
+    setHexSize(!hexSize);
   }
 
   const handleFormClose = (event) => {
@@ -167,26 +174,28 @@ export default function Country() {
 
   const renderSubmitted = submitted;
 
+  const scaledHexBool = hexSize;
+
   return html`
     <div class=${style.country}>
       <${Box} sx=${{ flexShrink: 1 }}>
         <${Grid} container spacing=${2}>
           <${Grid} item xs=${12}>
-            <${Paper} variant=${"outlined"} style=${"padding: 15px; "}>
+            <${Paper} variant=${"outlined"} style=${"padding: 24px; "}>
               <${Grid} container>
                 <${Grid} item xs=${12}>
                   <${Typography} variant="h3" component="h1">National Bridge Inventory</${Typography}>
                 </${Grid}>
                 <${Grid} item xs=${12}>
-                  <${Typography} style=${"padding-bottom: 8px"}
+                  <${Typography} style=${"padding-bottom: 16px"}
                                  variant="h6"
                                  component="h2"
                                  color="${grey[500]}">
                     <i>Display Options</i>
                   </${Typography}>
                 </${Grid}>
-                <${Grid} container spacing=${3}>
-                  <${Grid} item>
+                <${Grid} container xs=${12} spacing=${3} style=${"padding-bottom: 24px"}>
+                    <${Grid} item>
                     <${FormControl} sx=${{ minWidth: 240}} style=${"margin: 0px"}>
                       <${InputLabel}>Plot Type</${InputLabel}>
                       <${Select} value=${queryObj.plot_type}
@@ -203,8 +212,17 @@ export default function Country() {
                         })};
                       </${Select}>
                     </${FormControl}>
-                  </${Grid}>
-                  ${filters.map(value => (filter(value)))}
+                    </${Grid}>
+                    <${Grid} item >
+                    <${FormControlLabel} control=${html`<${Switch} defaultChecked
+                                                                   checked=${scaledHexBool}
+                                                                   onChange=${handleSwitchChange}
+                                                                   inputProps=${{ 'aria-label': 'controlled' }} />`}
+                    label="Scaled hex area"/>
+                    </${Grid}>
+                </${Grid}>
+                <${Grid} container spacing=${3}>
+                  ${filters.map(value => (filter(value)))} 
                 </${Grid}>
               </${Grid}>
             </${Paper}>
@@ -229,7 +247,7 @@ export default function Country() {
                                        field: plotType,
                                        count: bridges.natData.count,
                                        filters: queryObj
-          }}/><${HexbinChart} bridgeData=${bridges} plotType=${plotType}/>`) : null}
+          }}/><${HexbinChart} bridgeData=${bridges} plotType=${plotType} hexSize=${scaledHexBool}/>`) : null}
           ${(!renderSubmitted && bridges.hasOwnProperty('message'))  ?
           (html`<${Grid} item xs=${12}>
             <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
