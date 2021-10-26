@@ -105,8 +105,8 @@ const textMoreInfo = function (summaryType) {
 const moreInfo = ["rating", "percent_poor"];
 
 const summaryTitle = {
-  percent_poor: "Percentage of Bridges in Poor Condition",
-  rating: "Lowest Component Rating",
+  percent_poor: "Percent of Bridges in Poor Condition",
+  rating: "Lowest Rating",
   year_built: "Year Built",
 };
 

@@ -23,8 +23,6 @@ import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Button from "@mui/material/Button";
 
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import { CountryDescription } from "../../components/countryDescription";
 
 import style from "./style.css";
@@ -96,6 +94,12 @@ const plotQuery = {
   'year_built': 'year_built'
 }
 
+const displayOptions  = {
+  'percent_poor': 'Percent in poor condition',
+  'rating': 'Lowest rating',
+  'year_built': 'Year built'
+}
+
 // only visible if Rating Selected
 const startDecadeOptions = [];
 
@@ -123,10 +127,6 @@ export default function Country() {
   const handleSingleSelectChange = (event, type) => {
     const value = event.target.value.replace(' ', '_')
     setQueryObj({...queryObj, [type]: value})
-  }
-
-  const handleSwitchChange = (event) => {
-    setHexSize(!hexSize);
   }
 
   const handleFormClose = (event) => {
@@ -218,18 +218,10 @@ export default function Country() {
                         return html`<${MenuItem} key=${name}
                                                  value=${name}
                                                  >
-                        ${(name.charAt(0).toUpperCase() + name.slice(1)).replace('_', ' ')}</${MenuItem}>`
+                        ${displayOptions[name]}</${MenuItem}>`
                         })};
                       </${Select}>
                     </${FormControl}>
-                    </${Grid}>
-                    <${Grid} item >
-                      <${FormControlLabel}className=${classes.typographyVariant}
-                        control=${html`<${Switch} defaultChecked
-                                                  checked=${scaledHexBool}
-                                                  onChange=${handleSwitchChange}
-                                                  inputProps=${{ 'aria-label': 'controlled' }} />`}
-                        label="Scaled hex area"/>
                     </${Grid}>
                 </${Grid}>
                 <${Grid} container spacing=${3}>
