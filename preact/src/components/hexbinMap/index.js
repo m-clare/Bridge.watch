@@ -131,7 +131,7 @@ export function HexbinChart({ bridgeData, plotType, hexSize }) {
       legendNode.select("#legend").remove();
 
       legendNode
-        .attr("transform", `translate(${0.6 * width}, ${stdMargin})`)
+        .attr("transform", `translate(${0.6 * width}, ${stdMargin - 10})`)
         .append(() =>
           legend({
             color: color,
@@ -173,7 +173,7 @@ export function HexbinChart({ bridgeData, plotType, hexSize }) {
             .transition()
             .duration(200)
             .attr("d", (d) =>
-               myHexbin.hexagon(d3.max([radius(d.count) * 1.5, 12]))
+               myHexbin.hexagon(d3.max([radius(d.count) * 1.5, 15]))
             )
             .attr("stroke-width", "0.2em");
         })
