@@ -4,6 +4,7 @@ import { getNationalBridges } from "../../utils/nbi-api";
 import { useEffect, useState, useRef } from "preact/hooks";
 import { HexbinChart } from "../../components/hexbinMap";
 import { isEmpty } from "lodash-es";
+import { makeStyles } from "@mui/styles";
 
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -29,6 +30,12 @@ import { CountryDescription } from "../../components/countryDescription";
 import style from "./style.css";
 
 const html = htm.bind(h);
+
+const useStyles = makeStyles({
+  typographyVariant: {
+    fontVariant: "small-caps"
+  }
+})
 
 const plotOptions = ["rating", "year_built", "percent_poor"];
 
@@ -95,8 +102,10 @@ const startDecadeOptions = [];
 const endDecadeOptions = [];
 
 export default function Country() {
+  const classes = useStyles();
+
   const [bridges, setBridges] = useState({});
-  const [queryObj, setQueryObj] = useState({'plot_type': 'rating',
+  const [queryObj, setQueryObj] = useState({'plot_type': 'percent_poor',
                                             'material': [],
                                             'type': [],
                                             'service': []
@@ -184,7 +193,8 @@ export default function Country() {
             <${Paper} variant=${"outlined"} style=${"padding: 24px; "}>
               <${Grid} container>
                 <${Grid} item xs=${12}>
-                  <${Typography} variant="h3" component="h1">National Bridge Inventory</${Typography}>
+                  <${Typography} className=${classes.typographyVariant}
+                                 variant="h3" component="h1">National Bridge Inventory</${Typography}>
                 </${Grid}>
                 <${Grid} item xs=${12}>
                   <${Typography} style=${"padding-bottom: 16px"}
@@ -194,7 +204,7 @@ export default function Country() {
                     <i>Display Options</i>
                   </${Typography}>
                 </${Grid}>
-                <${Grid} container xs=${12} spacing=${3} style=${"padding-bottom: 24px"}>
+                <${Grid} container spacing=${3} style=${"padding-bottom: 24px"}>
                     <${Grid} item>
                     <${FormControl} sx=${{ minWidth: 240}} style=${"margin: 0px"}>
                       <${InputLabel}>Plot Type</${InputLabel}>
@@ -214,11 +224,12 @@ export default function Country() {
                     </${FormControl}>
                     </${Grid}>
                     <${Grid} item >
-                    <${FormControlLabel} control=${html`<${Switch} defaultChecked
-                                                                   checked=${scaledHexBool}
-                                                                   onChange=${handleSwitchChange}
-                                                                   inputProps=${{ 'aria-label': 'controlled' }} />`}
-                    label="Scaled hex area"/>
+                      <${FormControlLabel}className=${classes.typographyVariant}
+                        control=${html`<${Switch} defaultChecked
+                                                  checked=${scaledHexBool}
+                                                  onChange=${handleSwitchChange}
+                                                  inputProps=${{ 'aria-label': 'controlled' }} />`}
+                        label="Scaled hex area"/>
                     </${Grid}>
                 </${Grid}>
                 <${Grid} container spacing=${3}>
@@ -241,7 +252,7 @@ export default function Country() {
                 </${Grid}>
               </${Grid}>
             </${Paper}>
-          </${Grid}>`) : (html`<div></div>`)}
+          </${Grid}>`) : (null)}
           ${(!isEmpty(bridges) && !bridges.hasOwnProperty('message'))  ?
           (html`<${CountryDescription} summaryType=${plotType} keyValues=${{
                                        field: plotType,

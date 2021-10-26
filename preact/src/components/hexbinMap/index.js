@@ -13,6 +13,7 @@ import { legend } from "../colorLegend";
 import us from "us-atlas/states-albers-10m.json";
 import { isEmpty } from "lodash-es";
 import { colorDict } from "../colorPalette";
+import { makeStyles } from "@mui/styles";
 
 import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
@@ -23,6 +24,13 @@ import Switch from "@mui/material/Switch";
 
 import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
+
+const useStyles = makeStyles({
+  typographyVariant: {
+    fontVariant: "small-caps"
+  }
+})
+
 
 // Constant values for scaling, aspectRatio, etc.
 const width = 975;
@@ -78,6 +86,7 @@ const getRadius = (hexBin) => {
 }
 
 export function HexbinChart({ bridgeData, plotType, hexSize }) {
+  const classes = useStyles();
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
@@ -210,7 +219,7 @@ export function HexbinChart({ bridgeData, plotType, hexSize }) {
     <${Paper} variant=${"outlined"} style=${"padding: 15px"}>
       <${Grid} item>
         <div>
-          <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
+          <${Typography} className=${classes.typographyVariant} variant="h5" component="h2">${locality} Histogram</${Typography}>
           <${BarChart}
             selected=${hexSelected}
             objData=${activeHex.objHistogram}

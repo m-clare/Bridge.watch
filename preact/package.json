@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "bdi-preact",
+  "name": "Bridge.watch",
   "version": "0.0.0",
-  "license": "MIT",
+  "license": "GPLv3",
   "scripts": {
     "build": "PREACT_APP_API_URL='https://bridge.watch/api/' preact build",
     "serve": "sirv build --port 8080 --cors --single",
@@ -33,6 +33,7 @@
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.1",
     "@mui/material": "^5.0.2",
+    "@mui/styles": "^5.0.2",
     "axios": "^0.21.1",
     "cors": "^2.8.5",
     "d3": "^7.0.1",
@@ -46,6 +47,7 @@
     "prettier": "^2.4.1",
     "topojson-client": "^3.1.0",
     "ts-lit-plugin": "^1.2.1",
+    "typeface-fira-sans": "^1.1.13",
     "typeface-roboto": "^1.1.13",
     "underscore": "^1.13.1",
     "us-atlas": "^3.0.0"
@@ -57,5 +59,5 @@
       "<rootDir>/tests/__mocks__/setupTests.js"
     ]
   },
-  "proxy": "http://localhost:5000"
+  "proxy": "http://localhost:3000"
 }
