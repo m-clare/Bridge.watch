@@ -28,7 +28,7 @@ import style from "./style.css";
 
 const html = htm.bind(h);
 
-const plotOptions = ["rating", "year_built"];
+const plotOptions = ["rating", "year_built", "percent_poor"];
 
 const structureTypeOptions = {
   "Slab": "1",
@@ -81,6 +81,12 @@ const filters = [
   {'filter': 'service', 'label': 'Service Type', 'options': serviceTypeOptions}
 ]
 
+const plotQuery = {
+  'percent_poor': 'rating',
+  'rating': 'rating',
+  'year_built': 'year_built'
+}
+
 // only visible if Rating Selected
 const startDecadeOptions = [];
 
@@ -113,7 +119,7 @@ export default function Country() {
 
   useEffect(async () => {
     const searchParams = new URLSearchParams()
-    searchParams.set('plot_type', queryObj['plot_type'])
+    searchParams.set('plot_type', plotQuery[queryObj['plot_type']])
     if (queryObj['material'].length !== 0) {
       searchParams.set('material', queryObj['material'].map(d => materialOptions[d]))
     }
@@ -156,6 +162,8 @@ export default function Country() {
   </${FormControl}>
 </${Grid}>
 `}
+
+  const plotType = queryObj.plot_type;
 
   const renderSubmitted = submitted;
 
@@ -216,13 +224,13 @@ export default function Country() {
               </${Grid}>
             </${Paper}>
           </${Grid}>`) : (html`<div></div>`)}
-          ${(!isEmpty(bridges) || (!bridges) && !bridges.message)  ?
+          ${(!isEmpty(bridges) && !bridges.hasOwnProperty('message'))  ?
           (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
                                        field: bridges.field,
                                        count: bridges.natData.count,
                                        filters: queryObj
-                                       }}/><${HexbinChart} bridgeData=${bridges} />`) : null}
-          ${(!renderSubmitted && bridges.message)  ?
+          }}/><${HexbinChart} bridgeData=${bridges} plotType=${plotType}/>`) : null}
+          ${(!renderSubmitted && bridges.hasOwnProperty('message'))  ?
           (html`<${Grid} item xs=${12}>
             <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
               <${Grid} container>
@@ -230,7 +238,7 @@ export default function Country() {
                   <${Typography} style=${"text-align: center"}
                                  variant="h6"
                                  color=${grey[500]}>
-                    <i>No bridges found for custom query!</i>
+                    <i>${bridges.message}</i>
                   </${Typography}>
                 </${Grid}>
               </${Grid}>

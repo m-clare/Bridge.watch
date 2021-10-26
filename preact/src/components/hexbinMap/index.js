@@ -15,7 +15,7 @@ import { isEmpty } from "lodash-es";
 import { colorDict } from "../colorPalette";
 
 import { BarChart } from "../../components/barChart";
-import { HexTextSummary } from "../../components/hexTextSummary";
+import { HistTextSummary } from "../../components/histTextSummary";
 
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -43,11 +43,27 @@ const myHexbin = hexbin()
   .radius(10);
 
 const tickExtremes = {
-  "rating": ["Failed", "Excellent"],
-  "year_built": [],
+  rating: ["Failed", "Excellent"],
+  percent_poor: ["None in poor condition (%)", "All in poor condition (%)"],
+  year_built: [],
 };
 
-export function HexbinChart({ bridgeData }) {
+const getInterestValue = (plotType, hexValues) => {
+  if (plotType === "percent_poor") {
+    const histogram = hexValues.objHistogram;
+    const numPoor =
+      histogram[0].count +
+      histogram[1].count +
+      histogram[2].count +
+      histogram[3].count +
+      histogram[4].count;
+    return Math.round((numPoor / hexValues.count) * 100);
+  } else {
+    return hexValues.objKeyValues.median;
+  }
+};
+
+export function HexbinChart({ bridgeData, plotType }) {
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
@@ -90,7 +106,7 @@ export function HexbinChart({ bridgeData }) {
         [0, myHexbin.radius() * Math.SQRT2]
       );
 
-      const color = colorDict[bridgeData.field]
+      const color = colorDict[plotType];
 
       const getLegend = () => {
         if (!document.getElementById("legendContainer")) {
@@ -112,7 +128,7 @@ export function HexbinChart({ bridgeData }) {
             tickFormat: ".0f",
             tickSize: 0,
             ticks: 8,
-            tickExtremes: tickExtremes[bridgeData.field],
+            tickExtremes: tickExtremes[plotType],
           })
         );
 
@@ -131,8 +147,10 @@ export function HexbinChart({ bridgeData }) {
         .join("path")
         .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
         .attr("d", (d) => myHexbin.hexagon(d3.max([radius(d.count), 2])))
-        .attr("fill", (d) => color(d.interestValue))
-        .attr("stroke", (d) => d3.lab(color(d.interestValue)).darker())
+        .attr("fill", (d) => color(getInterestValue(plotType, d)))
+        .attr("stroke", (d) =>
+          d3.lab(color(getInterestValue(plotType, d))).darker()
+        )
         .attr("stroke-width", "0.1em")
         .on("mouseover", function (d) {
           // Set state to pass to barChart
@@ -192,7 +210,7 @@ export function HexbinChart({ bridgeData }) {
         </div>
       </${Grid}>
       <${Grid} item>
-        <${HexTextSummary}
+        <${HistTextSummary}
           selected=${hexSelected}
           objData=${activeHex.objKeyValues}
           natData=${bridgeData.natData}

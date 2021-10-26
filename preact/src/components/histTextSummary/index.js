@@ -7,7 +7,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 const html = htm.bind(h);
 
-export function HexTextSummary({ selected, objData, natData, field }) {
+export function HistTextSummary({ selected, objData, natData, field }) {
   let data;
 
   if (selected) {
@@ -25,7 +25,7 @@ export function HexTextSummary({ selected, objData, natData, field }) {
         <${ListItem}>Number of Bridges: ${data.count}</${ListItem}>
         <${ListItem}>${field} minimum: ${data.min}</${ListItem}>
         <${ListItem}>${field} maximum: ${data.max}</${ListItem}>
-        <${ListItem}>${field} average: ${data.avg}</${ListItem}>
+        <${ListItem}>${field} average: ${Math.round(data.avg)}</${ListItem}>
         <${ListItem}>${field} median: ${data.median}</${ListItem}>
         <${ListItem}>${field} mode: ${data.mode}</${ListItem}>
         <${ListItem}>
