@@ -225,8 +225,8 @@ export default function Country() {
             </${Paper}>
           </${Grid}>`) : (html`<div></div>`)}
           ${(!isEmpty(bridges) && !bridges.hasOwnProperty('message'))  ?
-          (html`<${CountryDescription} summaryType=${bridges.field} keyValues=${{
-                                       field: bridges.field,
+          (html`<${CountryDescription} summaryType=${plotType} keyValues=${{
+                                       field: plotType,
                                        count: bridges.natData.count,
                                        filters: queryObj
           }}/><${HexbinChart} bridgeData=${bridges} plotType=${plotType}/>`) : null}
