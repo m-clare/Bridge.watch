@@ -26,6 +26,8 @@ import Button from "@mui/material/Button";
 
 import { CountryDescription } from "../../components/countryDescription";
 import { FilterForm } from "../../components/filterForm";
+import { plotQuery, displayOptions, filterMapping } from "../../components/Options";
+
 import style from "./style.css";
 
 const html = htm.bind(h);
@@ -37,74 +39,6 @@ const useStyles = makeStyles({
 })
 
 const plotOptions = ["rating", "year_built", "percent_poor"];
-
-const structureTypeOptions = {
-  "Slab": "1",
-  "Stringer/Multi-beam or Girder": "2",
-  "Girder and Floorbeam System": "3",
-  "Tee Beam": "4",
-  "Box Beam or Girders - Multiple": "5",
-  "Box Beam or Girders - Single or Spread": "6",
-  "Frame": "7",
-  "Orthotropic": "8",
-  "Truss - Deck": "9",
-  "Truss - Thru": "10",
-  "Arch - Deck": "11",
-  "Arch - Thru": "12",
-  "Suspension": "13",
-  "Stayed Girder": "14",
-  "Movable - Lift": "15",
-  "Movable - Bascule": "16",
-  "Movable - Swing": "17",
-  "Segmental Box Girder": "21",
-  "Channel Beam": "22"
-};
-
-const materialOptions = {
-  "Reinforced Concrete": "1,2",
-  "Steel": "3,4",
-  "Prestressed or Post-tensioned Concrete": "5,6",
-  "Wood or Timber": "7",
-  "Masonry": "8",
-  "Aluminum, Wrought Iron, or Cast Iron": "9",
-  "Other": "0",
-}
-
-const serviceTypeOptions = {
-  "Highway": "1",
-  "Railroad": "2",
-  "Pedestrian-bicycle": "3",
-  "Highway-railroad": "4",
-  "Highway-pedestrian": "5",
-  "Overpass structure at an interchange": "6",
-  "Third level (interchange)": "7",
-  "Fourth level (interchange)": "8",
-  "Building or plaza": "9",
-  "Other": "0"
-}
-
-const plotQuery = {
-  'percent_poor': 'rating',
-  'rating': 'rating',
-  'year_built': 'year_built'
-}
-
-const displayOptions  = {
-  'percent_poor': 'Percent in poor condition',
-  'rating': 'Lowest rating',
-  'year_built': 'Year built'
-}
-
-const filterMapping = {
-  'material': materialOptions,
-  'type': structureTypeOptions,
-  'service': serviceTypeOptions
-}
-
-// only visible if Rating Selected
-const startDecadeOptions = []; 
-
-const endDecadeOptions = [];
 
 function constructURI(query) {
   const searchParams = new URLSearchParams()
@@ -124,6 +58,9 @@ function constructURI(query) {
   return uriString
 }
 
+function updateQuery(queryState, type, updatedParam) {
+  return {...queryState, [type]: updatedParam}
+}
 export default function Country() {
   const classes = useStyles();
 
@@ -145,12 +82,17 @@ export default function Country() {
 
   const handleSingleSelectChange = (event, type) => {
     const value = event.target.value.replace(' ', '_')
-    setQueryObj({...queryState, [type]: value})
+    setQueryState({...queryState, [type]: value})
+    const newURI = constructURI({...queryState, [type]: value})
+    if (newURI !== queryURI) {
+      setSubmitted(true)
+    }
   }
 
+  // this handler only works on multi select options...
   const handleFormClose = (event) => {
     const newURI = constructURI(queryState)
-    if (newURI !== queryURI) { 
+    if (newURI !== queryURI) {
       setSubmitted(true);
     }
   }
@@ -164,6 +106,7 @@ export default function Country() {
   }, [submitted]);
 
   const plotType = queryState.plot_type;
+  /* const currentState = queryState */
   const renderSubmitted = submitted;
   const scaledHexBool = hexSize;
 
@@ -194,7 +137,6 @@ export default function Country() {
                                  label="Plot Type"
                                  disabled=${renderSubmitted}
                                  onChange=${(e) => handleSingleSelectChange(e, 'plot_type')}
-                                 onClose=${handleFormClose}
                         >
                         ${plotOptions.map((name, index) => {
                         return html`<${MenuItem} key=${name}

@@ -186,5 +186,5 @@ export function CountryDescription({ summaryType, keyValues }) {
         </${Grid}>
       </${Card}>
     </${Grid}>`;
-    }
-    
+}
+
