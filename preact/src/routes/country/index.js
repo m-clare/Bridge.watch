@@ -24,7 +24,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Button from "@mui/material/Button";
 
 import { CountryDescription } from "../../components/countryDescription";
-
+import { FilterForm } from "../../components/filterForm";
 import style from "./style.css";
 
 const html = htm.bind(h);
@@ -109,24 +109,23 @@ export default function Country() {
   const classes = useStyles();
 
   const [bridges, setBridges] = useState({});
-  const [queryObj, setQueryObj] = useState({'plot_type': 'percent_poor',
-                                            'material': [],
-                                            'type': [],
-                                            'service': []
-                                            })
+  const [queryState, setQueryState] = useState({'plot_type': 'percent_poor',
+                                                'material': [],
+                                                'type': [],
+                                                'service': []
+                                               })
   const [submitted, setSubmitted] = useState(true);
   const [hexSize, setHexSize] = useState(true)
 
-  // TODO: Find way to consolidate these event handlers
   const handleChange = (event, type) => {
     const value = event.target.value
     const valueArray = typeof(value) === 'string' ? value.split(',') : value
-    setQueryObj({...queryObj, [type]: valueArray})
+    setQueryState({...queryState, [type]: valueArray})
   };
 
   const handleSingleSelectChange = (event, type) => {
     const value = event.target.value.replace(' ', '_')
-    setQueryObj({...queryObj, [type]: value})
+    setQueryObj({...queryState, [type]: value})
   }
 
   const handleFormClose = (event) => {
@@ -135,15 +134,15 @@ export default function Country() {
 
   useEffect(async () => {
     const searchParams = new URLSearchParams()
-    searchParams.set('plot_type', plotQuery[queryObj['plot_type']])
-    if (queryObj['material'].length !== 0) {
-      searchParams.set('material', queryObj['material'].map(d => materialOptions[d]))
+    searchParams.set('plot_type', plotQuery[queryState['plot_type']])
+    if (queryState['material'].length !== 0) {
+      searchParams.set('material', queryState['material'].map(d => materialOptions[d]))
     }
-    if (queryObj['type'].length !== 0) {
-      searchParams.set('type', queryObj['type'].map(d => structureTypeOptions[d]))
+    if (queryState['type'].length !== 0) {
+      searchParams.set('type', queryState['type'].map(d => structureTypeOptions[d]))
     }
-    if (queryObj['service'].length !== 0) {
-      searchParams.set('service', queryObj['service'].map(d => serviceTypeOptions[d]))
+    if (queryState['service'].length !== 0) {
+      searchParams.set('service', queryState['service'].map(d => serviceTypeOptions[d]))
     }
     const uriString = searchParams.toString().toLowerCase()
     const bridgeData = await getNationalBridges(uriString);
@@ -151,38 +150,8 @@ export default function Country() {
     setSubmitted(false);
   }, [submitted]);
 
-  function filter(filterObj) {
-    return html
-`<${Grid} item>
-  <${FormControl} sx=${{ m: 1, minWidth: 240}} style=${"margin: 0px"}>
-    <${InputLabel}>${filterObj.label}</${InputLabel}>
-    <${Select}
-      value=${queryObj[filterObj.filter]}
-      label=${filterObj.filter}
-      onChange=${(e) => handleChange(e, filterObj.filter)}
-      onClose=${handleFormClose}
-      multiple
-      disabled=${renderSubmitted}
-      input=${ html`<${OutlinedInput} id="select-multiple-chip" label=${filterObj.label} />` }
-      renderValue=${(selected) => (
-      html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-        ${selected.map(value => (
-        html`<${Chip} key=${value} label=${value} />`
-        ))}
-      </${Box}>`)}
-      >
-      ${Object.keys(filterObj.options).map((name, index) => {
-      return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
-      })};
-    </${Select}>
-  </${FormControl}>
-</${Grid}>
-`}
-
-  const plotType = queryObj.plot_type;
-
+  const plotType = queryState.plot_type;
   const renderSubmitted = submitted;
-
   const scaledHexBool = hexSize;
 
   return html`
@@ -208,7 +177,7 @@ export default function Country() {
                     <${Grid} item>
                     <${FormControl} sx=${{ minWidth: 240}} style=${"margin: 0px"}>
                       <${InputLabel}>Plot Type</${InputLabel}>
-                      <${Select} value=${queryObj.plot_type}
+                      <${Select} value=${queryState.plot_type}
                                  label="Plot Type"
                                  disabled=${renderSubmitted}
                                  onChange=${(e) => handleSingleSelectChange(e, 'plot_type')}
@@ -224,9 +193,11 @@ export default function Country() {
                     </${FormControl}>
                     </${Grid}>
                 </${Grid}>
-                <${Grid} container spacing=${3}>
-                  ${filters.map(value => (filter(value)))} 
-                </${Grid}>
+                <${FilterForm} queryState=${queryState}
+                               handleChange=${handleChange}
+                               handleClose=${handleFormClose}
+                               submitted=${renderSubmitted}
+                               />
               </${Grid}>
             </${Paper}>
           </${Grid}>
@@ -249,7 +220,7 @@ export default function Country() {
           (html`<${CountryDescription} summaryType=${plotType} keyValues=${{
                                        field: plotType,
                                        count: bridges.natData.count,
-                                       filters: queryObj
+                                       filters: queryState
           }}/><${HexbinChart} bridgeData=${bridges} plotType=${plotType} hexSize=${scaledHexBool}/>`) : null}
           ${(!renderSubmitted && bridges.hasOwnProperty('message'))  ?
           (html`<${Grid} item xs=${12}>
@@ -269,4 +240,3 @@ export default function Country() {
       </${Box}>
     </div>`;
     }
-    

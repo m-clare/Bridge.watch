@@ -64,33 +64,35 @@ const serviceTypeOptions = {
 }
 
 const filters = [
-  {'filter': 'material', 'label': 'Bridge Material', 'options': materialOptions},
-  {'filter': 'type', 'label': 'Bridge Type', 'options': structureTypeOptions},
-  {'filter': 'service', 'label': 'Service Type', 'options': serviceTypeOptions}
+  {'name': 'material', 'label': 'Bridge Material', 'options': materialOptions},
+  {'name': 'type', 'label': 'Bridge Type', 'options': structureTypeOptions},
+  {'name': 'service', 'label': 'Service Type', 'options': serviceTypeOptions}
 ]
 
-function singleFilter(filterObj, formHandlers) {
+function singleFilter(filter, queryState, formHandlers) {
   
 }
 
-function multiFilter(filterObj, formHandlers) {
+function multiFilter(filter, queryState, formHandlers) {
 
-  const handleChange = formHandlers[handleChange]
-  const renderSubmitted = formHandlers[renderSubmitted]
-  const handleClose = formHandlers[handleClose]
+  const handleChange = formHandlers.handleChange
+  const renderSubmitted = formHandlers.submitted
+  const handleClose = formHandlers.handleClose
+
+  const colWidth = Math.max(4, Math.round(12 / filters.length))
 
   return html
-`<${Grid} item>
-  <${FormControl} sx=${{ m: 1, minWidth: 240}} style=${"margin: 0px"}>
-    <${InputLabel}>${filterObj.label}</${InputLabel}>
+`<${Grid} item xs=${12} md=${colWidth}>
+  <${FormControl} sx=${{ m: 1, minWidth: 240}} fullWidth style=${"margin: 0px"}>
+    <${InputLabel}>${filter.label}</${InputLabel}>
     <${Select}
-      value=${filterObj[filterObj.filter]}
-      label=${filterObj.filter}
-      onChange=${(e) => handleChange(e, filterObj.filter)}
+      value=${queryState[filter.name]}
+      label=${filter.name}
+      onChange=${(e) => handleChange(e, filter.name)}
       onClose=${handleClose}
       multiple
       disabled=${renderSubmitted}
-      input=${ html`<${OutlinedInput} id="select-multiple-chip" label=${filterObj.label} />` }
+      input=${ html`<${OutlinedInput} id="select-multiple-chip" label=${filter.label} />` }
       renderValue=${(selected) => (
       html`<${Box} sx=${{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
         ${selected.map(value => (
@@ -98,7 +100,7 @@ function multiFilter(filterObj, formHandlers) {
         ))}
       </${Box}>`)}
       >
-      ${Object.keys(filterObj.options).map((name, index) => {
+      ${Object.keys(filter.options).map((name, index) => {
       return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`
       })};
     </${Select}>
@@ -107,9 +109,17 @@ function multiFilter(filterObj, formHandlers) {
 
 }
 
-export default function filterForm() {
-  return html`
-  <${FormControl} sx={{m: 1 , minWidth: 120}}></${FormControl}>
-  `
+/* export function FilterForm({ queryObj, handleChange, handleClose, submitted }) { */
+export function FilterForm({ queryState, handleChange, handleClose, submitted }) {
 
+  const formHandlers = {} ;
+  formHandlers.handleChange = handleChange;
+  formHandlers.handleClose = handleClose;
+  formHandlers.submitted = submitted
+
+  return html`
+  <${Grid} container spacing=${3} sx=${{flexGrow: 1}}>
+    ${filters.map(value => (multiFilter(value, queryState, formHandlers)))}
+  </${Grid}>
+  `
 }
