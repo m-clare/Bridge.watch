@@ -4,6 +4,7 @@ import { getNationalBridges } from "../../utils/nbi-api";
 import { useEffect, useState, useRef } from "preact/hooks";
 import { HexbinChart } from "../../components/hexbinMap";
 import { isEmpty } from "lodash-es";
+import { isEqual } from "lodash-es";
 import { makeStyles } from "@mui/styles";
 
 import Box from "@mui/material/Box";
@@ -82,12 +83,6 @@ const serviceTypeOptions = {
   "Other": "0"
 }
 
-const filters = [
-  {'filter': 'material', 'label': 'Bridge Material', 'options': materialOptions},
-  {'filter': 'type', 'label': 'Bridge Type', 'options': structureTypeOptions},
-  {'filter': 'service', 'label': 'Service Type', 'options': serviceTypeOptions}
-]
-
 const plotQuery = {
   'percent_poor': 'rating',
   'rating': 'rating',
@@ -100,10 +95,34 @@ const displayOptions  = {
   'year_built': 'Year built'
 }
 
+const filterMapping = {
+  'material': materialOptions,
+  'type': structureTypeOptions,
+  'service': serviceTypeOptions
+}
+
 // only visible if Rating Selected
-const startDecadeOptions = [];
+const startDecadeOptions = []; 
 
 const endDecadeOptions = [];
+
+function constructURI(query) {
+  const searchParams = new URLSearchParams()
+  const keys = Object.keys(query)
+  keys.forEach(item => {
+    if (item === 'plot_type') {
+      searchParams.set(item, plotQuery[query['plot_type']])
+    }
+    else {
+      if (query[item].length !== 0) {
+        const filterMap = filterMapping[item]
+        searchParams.set(item, query[item].map(d => filterMap[d]).sort())
+      }
+    }
+  })
+  const uriString = searchParams.toString().toLowerCase();
+  return uriString
+}
 
 export default function Country() {
   const classes = useStyles();
@@ -114,12 +133,13 @@ export default function Country() {
                                                 'type': [],
                                                 'service': []
                                                })
+  const [queryURI, setQueryURI] = useState('plot_type=percent_poor')
   const [submitted, setSubmitted] = useState(true);
   const [hexSize, setHexSize] = useState(true)
 
   const handleChange = (event, type) => {
     const value = event.target.value
-    const valueArray = typeof(value) === 'string' ? value.split(',') : value
+    const valueArray = typeof(value) === 'string' ? value.split(',').sort() : value.sort()
     setQueryState({...queryState, [type]: valueArray})
   };
 
@@ -129,23 +149,16 @@ export default function Country() {
   }
 
   const handleFormClose = (event) => {
-    setSubmitted(true);
+    const newURI = constructURI(queryState)
+    if (newURI !== queryURI) { 
+      setSubmitted(true);
+    }
   }
 
   useEffect(async () => {
-    const searchParams = new URLSearchParams()
-    searchParams.set('plot_type', plotQuery[queryState['plot_type']])
-    if (queryState['material'].length !== 0) {
-      searchParams.set('material', queryState['material'].map(d => materialOptions[d]))
-    }
-    if (queryState['type'].length !== 0) {
-      searchParams.set('type', queryState['type'].map(d => structureTypeOptions[d]))
-    }
-    if (queryState['service'].length !== 0) {
-      searchParams.set('service', queryState['service'].map(d => serviceTypeOptions[d]))
-    }
-    const uriString = searchParams.toString().toLowerCase()
-    const bridgeData = await getNationalBridges(uriString);
+    const newURI = constructURI(queryState)
+    const bridgeData = await getNationalBridges(newURI);
+    setQueryURI(newURI);
     setBridges(bridgeData);
     setSubmitted(false);
   }, [submitted]);
