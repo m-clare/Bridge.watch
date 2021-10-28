@@ -25,8 +25,8 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Button from "@mui/material/Button";
 
 import { CountryDescription } from "../../components/countryDescription";
-import { FilterForm } from "../../components/filterForm";
-import { plotQuery, displayOptions, filterMapping } from "../../components/Options";
+import { QueryForm } from "../../components/queryForm";
+import { filters, plotOptions } from "../../components/Options";
 
 import style from "./style.css";
 
@@ -38,18 +38,17 @@ const useStyles = makeStyles({
   }
 })
 
-const plotOptions = ["rating", "year_built", "percent_poor"];
-
 function constructURI(query) {
   const searchParams = new URLSearchParams()
   const keys = Object.keys(query)
   keys.forEach(item => {
     if (item === 'plot_type') {
-      searchParams.set(item, plotQuery[query['plot_type']])
+      const value = query['plot_type']
+      searchParams.set(item, plotOptions[value].query)
     }
     else {
       if (query[item].length !== 0) {
-        const filterMap = filterMapping[item]
+        const filterMap = filters[item].options
         searchParams.set(item, query[item].map(d => filterMap[d]).sort())
       }
     }
@@ -80,16 +79,15 @@ export default function Country() {
     setQueryState({...queryState, [type]: valueArray})
   };
 
-  const handleSingleSelectChange = (event, type) => {
+  const handleSingleChange = (event, type) => {
     const value = event.target.value.replace(' ', '_')
     setQueryState({...queryState, [type]: value})
     const newURI = constructURI({...queryState, [type]: value})
-    if (newURI !== queryURI) {
+    if (newURI !== queryURI || queryState.plot_type !== value ) {
       setSubmitted(true)
     }
   }
 
-  // this handler only works on multi select options...
   const handleFormClose = (event) => {
     const newURI = constructURI(queryState)
     if (newURI !== queryURI) {
@@ -106,7 +104,6 @@ export default function Country() {
   }, [submitted]);
 
   const plotType = queryState.plot_type;
-  /* const currentState = queryState */
   const renderSubmitted = submitted;
   const scaledHexBool = hexSize;
 
@@ -116,42 +113,18 @@ export default function Country() {
         <${Grid} container spacing=${2}>
           <${Grid} item xs=${12}>
             <${Paper} variant=${"outlined"} style=${"padding: 24px; "}>
-              <${Grid} container>
+              <${Grid} container spacing=${3}>
                 <${Grid} item xs=${12}>
                   <${Typography} className=${classes.typographyVariant}
                                  variant="h3" component="h1">National Bridge Inventory</${Typography}>
                 </${Grid}>
-                <${Grid} item xs=${12}>
-                  <${Typography} style=${"padding-bottom: 16px"}
-                                 variant="h6"
-                                 component="h2"
-                                 color="${grey[500]}">
-                    <i>Display Options</i>
-                  </${Typography}>
-                </${Grid}>
-                <${Grid} container spacing=${3} style=${"padding-bottom: 24px"}>
-                    <${Grid} item>
-                    <${FormControl} sx=${{ minWidth: 240}} style=${"margin: 0px"}>
-                      <${InputLabel}>Plot Type</${InputLabel}>
-                      <${Select} value=${queryState.plot_type}
-                                 label="Plot Type"
-                                 disabled=${renderSubmitted}
-                                 onChange=${(e) => handleSingleSelectChange(e, 'plot_type')}
-                        >
-                        ${plotOptions.map((name, index) => {
-                        return html`<${MenuItem} key=${name}
-                                                 value=${name}
-                                                 >
-                        ${displayOptions[name]}</${MenuItem}>`
-                        })};
-                      </${Select}>
-                    </${FormControl}>
-                    </${Grid}>
-                </${Grid}>
-                <${FilterForm} queryState=${queryState}
-                               handleChange=${handleChange}
-                               handleClose=${handleFormClose}
-                               submitted=${renderSubmitted}
+                <${QueryForm} queryState=${queryState}
+                              handleChange=${handleChange}
+                              handleClose=${handleFormClose}
+                              handleSingleChange=${handleSingleChange}
+                              submitted=${renderSubmitted}
+                              plotOptions=${plotOptions}
+                              filters=${filters}
                                />
               </${Grid}>
             </${Paper}>

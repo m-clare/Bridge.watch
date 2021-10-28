@@ -95,7 +95,7 @@ export function HexbinChart({ bridgeData, plotType }) {
 
   const d3Container = useRef(null);
 
-  const widthCheck = useMediaQuery("(min-width:600px)");
+  const widthCheck = useMediaQuery("(min-width:650px)");
 
   const handleSwitchChange = (event) => {
     setHexSize(!hexSize);
@@ -209,7 +209,7 @@ export function HexbinChart({ bridgeData, plotType }) {
 
   return html`
 <${Grid} item container spacing=${2}>
-  <${Grid} item xs=${12} sm=${8}>
+  <${Grid} item xs=${12} md=${8}>
     <${FormControlLabel}className=${classes.typographyVariant}
       control=${html`<${Switch} defaultChecked
                                 checked=${hexSize}
@@ -231,8 +231,8 @@ export function HexbinChart({ bridgeData, plotType }) {
         />
     </svg>
   </${Grid}>
-  <${Grid} item xs=${12} sm=${4}>
-    <${Paper} variant=${"outlined"} style=${"padding: 15px"}> 
+  <${Grid} item xs=${12} md=${4}>
+    <${Paper} variant=${"outlined"} style=${"padding: 16px"}> 
       <${Grid} item>
         <div>
           <${Typography} className=${classes.typographyVariant} variant="h5" component="h2">${locality} Histogram</${Typography}>
