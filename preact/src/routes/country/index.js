@@ -8,6 +8,7 @@ import { isEqual } from "lodash-es";
 import { makeStyles } from "@mui/styles";
 
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import LinearProgress from "@mui/material/LinearProgress";
@@ -108,63 +109,63 @@ export default function Country() {
   const scaledHexBool = hexSize;
 
   return html`
-    <div class=${style.country}>
-      <${Box} sx=${{ flexShrink: 1 }}>
-        <${Grid} container spacing=${2}>
-          <${Grid} item xs=${12}>
-            <${Paper} variant=${"outlined"} style=${"padding: 24px; "}>
-              <${Grid} container spacing=${3}>
-                <${Grid} item xs=${12}>
-                  <${Typography} className=${classes.typographyVariant}
-                                 variant="h3" component="h1">National Bridge Inventory</${Typography}>
-                </${Grid}>
-                <${QueryForm} queryState=${queryState}
-                              handleChange=${handleChange}
-                              handleClose=${handleFormClose}
-                              handleSingleChange=${handleSingleChange}
-                              submitted=${renderSubmitted}
-                              plotOptions=${plotOptions}
-                              filters=${filters}
-                               />
-              </${Grid}>
-            </${Paper}>
+<${Box} sx=${{ padding: "16px"}}>
+  <${Container} maxWidth="lg">
+    <${Grid} container spacing=${2}>
+      <${Grid} item xs=${12}>
+        <${Paper} variant=${"outlined"} style=${"padding: 24px; "}>
+          <${Grid} container spacing=${3}>
+            <${Grid} item xs=${12}>
+              <${Typography} className=${classes.typographyVariant}
+                             variant="h3" component="h1">National Bridge Inventory</${Typography}>
+            </${Grid}>
+            <${QueryForm} queryState=${queryState}
+                          handleChange=${handleChange}
+                          handleClose=${handleFormClose}
+                          handleSingleChange=${handleSingleChange}
+                          submitted=${renderSubmitted}
+                          plotOptions=${plotOptions}
+                          filters=${filters}
+                          />
           </${Grid}>
-          ${renderSubmitted ? (
-          html`<${Grid} item xs=${12}>
-            <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
-              <${Grid} container>
-                <${Grid} item xs=${12}>
-                  <${Typography} style=${"text-align: center"}
-                                 variant="h6"
-                                 color=${grey[500]}>
-                    <i>Loading query...</i>
+        </${Paper}>
+      </${Grid}>
+      ${renderSubmitted ? (
+      html`<${Grid} item xs=${12}>
+        <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
+          <${Grid} container>
+            <${Grid} item xs=${12}>
+              <${Typography} style=${"text-align: center"}
+                             variant="h6"
+                             color=${grey[500]}>
+                <i>Loading query...</i>
                   </${Typography}>
-                  <${LinearProgress} />
-                </${Grid}>
-              </${Grid}>
-            </${Paper}>
-          </${Grid}>`) : (null)}
-          ${(!isEmpty(bridges) && !bridges.hasOwnProperty('message'))  ?
-          (html`<${CountryDescription} summaryType=${plotType} keyValues=${{
-                                       field: plotType,
-                                       count: bridges.natData.count,
-                                       filters: queryState
-          }}/><${HexbinChart} bridgeData=${bridges} plotType=${plotType} hexSize=${scaledHexBool}/>`) : null}
-          ${(!renderSubmitted && bridges.hasOwnProperty('message'))  ?
-          (html`<${Grid} item xs=${12}>
-            <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
-              <${Grid} container>
-                <${Grid} item xs=${12}>
-                  <${Typography} style=${"text-align: center"}
-                                 variant="h6"
-                                 color=${grey[500]}>
-                    <i>${bridges.message}</i>
-                  </${Typography}>
-                </${Grid}>
-              </${Grid}>
-            </${Paper}>
-          </${Grid}>`) : null}
-        </${Grid}>
-      </${Box}>
-    </div>`;
-    }
+              <${LinearProgress} />
+            </${Grid}>
+          </${Grid}>
+        </${Paper}>
+      </${Grid}>`) : (null)}
+      ${(!isEmpty(bridges) && !bridges.hasOwnProperty('message'))  ?
+      (html`<${CountryDescription} summaryType=${plotType} keyValues=${{
+                                   field: plotType,
+                                   count: bridges.natData.count,
+                                   filters: queryState
+                                   }}/><${HexbinChart} bridgeData=${bridges} plotType=${plotType} hexSize=${scaledHexBool}/>`) : null}
+      ${(!renderSubmitted && bridges.hasOwnProperty('message'))  ?
+      (html`<${Grid} item xs=${12}>
+        <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>
+          <${Grid} container>
+            <${Grid} item xs=${12}>
+              <${Typography} style=${"text-align: center"}
+                             variant="h6"
+                             color=${grey[500]}>
+                <i>${bridges.message}</i>
+              </${Typography}>
+            </${Grid}>
+          </${Grid}>
+        </${Paper}>
+      </${Grid}>`) : null}
+    </${Grid}>
+  </${Container}>
+</${Box}>`;
+}

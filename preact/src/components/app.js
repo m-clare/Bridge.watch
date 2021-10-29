@@ -1,9 +1,11 @@
 import { h } from "preact";
 import { Router } from "preact-router";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { Container } from "@mui/material/Container";
 import htm from "htm";
 const html = htm.bind(h);
 import Header from "./header";
+import Footer from "./footer";
 
 // Code-splitting is automated for `routes` directory
 import Home from "../routes/home";
@@ -22,7 +24,8 @@ const THEME = createTheme({
     primary: {
       main: "#1c5d99",
       light: "#588aca",
-      dark: "#00346a"
+      dark: "#00346a",
+      contrastText: "#ffffff"
 
     },
     secondary: {
@@ -31,6 +34,7 @@ const THEME = createTheme({
       dark: "#8d090f"
     }
   }
+
 })
 
 const App = () => (
@@ -42,6 +46,7 @@ html`
       <${Country} path="/" />
       <${Country} path="/country" />
     </${Router}>
+    <${Footer} />
   </div>
 </${ThemeProvider}>`
 );

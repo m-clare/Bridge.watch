@@ -13,14 +13,10 @@ const html = htm.bind(h);
 
 export default function Header() {
   return html`
-      <${Box} sx=${{ flexGrow: 1 }}>
-      <${AppBar} position="static">
-      <${Toolbar}>
-      <${IconButton} size="medium" edge="start" color="inherit" aria-label="menu"
-       sx=${{ mr: 2 }}>
-      <${MenuIcon} />
-      </${IconButton}>
-      </${Toolbar}>
-      </${AppBar}>
-      </${Box}>`;
+<${Box} sx=${{ flexGrow: 1 }}>
+  <${AppBar} position="static">
+    <${Toolbar}>
+    </${Toolbar}>
+  </${AppBar}>
+</${Box}>`;
 }

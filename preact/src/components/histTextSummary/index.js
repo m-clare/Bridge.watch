@@ -26,7 +26,7 @@ export function HistTextSummary({ selected, objData, natData, field }) {
   }
   field = field.replace(/_/g, ' ');
   return html`
-      <div style=${"min-height: 240px"}>
+      <div style=${"min-height: 250px"}>
         <${Typography} className=${classes.typographyVariant} variant="h5" component="h2">
           ${selected ? 'Selected Hex Properties' : 'National Bridge Properties'}
         </${Typography}> 
