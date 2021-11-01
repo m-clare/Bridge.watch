@@ -5,20 +5,11 @@ import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import { makeStyles } from "@mui/styles";
 const html = htm.bind(h);
 
-const useStyles = makeStyles({
-  typographyVariant: {
-    fontVariant: "small-caps"
-  }
-})
-
-
 export function HistTextSummary({ selected, objData, natData, field }) {
-  const classes = useStyles();
-  let data;
 
+  let data;
   if (selected) {
     data = objData
   } else {
@@ -27,8 +18,8 @@ export function HistTextSummary({ selected, objData, natData, field }) {
   field = field.replace(/_/g, ' ');
   return html`
       <div style=${"min-height: 250px"}>
-        <${Typography} className=${classes.typographyVariant} variant="h5" component="h2">
-          ${selected ? 'Selected Hex Properties' : 'National Bridge Properties'}
+        <${Typography} variant="h5" component="h2">
+          ${selected ? 'Selected Hex Properties' : 'National Properties'}
         </${Typography}> 
         <${List} dense=${true}>
         <${ListItem}>Number of Bridges: ${data.count}</${ListItem}>

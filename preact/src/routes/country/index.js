@@ -33,12 +33,6 @@ import style from "./style.css";
 
 const html = htm.bind(h);
 
-const useStyles = makeStyles({
-  typographyVariant: {
-    fontVariant: "small-caps"
-  }
-})
-
 function constructURI(query) {
   const searchParams = new URLSearchParams()
   const keys = Object.keys(query)
@@ -62,8 +56,6 @@ function updateQuery(queryState, type, updatedParam) {
   return {...queryState, [type]: updatedParam}
 }
 export default function Country() {
-  const classes = useStyles();
-
   const [bridges, setBridges] = useState({});
   const [queryState, setQueryState] = useState({'plot_type': 'percent_poor',
                                                 'material': [],
@@ -73,6 +65,7 @@ export default function Country() {
   const [queryURI, setQueryURI] = useState('plot_type=percent_poor')
   const [submitted, setSubmitted] = useState(true);
   const [hexSize, setHexSize] = useState(true)
+  const [plotType, setPlotType] = useState(queryState.plot_type)
 
   const handleChange = (event, type) => {
     const value = event.target.value
@@ -84,8 +77,11 @@ export default function Country() {
     const value = event.target.value.replace(' ', '_')
     setQueryState({...queryState, [type]: value})
     const newURI = constructURI({...queryState, [type]: value})
-    if (newURI !== queryURI || queryState.plot_type !== value ) {
+    if (newURI !== queryURI ) {
       setSubmitted(true)
+    }
+    if (plotType !== value ) {
+      setPlotType(value)
     }
   }
 
@@ -104,7 +100,7 @@ export default function Country() {
     setSubmitted(false);
   }, [submitted]);
 
-  const plotType = queryState.plot_type;
+  const renderPlotType = plotType;
   const renderSubmitted = submitted;
   const scaledHexBool = hexSize;
 
@@ -116,8 +112,7 @@ export default function Country() {
         <${Paper} variant=${"outlined"} style=${"padding: 24px; "}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
-              <${Typography} className=${classes.typographyVariant}
-                             variant="h3" component="h1">National Bridge Inventory</${Typography}>
+              <${Typography} variant="h3" component="h1">National Bridge Inventory</${Typography}>
             </${Grid}>
             <${QueryForm} queryState=${queryState}
                           handleChange=${handleChange}
@@ -146,11 +141,11 @@ export default function Country() {
         </${Paper}>
       </${Grid}>`) : (null)}
       ${(!isEmpty(bridges) && !bridges.hasOwnProperty('message'))  ?
-      (html`<${CountryDescription} summaryType=${plotType} keyValues=${{
-                                   field: plotType,
+      (html`<${CountryDescription} summaryType=${renderPlotType} keyValues=${{
+                                   field: renderPlotType,
                                    count: bridges.natData.count,
                                    filters: queryState
-                                   }}/><${HexbinChart} bridgeData=${bridges} plotType=${plotType} hexSize=${scaledHexBool}/>`) : null}
+                                   }}/><${HexbinChart} bridgeData=${bridges} plotType=${renderPlotType} hexSize=${scaledHexBool}/>`) : null}
       ${(!renderSubmitted && bridges.hasOwnProperty('message'))  ?
       (html`<${Grid} item xs=${12}>
         <${Paper} variant=${"outlined"} style=${"padding: 16px; "}>

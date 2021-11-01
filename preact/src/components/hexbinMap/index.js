@@ -13,10 +13,10 @@ import { legend } from "../colorLegend";
 import us from "us-atlas/states-albers-10m.json";
 import { isEmpty } from "lodash-es";
 import { colorDict } from "../colorPalette";
-import { makeStyles } from "@mui/styles";
 
 import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
+import { PropertyPanel } from "../../components/propertyPanel";
 
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -24,13 +24,6 @@ import Switch from "@mui/material/Switch";
 
 import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
-
-const useStyles = makeStyles({
-  typographyVariant: {
-    fontVariant: "small-caps"
-  }
-})
-
 
 // Constant values for scaling, aspectRatio, etc.
 const width = 975;
@@ -74,24 +67,24 @@ const getInterestValue = (plotType, hexValues) => {
 
 const getHexSize = (hexSize, radius, count) => {
   if (hexSize) {
-    return d3.max([radius(count), 2])
+    return d3.max([radius(count), 2]);
   } else {
     return 10;
   }
-}
+};
 
 const getRadius = (hexBin) => {
-  return d3.scaleSqrt([0, d3.max(hexBin, (d) => d.count)],
-                      [0, myHexbin.radius() * Math.SQRT2])
-}
+  return d3.scaleSqrt(
+    [0, d3.max(hexBin, (d) => d.count)],
+    [0, myHexbin.radius() * Math.SQRT2]
+  );
+};
 
 export function HexbinChart({ bridgeData, plotType }) {
-  const classes = useStyles();
-  
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
-  const [hexSize, setHexSize] = useState(true)
+  const [hexSize, setHexSize] = useState(true);
 
   const d3Container = useRef(null);
 
@@ -99,7 +92,7 @@ export function HexbinChart({ bridgeData, plotType }) {
 
   const handleSwitchChange = (event) => {
     setHexSize(!hexSize);
-  }
+  };
 
   let barHeight;
   if (widthCheck) {
@@ -130,7 +123,7 @@ export function HexbinChart({ bridgeData, plotType }) {
         totalValues: bridgeData.totalValues,
       };
 
-      const radius = getRadius(hexBridge.hexBin)
+      const radius = getRadius(hexBridge.hexBin);
 
       const color = colorDict[plotType];
 
@@ -142,7 +135,6 @@ export function HexbinChart({ bridgeData, plotType }) {
       };
 
       const legendNode = getLegend();
-      //TODO:  add legend only once... probe this further
       legendNode.select("#legend").remove();
 
       legendNode
@@ -166,7 +158,7 @@ export function HexbinChart({ bridgeData, plotType }) {
       };
       const hexNode = getHex();
 
-      const hexBool = hexSize
+      const hexBool = hexSize;
 
       // add hexes
       hexNode
@@ -174,7 +166,9 @@ export function HexbinChart({ bridgeData, plotType }) {
         .data(hexBridge.hexBin)
         .join("path")
         .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
-        .attr("d", (d) => myHexbin.hexagon(getHexSize(hexBool, radius, d.count)))
+        .attr("d", (d) =>
+          myHexbin.hexagon(getHexSize(hexBool, radius, d.count))
+        )
         .attr("fill", (d) => color(getInterestValue(plotType, d)))
         .attr("stroke", (d) =>
           d3.lab(color(getInterestValue(plotType, d))).darker()
@@ -190,7 +184,7 @@ export function HexbinChart({ bridgeData, plotType }) {
             .transition()
             .duration(200)
             .attr("d", (d) =>
-               myHexbin.hexagon(d3.max([radius(d.count) * 1.5, 15]))
+              myHexbin.hexagon(d3.max([radius(d.count) * 1.5, 15]))
             )
             .attr("stroke-width", "0.2em");
         })
@@ -199,22 +193,24 @@ export function HexbinChart({ bridgeData, plotType }) {
           d3.select(this)
             .transition()
             .duration(200)
-            .attr("d", (d) => myHexbin.hexagon(getHexSize(hexBool, radius, d.count)))
+            .attr("d", (d) =>
+              myHexbin.hexagon(getHexSize(hexBool, radius, d.count))
+            )
             .attr("stroke-width", "0.1em");
         });
     }
-  }, [bridgeData, hexSize]);
-
-
+  }, [bridgeData, hexSize, plotType]);
 
   return html`
 <${Grid} item container spacing=${2}>
   <${Grid} item xs=${12} md=${8}>
-    <${FormControlLabel}className=${classes.typographyVariant}
-      control=${html`<${Switch} defaultChecked
-                                checked=${hexSize}
-                                onChange=${handleSwitchChange}
-                                inputProps=${{ 'aria-label': 'controlled' }} />`}
+    <${FormControlLabel}
+      control=${html`<${Switch}
+        defaultChecked
+        checked=${hexSize}
+        onChange=${handleSwitchChange}
+        inputProps=${{ "aria-label": "controlled" }}
+      />`}
       label="Scaled hex area"/>
     <svg
       class="d3-component"
@@ -231,30 +227,11 @@ export function HexbinChart({ bridgeData, plotType }) {
         />
     </svg>
   </${Grid}>
-  <${Grid} item xs=${12} md=${4}>
-    <${Paper} variant=${"outlined"} style=${"padding: 16px"}> 
-      <${Grid} item>
-        <div>
-          <${Typography} className=${classes.typographyVariant} variant="h5" component="h2">${locality} Histogram</${Typography}>
-          <${BarChart}
-            selected=${hexSelected}
-            objData=${activeHex.objHistogram}
-            initialData=${totalValues}
-            barHeight=${barHeight}
-            field=${bridgeData.field}
-            />
-        </div>
-      </${Grid}>
-      <${Grid} item>
-        <${HistTextSummary}
-          selected=${hexSelected}
-          objData=${activeHex.objKeyValues}
-          natData=${bridgeData.natData}
-          field=${bridgeData.field[0].toUpperCase()}${bridgeData.field.slice(1)}
-          />
-      </${Grid}>
-    </${Paper}>
-  </${Grid}>
-</${Grid}>
-  `;
+  <${PropertyPanel} hexSelected=${hexSelected}
+                    objData=${activeHex}
+                    initialData=${totalValues}
+                    natData=${bridgeData.natData}
+                    field=${bridgeData.field}
+                    />
+</${Grid}>`;
 }

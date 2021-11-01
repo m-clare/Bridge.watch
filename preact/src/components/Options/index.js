@@ -47,7 +47,7 @@ const serviceTypeOptions = {
 
 export const plotOptions = {
   'percent_poor': {'query': 'rating', 'display': 'Percent in poor condition'},
-  'rating': {'query': 'rating', 'display': 'Lowest rating'},
+  'rating': {'query': 'rating', 'display': 'Overall rating'},
   'year_built': {'query': 'year_built', 'display': 'Year built'}
 }
 

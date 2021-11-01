@@ -5,7 +5,6 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import { makeStyles } from "@mui/styles";
 import { grey } from "@mui/material/colors";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -18,16 +17,6 @@ import CardActions from "@mui/material/CardActions";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 const html = htm.bind(h);
-
-const useStyles = makeStyles({
-  typographyVariant: {
-    fontVariant: "small-caps",
-  },
-  typographyEmphasis: {
-    fontStyle: "italic",
-    fontWeight: 300,
-  }
-});
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -106,7 +95,7 @@ const moreInfo = ["rating", "percent_poor"];
 
 const summaryTitle = {
   percent_poor: "Percent of Bridges in Poor Condition",
-  rating: "Lowest Rating",
+  rating: "Overall Rating",
   year_built: "Year Built",
 };
 
@@ -127,7 +116,6 @@ function getFiltersAsString(filters) {
 }
 
 export function CountryDescription({ summaryType, keyValues }) {
-  const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
 
   const handleExpandClick = () => {
@@ -150,14 +138,14 @@ export function CountryDescription({ summaryType, keyValues }) {
       <${Card} variant=${"outlined"}>
         <${Grid} item xs=${12}>
           <${CardContent}>
-            <${Typography} className=${classes.typographyVariant}
+            <${Typography} 
                            variant="h4"
                            component="h2">${
               summaryTitle[field]
               }</${Typography}>
             ${getFiltersAsString(filters).map(
             (d) =>
-            html`<${Typography} className=${classes.typographyEmphasis}
+            html`<${Typography} 
                                 variant="h6"
                                 component="h3"
                                 style=${"font-weight:400, text-variant: small-caps"}>
