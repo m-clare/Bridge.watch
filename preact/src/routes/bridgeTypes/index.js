@@ -88,11 +88,7 @@ export default function BridgeTypes() {
           ${
             "attrLink" in bridgeType
               ? html`
-          <p style=${"padding-left: 5px;
-                      margin-top: -20px;
-                      margin-bottom: 0px;
-                      font-size: 0.8rem;
-                      color: #bdbdbd"}
+          <p style=${"padding-left: 5px; margin-top: -20px; margin-bottom: 0px; font-size: 0.8rem; color: #bdbdbd"}
              >
             <a href=${bridgeType.attrLink} style=${"color: #bdbdbd"}
                >Photo</a>
