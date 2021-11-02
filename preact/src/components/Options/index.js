@@ -2,22 +2,15 @@
 
 const structureTypeOptions = {
   "Slab": "1",
-  "Stringer/Multi-beam or Girder": "2",
-  "Girder and Floorbeam System": "3",
   "Tee Beam": "4",
-  "Box Beam or Girders - Multiple": "5",
-  "Box Beam or Girders - Single or Spread": "6",
+  "Box Beam or Girders": "2,3,5,6",
   "Frame": "7",
   "Orthotropic": "8",
-  "Truss - Deck": "9",
-  "Truss - Thru": "10",
-  "Arch - Deck": "11",
-  "Arch - Thru": "12",
+  "Truss": "9,10",
+  "Arch": "11,12",
   "Suspension": "13",
   "Stayed Girder": "14",
-  "Movable - Lift": "15",
-  "Movable - Bascule": "16",
-  "Movable - Swing": "17",
+  "Movable (Lift, Bascule, or Swing)": "15,16,17",
   "Segmental Box Girder": "21",
   "Channel Beam": "22"
 };
