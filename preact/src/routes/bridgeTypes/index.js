@@ -68,67 +68,75 @@ export default function BridgeTypes() {
       <${Grid} item xs=${12}><${Typography} variant="h2">Types of Bridges</${Typography}></${Grid}>
       ${bridgeTypes.map(
         (bridgeType, index) =>
-          html`<${Grid} item xs=${12} sm=${4} key=${index}>
-  <${Card} className=${classes.card}>
-  <${CardHeader} title=${
+          html`
+      <${Grid} item xs=${12} sm=${4} key=${index}>
+        <${Card} className=${classes.card}>
+          <${CardHeader} title=${
             bridgeType.type
           } color="primary" subheader=${getArrayAsString(
             "Typical materials",
             bridgeType.materialOptions
           )}/>
-  ${
-    "img" in bridgeType
-      ? html` <${CardMedia}
-          className=${classes.media}
-          image=${bridgeType.img}
-        />`
-      : null
-  }
-  ${
-    "attrLink" in bridgeType
-      ? html`<p
-          style=${"padding-left: 5px; margin-top: -20px; margin-bottom: 0px; font-size: 0.8rem; color: #bdbdbd"}
-        >
-          <a href=${bridgeType.attrLink} style=${"color: #bdbdbd"}>Photo</a> by
-          ${bridgeType.attrAuthor} /
-          <a href=${bridgeType.attrLicenseLink} style=${"color: #bdbdbd"}
-            >${bridgeType.attrLicense}</a
-          >
-        </p>`
-      : null
-  }
-  <${CardContent}>
-  <${Typography} color="primary" variant="h6">${
+          ${
+            "img" in bridgeType
+              ? html` <${CardMedia}
+                  className=${classes.media}
+                  image=${bridgeType.img}
+                />`
+              : null
+          }
+          ${
+            "attrLink" in bridgeType
+              ? html`
+          <p style=${"padding-left: 5px;
+                      margin-top: -20px;
+                      margin-bottom: 0px;
+                      font-size: 0.8rem;
+                      color: #bdbdbd"}
+             >
+            <a href=${bridgeType.attrLink} style=${"color: #bdbdbd"}
+               >Photo</a>
+            by ${bridgeType.attrAuthor} /
+            <a
+              href=${bridgeType.attrLicenseLink}
+              style=${"color: #bdbdbd"}
+              >${bridgeType.attrLicense}</a>
+          </p>`
+          : null
+          }
+          <${CardContent}>
+            <${Typography} color="primary" variant="h6">${
             bridgeType.exampleName
           }</${Typography}>
-  <${Typography} color="textSecondary" variant="subtitle1">${
+            <${Typography} color="textSecondary" variant="subtitle1">${
             bridgeType.exampleLocation
           }</${Typography}>
-  <${Typography} color="textSecondary" variant="subtitle1">${
+            <${Typography} color="textSecondary" variant="subtitle1">${
             bridgeType.exampleStructuralEngineer
           }</${Typography}>
-  </${CardContent}>
-  <${CardActions} disableSpacing>
-  <${ExpandMore} expand=${typesExpanded[bridgeType.type]}
-  onClick=${(e) => handleExpandClick(e, bridgeType.type)}
-  aria-expanded=${typesExpanded[bridgeType.type]}
-  aria-label="show more"
-  >
-  <${ExpandMoreIcon} />
-  </${ExpandMore}>
-  </${CardActions}>
-  <${Collapse} in=${
+          </${CardContent}>
+          <${CardActions} disableSpacing>
+            <${ExpandMore} expand=${typesExpanded[bridgeType.type]}
+                           onClick=${(e) =>
+                             handleExpandClick(e, bridgeType.type)}
+              aria-expanded=${typesExpanded[bridgeType.type]}
+              aria-label="show more"
+              >
+              <${ExpandMoreIcon} />
+            </${ExpandMore}>
+          </${CardActions}>
+          <${Collapse} in=${
             typesExpanded[bridgeType.type]
           } timeout="auto" unmountOnExit>
-  <${CardContent}>
-  <${Typography} paragraph>${bridgeType.description}</${Typography}>
-  </${CardContent}>
-  </${Collapse}>
-  </${Card}>
-  </${Grid}>`
+            <${CardContent}>
+              <${Typography} paragraph>${bridgeType.description}</${Typography}>
+            </${CardContent}>
+          </${Collapse}>
+        </${Card}>
+      </${Grid}>`
       )}
     </${Grid}>
   </${Container}>
 </${Box}> 
-  `;
+`;
 }
