@@ -91,8 +91,7 @@ export default function BridgeTypes() {
           <p style=${"padding-left: 5px; margin-top: -20px; margin-bottom: 0px; font-size: 0.8rem; color: #bdbdbd"}
              >
             <a href=${bridgeType.attrLink} style=${"color: #bdbdbd"}
-               >Photo</a>
-            by ${bridgeType.attrAuthor} /
+               >Photo</a> by ${bridgeType.attrAuthor} /
             <a
               href=${bridgeType.attrLicenseLink}
               style=${"color: #bdbdbd"}
