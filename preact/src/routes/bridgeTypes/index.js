@@ -17,6 +17,7 @@ import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled } from "@mui/material/styles";
+import Image from "mui-image";
 
 const html = htm.bind(h);
 
@@ -126,6 +127,21 @@ export default function BridgeTypes() {
             <${CardContent}>
               <${Typography} paragraph>${bridgeType.description}</${Typography}>
             </${CardContent}>
+            ${('constructionImg' in bridgeType) ? (html`<${CardMedia} className=${classes.media} image=${bridgeType.constructionImg}/>`) : null}
+            ${
+            "cImgAttrLink" in bridgeType
+              ? html`
+          <p style=${"padding-left: 5px; margin-top: -20px; margin-bottom: 0px; font-size: 0.8rem; color: #bdbdbd"}
+             >
+            <a href=${bridgeType.cImgAttrLink} style=${"color: #bdbdbd"}
+               >Photo</a> by ${bridgeType.cImgAttrAuthor} /
+            <a
+              href=${bridgeType.cImgAttrLicenseLink}
+              style=${"color: #bdbdbd"}
+              >${bridgeType.cImgAttrLicense}</a>
+          </p>`
+          : null
+          }
           </${Collapse}>
         </${Card}>
       </${Grid}>`
@@ -133,5 +149,5 @@ export default function BridgeTypes() {
     </${Grid}>
   </${Container}>
 </${Box}> 
-`;
+  `;
 }
