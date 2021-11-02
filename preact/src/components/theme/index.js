@@ -26,9 +26,25 @@ export default {
   components: {
     MuiTypography: {
       styleOverrides: {
-        root: {
+        h1: {
+          fontVariant: "small-caps",
+        },
+        h2: {
+          fontVariant: "small-caps",
+        },
+        h3: {
+          fontVariant: "small-caps",
+        },
+        h4: {
+         fontVariant: "small-caps",
+        },
+        h5: {
+          fontVariant: "small-caps",
+        },
+        h6: {
           fontVariant: "small-caps",
         }
+
       }
     }
   }

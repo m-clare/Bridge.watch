@@ -17,10 +17,7 @@ export function HistTextSummary({ selected, objData, natData, field }) {
   }
   field = field.replace(/_/g, ' ');
   return html`
-      <div style=${"min-height: 250px"}>
-        <${Typography} variant="h5" component="h2">
-          ${selected ? 'Selected Hex Properties' : 'National Properties'}
-        </${Typography}> 
+      <div style=${"min-height: 200px"}>
         <${List} dense=${true}>
         <${ListItem}>Number of Bridges: ${data.count}</${ListItem}>
         <${ListItem}>${field} minimum: ${data.min}</${ListItem}>

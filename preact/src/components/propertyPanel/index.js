@@ -56,6 +56,7 @@ export function PropertyPanel({ hexSelected, objData, initialData, natData, fiel
         />
     </${Grid}>
     <${Grid} item>
+      <${Typography} variant="h5" component="h2">${locality} Properties</${Typography}>
       <${HistTextSummary}
         selected=${hexSelected}
         objData=${objData.objKeyValues}

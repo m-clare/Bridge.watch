@@ -148,7 +148,7 @@ export function CountryDescription({ summaryType, keyValues }) {
             html`<${Typography} 
                                 variant="h6"
                                 component="h3"
-                                style=${"font-weight:400, text-variant: small-caps"}>
+                                style=${"font-weight:400"}>
               ${d}</${Typography}>`
             )}
             ${textSummary(summaryType, count)}

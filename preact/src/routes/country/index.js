@@ -29,8 +29,6 @@ import { CountryDescription } from "../../components/countryDescription";
 import { QueryForm } from "../../components/queryForm";
 import { filters, plotOptions } from "../../components/Options";
 
-import style from "./style.css";
-
 const html = htm.bind(h);
 
 function constructURI(query) {

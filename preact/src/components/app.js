@@ -12,6 +12,8 @@ import theme from "./theme";
 import Home from "../routes/home";
 import Profile from "../routes/profile";
 import Country from "../routes/country";
+import About from "../routes/about";
+import BridgeTypes from "../routes/bridgeTypes";
 
 const THEME = createTheme(theme);
 
@@ -23,6 +25,8 @@ html`
     <div style=${"position: relative; min-height: 100vh;"}>
     <${Router}>
       <${Country} path="/" />
+      <${About} path="/about" />
+      <${BridgeTypes} path="/bridge_types" />
       <${Country} path="/country" />
     </${Router}>
     </div>
