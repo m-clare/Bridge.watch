@@ -76,50 +76,45 @@ function getHexbinData(data) {
     const allKeyData = getKeyProps(bridgeInfo, field);
 
     // define x domain and binning
-    let x;
     let min;
     let max;
     let domain;
     let histogram;
     let rawHistogram;
-    let allCount;
-    let allHistogram;
-
-    let emptyHist;
-    let d3Histogram;
 
     if (field === "rating") {
-      domain = d3.range(0, 10);
-      emptyHist = object(domain, new Array(domain.length).fill(0));
-      allCount = countBy(bridgeInfo.map((d) => d[field]));
-      allCount = { ...emptyHist, ...allCount };
-      allKeyData["count"] = bridgeInfo.map((d) => d[field]).length;
-      allHistogram = Object.keys(allCount)
-        .sort()
-        .map((d) => ({ [field]: +d, count: allCount[d] }));
+      min = 0
+      max = 9
+      domain = d3.range(min, max+1, 1);
     } else if (field === "year_built") {
       min = 1900;
-      max = 2022;
-      domain = d3.range(min, max, 5);
-      emptyHist = object(domain, new Array(domain.length).fill(0));
-      d3Histogram = d3.histogram().domain([min, max]).thresholds(domain.length);
-      rawHistogram = d3Histogram(bridgeInfo.map((d) => d[field]));
-      rawHistogram = rawHistogram.map((d) => ({
-        count: d.length,
-        year_built: d.x0,
-        year_excluded: d.x1,
-      }));
-      histogram = object(
-        rawHistogram.map((d) => d["year_built"]),
-        rawHistogram.map((d) => d.count)
-      );
-      allCount = { ...emptyHist, ...histogram };
-      allHistogram = Object.keys(allCount)
-        .sort()
-        .map((d) => ({ [field]: +d, count: allCount[d] }));
+      max = 2021;
+      domain = d3.range(min, max+1, 5)
+    } else if (field === "repair_cost_per_foot") {
+      min = 0
+      max = 150
+      domain = d3.range(min, max+1, 5);
     } else {
       throw new Error("invalid field");
     }
+    const emptyHist = object(domain, new Array(domain.length).fill(0));
+    const d3Histogram = d3.histogram().domain([min, max+1]).thresholds(domain.length);
+    console.log(d3Histogram.domain())
+    rawHistogram = d3Histogram(bridgeInfo.map((d) => d[field]));
+    rawHistogram = rawHistogram.map((d) => ({
+      count: d.length,
+      [field]: +d.x0
+    }))
+    histogram = object(
+      rawHistogram.map((d) => +d[field]),
+      rawHistogram.map((d) => d.count)
+    );
+    const allCount = { ...emptyHist, ...histogram };
+    
+    const allHistogram = Object.keys(allCount)
+          .sort(function(a, b) { return a - b})
+          .map((d) => ({ [field]: +d, count: allCount[d] }));
+    console.log(allHistogram)
 
     const rawHex = customHexbin(bridgeInfo);
 
@@ -138,25 +133,21 @@ function getHexbinData(data) {
       // do histogram binning on specific range
       // (reduces number of bins for year ranges)
       let histogram;
-      if (field === "year_built") {
-        rawHistogram = d3Histogram(d.map((d) => d[field]));
-        rawHistogram = rawHistogram.map((d) => ({
-          count: d.length,
-          year_built: d.x0,
-          year_excluded: d.x1,
-        }));
-        histogram = object(
-          rawHistogram.map((d) => d["year_built"]),
-          rawHistogram.map((d) => d.count)
-        );
-      } else {
-        histogram = countBy(d.map((x) => x[field]));
-      }
+
+      const hexbinHistogram = d3Histogram(d.map((d) => d[field]));
+      const hexRawHistogram = hexbinHistogram.map((d) => ({
+        count: d.length,
+        [field]: +d.x0
+      }))
+      histogram = object(
+        hexRawHistogram.map((d) => +d[field]),
+        hexRawHistogram.map((d) => d.count)
+      );
       histogram = { ...emptyHist, ...histogram };
 
       const objHistogram = Object.keys(histogram)
-        .sort()
-        .map((d) => ({ [field]: +d, count: histogram[d] }));
+            .sort(function(a, b) { return a - b})
+            .map((d) => ({ [field]: +d, count: histogram[d] }));
       return { x, y, objKeyValues, objHistogram, count };
     });
 

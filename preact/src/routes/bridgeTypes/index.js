@@ -17,7 +17,6 @@ import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled } from "@mui/material/styles";
-import Image from "mui-image";
 
 const html = htm.bind(h);
 
@@ -70,7 +69,7 @@ export default function BridgeTypes() {
       ${bridgeTypes.map(
         (bridgeType, index) =>
           html`
-      <${Grid} item xs=${12} sm=${4} key=${index}>
+      <${Grid} item xs=${12} sm=${6} md=${4} key=${index}>
         <${Card} className=${classes.card}>
           <${CardHeader} title=${
             bridgeType.type

@@ -7,7 +7,7 @@ export const bridgeTypes = [
     attrAuthor: "Nehrams2020",
     attrLicense: "CC BY-SA",
     attrLicenseLink: "https://creativecommons.org/licenses/by-sa/3.0/deed",
-    materialOptions: ["steel", "concrete"],
+    materialOptions: ["steel", "concrete", "timber"],
     description:
       "Simplest and brute force method to span over a waterway or obstacle, but most inefficient use of material, and only short spans between supporting points possible",
     exampleName: "Coronado Bridge",
@@ -51,7 +51,7 @@ export const bridgeTypes = [
     attrLicense: "CC BY-SA",
     attrLicenseLink: "https://creativecommons.org/licenses/by-sa/3.0/",
     description:
-      "The arch shape results in primarily compression forces, making concrete the ideal material for this type of bridge, though steel is also possible. Arch bridges have been around for millenia, but they are inefficient to build due to the falsework/scaffolding and abutment requirements (see sample construction photo below). Boat clearance is also limited due to the arch obstructure, and spans are limited due to the inherent weakness of a slender compression arch relative to other bridge types that utilize high-strength steel cables in tension for the primary members.",
+      "The arch shape results in primarily compression forces, making concrete the ideal material for this type of bridge, though steel is also possible. Arch bridges have been around for millenia, but they are inefficient to build due to the falsework/scaffolding and abutment requirements (see sample construction photo below). Boat clearance is also limited due to the arch obstruction, and spans are limited due to the inherent weakness of a slender compression arch relative to other bridge types that utilize high-strength steel cables in tension for the primary members.",
     exampleName: "Lilac Road Bridge",
     exampleLocation: "San Diego, CA",
     exampleStructuralEngineer: "Caltrans",
@@ -91,7 +91,7 @@ export const bridgeTypes = [
     attrLicense: "CC BY-SA",
     attrLicenseLink: "https://creativecommons.org/licenses/by-sa/3.0/deed",
     description:
-      "Segmental box girders are strong enough to be cantilevered (unsupported on one side) during constructure. Box girders may or may not be arched. No abutments or extensive falsework is needed for this bridge type, since it is self-supporting. Box girders have the same boat clearance issues as a standard girder or arch bridge, since the roadway is on top of the structure. Spans are still limited compred to other bridge types that utilize high-strength steel cables in tension for the primary members",
+      "Segmental box girders are strong enough to be cantilevered (unsupported on one side) during construction. Box girders may or may not be arched. No abutments or extensive falsework is needed for this bridge type, since it is self-supporting. Box girders have the same boat clearance issues as a standard girder or arch bridge, since the roadway is on top of the structure. Spans are still limited compared to other bridge types that utilize high-strength steel cables in tension for the primary members",
     exampleName: "West Seattle Bridge",
     exampleLocation: "Seattle, WA",
     exampleStructuralEngineer: "Contech Consultants, Inc.",

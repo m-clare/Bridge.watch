@@ -61,7 +61,7 @@ export function PropertyPanel({ hexSelected, objData, initialData, natData, fiel
         selected=${hexSelected}
         objData=${objData.objKeyValues}
         natData=${natData}
-        field=${field[0].toUpperCase()}${field.slice(1)}
+        field=${field}
         />
     </${Grid}>
   </${Paper}>

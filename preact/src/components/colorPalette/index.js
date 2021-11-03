@@ -51,6 +51,7 @@ const colorDict = {
   rating: ratingColorblind,
   year_built: yearBuiltColor,
   percent_poor: percentPoor,
+  repair_cost_per_foot: percentPoor
 };
 
 export { colorDict };

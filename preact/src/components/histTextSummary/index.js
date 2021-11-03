@@ -5,6 +5,7 @@ import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import { plotOptions } from "../Options";
 const html = htm.bind(h);
 
 export function HistTextSummary({ selected, objData, natData, field }) {
@@ -15,16 +16,16 @@ export function HistTextSummary({ selected, objData, natData, field }) {
   } else {
     data = natData
   }
-  field = field.replace(/_/g, ' ');
+  const fieldDisplay = plotOptions[field]['histogram'];
   return html`
       <div style=${"min-height: 200px"}>
         <${List} dense=${true}>
         <${ListItem}>Number of Bridges: ${data.count}</${ListItem}>
-        <${ListItem}>${field} minimum: ${data.min}</${ListItem}>
-        <${ListItem}>${field} maximum: ${data.max}</${ListItem}>
-        <${ListItem}>${field} average: ${Math.round(data.avg)}</${ListItem}>
-        <${ListItem}>${field} median: ${data.median}</${ListItem}>
-        <${ListItem}>${field} mode: ${data.mode}</${ListItem}>
+        <${ListItem}>${fieldDisplay} minimum: ${Math.round(data.min)}</${ListItem}>
+        <${ListItem}>${fieldDisplay} maximum: ${Math.round(data.max)}</${ListItem}>
+        <${ListItem}>${fieldDisplay} average: ${Math.round(data.avg)}</${ListItem}>
+        <${ListItem}>${fieldDisplay} median: ${Math.round(data.median)}</${ListItem}>
+        <${ListItem}>${fieldDisplay} mode: ${Math.round(data.mode)}</${ListItem}>
         <${ListItem}>
          ${selected ? 
           html`Center Coordinate: ${data.hexLocation[1]}°N, ${-data.hexLocation[0]}°W` : null}

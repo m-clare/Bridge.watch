@@ -428,12 +428,38 @@ ALTER TABLE nbi ALTER COLUMN year_of_average_daily_traffic SET DATA TYPE INTEGER
 ALTER TABLE nbi ALTER COLUMN year_of_future_average_daily_traffic SET DATA TYPE INTEGER USING year_of_future_average_daily_traffic::integer;
 ALTER TABLE nbi ALTER COLUMN year_of_improvement_cost_estimate SET DATA TYPE INTEGER USING year_of_improvement_cost_estimate::integer; 
 ALTER TABLE nbi ALTER COLUMN year_reconstructed SET DATA TYPE INTEGER USING year_reconstructed::integer;
+ALTER TABLE nbi ALTER COLUMN total_project_improvement_cost TYPE DOUBLE PRECISION USING total_project_improvement_cost::double precision;
+ALTER TABLE nbi ALTER COLUMN bridge_improvement_cost TYPE DOUBLE PRECISION USING bridge_improvement_cost::double precision;
+ALTER TABLE nbi ALTER COLUMN roadway_improvement_cost TYPE DOUBLE PRECISION USING roadway_improvement_cost::double precision;
+ALTER TABLE nbi ALTER COLUMN length_of_structure_improvement TYPE DOUBLE PRECISION USING length_of_structure_improvement::double precision;
 
 
--- CREATE TABLE abbrev_rating AS SELECT structure_number, state_id, latitude, longitude, structure_type, lowest_rating from nbi;
--- DELETE FROM abbrev_rating WHERE not (abbrev_rating IS NOT NULL);
--- ALTER TABLE abbrev_rating ADD COLUMN id SERIAL PRIMARY KEY;
--- ALTER TABLE abbrev_rating ADD CONSTRAINT lowest_rating_id FOREIGN KEY (lowest_rating_id) REFERENCES lowest_rating(id);
--- ALTER TABLE abbrev_rating ADD CONSTRAINT state_id FOREIGN KEY (state_id) REFERENCES state(id);
---  DELETE FROM abbrev_rating WHERE structure_type IN ('00', '18', '19');
+CREATE TABLE abbrev_rating AS SELECT structure_number, state_id, latitude, longitude, structure_type_id, structure_kind_id, lowest_rating_id, year_built, superstructure_condition_id, substructure_condition_id, deck_condition_id, type_of_service_on_bridge_id from nbi;
+ALTER TABLE abbrev_rating ADD CONSTRAINT lowest_rating_id FOREIGN KEY (lowest_rating_id) REFERENCES lowest_rating(id);
+DELETE FROM abbrev_rating WHERE (abbrev_rating.lowest_rating_id IS NULL);
+ALTER TABLE abbrev_rating ADD COLUMN id SERIAL PRIMARY KEY;
+ALTER TABLE abbrev_rating ADD CONSTRAINT structure_type_id FOREIGN KEY (structure_type_id) REFERENCES structure_type(id);
+ALTER TABLE abbrev_rating ADD CONSTRAINT structure_kind_id FOREIGN KEY (structure_kind_id) REFERENCES structure_kind(id);
+ALTER TABLE abbrev_rating ADD CONSTRAINT superstructure_condition_id FOREIGN KEY (superstructure_condition_id) REFERENCES superstructure_condition(id);
+ALTER TABLE abbrev_rating ADD CONSTRAINT substructure_condition_id FOREIGN KEY (substructure_condition_id) REFERENCES substructure_condition(id);
+ALTER TABLE abbrev_rating ADD CONSTRAINT deck_condition_id FOREIGN KEY (deck_condition_id) REFERENCES deck_condition(id);
+ALTER TABLE abbrev_rating ADD CONSTRAINT type_of_service_on_bridge_id FOREIGN KEY (type_of_service_on_bridge_id) REFERENCES type_of_service_on_bridge(id);
+ALTER TABLE abbrev_rating ADD CONSTRAINT state_id FOREIGN KEY (state_id) REFERENCES state(id);
+
+CREATE TABLE abbrev_year_built AS SELECT structure_number, state_id, latitude, longitude, structure_type_id, structure_kind_id, lowest_rating_id, year_built, superstructure_condition_id, substructure_condition_id, deck_condition_id, type_of_service_on_bridge_id from nbi;
+DELETE FROM abbrev_year_built WHERE (abbrev_year_built.year_built IS NULL);
+ALTER TABLE abbrev_year_built ADD COLUMN id SERIAL PRIMARY KEY;
+ALTER TABLE abbrev_year_built ADD CONSTRAINT lowest_rating_id FOREIGN KEY (lowest_rating_id) REFERENCES lowest_rating(id);
+ALTER TABLE abbrev_year_built ADD CONSTRAINT structure_type_id FOREIGN KEY (structure_type_id) REFERENCES structure_type(id);
+ALTER TABLE abbrev_year_built ADD CONSTRAINT structure_kind_id FOREIGN KEY (structure_kind_id) REFERENCES structure_kind(id);
+ALTER TABLE abbrev_year_built ADD CONSTRAINT superstructure_condition_id FOREIGN KEY (superstructure_condition_id) REFERENCES superstructure_condition(id);
+ALTER TABLE abbrev_year_built ADD CONSTRAINT substructure_condition_id FOREIGN KEY (substructure_condition_id) REFERENCES substructure_condition(id);
+ALTER TABLE abbrev_year_built ADD CONSTRAINT deck_condition_id FOREIGN KEY (deck_condition_id) REFERENCES deck_condition(id);
+ALTER TABLE abbrev_year_built ADD CONSTRAINT type_of_service_on_bridge_id FOREIGN KEY (type_of_service_on_bridge_id) REFERENCES type_of_service_on_bridge(id);
+ALTER TABLE abbrev_year_built ADD CONSTRAINT state_id FOREIGN KEY (state_id) REFERENCES state(id);
+
+-- CREATE UNIQUE INDEX structure_type_idx ON abbrev_year_built (structure_type_id);
+-- CREATE UNIQUE INDEX structure_kind_idx ON abbrev_year_built (structure_kind_id);
+-- CREATE UNIQUE INDEX type_of_service_on_bridge_idx ON abbrev_year_built (type_of_service_on_bridge_id);
+
 

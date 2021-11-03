@@ -39,9 +39,10 @@ const serviceTypeOptions = {
 }
 
 export const plotOptions = {
-  'percent_poor': {'query': 'rating', 'display': 'Percent in poor condition'},
-  'rating': {'query': 'rating', 'display': 'Overall rating'},
-  'year_built': {'query': 'year_built', 'display': 'Year built'}
+  'percent_poor': {'query': 'rating', 'display': 'Percent in poor condition', 'histogram': 'Rating'},
+  'rating': {'query': 'rating', 'display': 'Overall rating', 'histogram': 'Rating'},
+  'year_built': {'query': 'year_built', 'display': 'Year built', 'histogram': 'Year built'},
+  'repair_cost_per_foot': {'query': 'repair_cost_per_foot', 'display': 'Estimated repair cost per foot of bridge (in $1000s)', 'histogram': 'Repair $1000s / ft bridge'}
 }
 
 export const filters = {

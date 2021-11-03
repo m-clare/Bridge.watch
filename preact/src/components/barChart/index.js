@@ -12,9 +12,16 @@ function updateBarChart(svg, data, dimensions) {
   const height = dimensions.height;
   const margins = dimensions.margins;
 
+  let max;
+  if (d3.max(data, (d) => d.count) === 0) {
+    max = 1;
+  } else {
+    max = d3.max(data, (d) => d.count)
+  }
+
   const y = d3
     .scaleLinear()
-    .domain([0, d3.max(data, (d) => d.count)])
+    .domain([0, max])
     .nice()
     .range([height - margins.bottom, margins.top]);
 
@@ -146,9 +153,17 @@ export function BarChart({
         .range([margins.left, width - margins.right])
         .padding(0.1);
 
+      // handle empty histogram
+      let max;
+      if (d3.max(data, (d) => d.count) === 0) {
+        max = 1;
+      } else {
+        max = d3.max(data, (d) => d.count)
+      }
+      console.log(max)
       const y = d3
         .scaleLinear()
-        .domain([0, d3.max(data, (d) => d.count)])
+        .domain([0, max])
         .nice()
         .range([height - margins.bottom, margins.top]);
 

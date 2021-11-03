@@ -15,7 +15,6 @@ def national_bridges_csv(request):
     if request.method == "GET":
         # base query
         fields = []
-        bridges = Bridge.objects.all()
 
         # todo: more general way of retrieving query params?
         # store as dictionary, then parse into:
@@ -27,11 +26,17 @@ def national_bridges_csv(request):
         # rating base
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
-            bridges = bridges.exclude(lowest_rating_id__isnull=True)
+            bridges = AbbrevRating.objects.all()
             fields.append(plot_type)
         # year built base
         elif plot_type == "year_built":
-            bridges = bridges.exclude(year_built__isnull=True)
+            bridges = AbbrevYearBuilt.objects.all()
+            fields.append(plot_type)
+        elif plot_type == "repair_cost_per_foot":
+            bridges = Bridge.objects.all()
+            bridges = bridges.filter(year_of_improvement_cost_estimate__gte=2013)
+            bridges = bridges.exclude(total_project_improvement_cost__in=[None, 0])
+            bridges = bridges.exclude(length_of_structure_improvement__in=[None, 0])
             fields.append(plot_type)
         else:
             raise ValueError("invalid plot type provided")
@@ -55,6 +60,8 @@ def national_bridges_csv(request):
         fields.extend(["latitude", "longitude"])
         if ('rating' in fields):
             bridges = bridges.annotate(rating=F('lowest_rating__code'))
+        if ('repair_cost_per_foot' in fields):
+            bridges = bridges.annotate(repair_cost_per_foot=(F('total_project_improvement_cost') / (F('length_of_structure_improvement') * 3.28)))
         bridges = bridges.values_list(*fields)
 
         # limit query results for troubleshooting
