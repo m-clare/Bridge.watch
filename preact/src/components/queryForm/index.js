@@ -12,6 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Button from "@mui/material/Button";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
@@ -68,7 +69,7 @@ function multiFilter(filter, queryState, formHandlers, colWidth) {
       </${Box}>`}
       >
       ${Object.keys(filter.options).map((name, index) => {
-        return html`<${MenuItem} value=${name}>${name}</${MenuItem}>`;
+        return html`<${MenuItem} dense value=${name}>${name}</${MenuItem}>`;
       })};
     </${Select}>
   </${FormControl}>

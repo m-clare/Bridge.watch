@@ -24,7 +24,7 @@ import Switch from "@mui/material/Switch";
 import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
 
-export function PropertyPanel({ hexSelected, objData, initialData, natData, field}) {
+export function PropertyPanel({ hexSelected, objData, initialData, natData, field, plotHeight }) {
 
   let locality;
   if (hexSelected) {
@@ -42,9 +42,10 @@ export function PropertyPanel({ hexSelected, objData, initialData, natData, fiel
     barHeight = 300;
   }
 
+
   return html`
 <${Grid} item xs=${12} md=${4} >
-  <${Paper} style=${"padding: 24px; min-height: 580px"}> 
+  <${Paper} style=${`padding: 24px; min-height: ${plotHeight}`}> 
     <${Grid} item>
       <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
       <${BarChart}

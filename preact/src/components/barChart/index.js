@@ -160,7 +160,6 @@ export function BarChart({
       } else {
         max = d3.max(data, (d) => d.count)
       }
-      console.log(max)
       const y = d3
         .scaleLinear()
         .domain([0, max])

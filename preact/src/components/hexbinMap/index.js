@@ -90,17 +90,17 @@ export function HexbinChart({ bridgeData, plotType }) {
 
   const d3Container = useRef(null);
 
-  const widthCheck = useMediaQuery("(min-width:650px)");
+  const widthCheck = useMediaQuery("(min-width:600px)");
 
   const handleSwitchChange = (event) => {
     setHexSize(!hexSize);
   };
 
-  let barHeight;
+  let plotHeight;
   if (widthCheck) {
-    barHeight = 600;
+    plotHeight = "600px";
   } else {
-    barHeight = 300;
+    plotHeight = "0px";
   }
 
   let locality;
@@ -207,7 +207,7 @@ export function HexbinChart({ bridgeData, plotType }) {
 <${Grid} item container spacing=${3}>
   
   <${Grid} item xs=${12} md=${8}>
-    <${Paper} style=${"padding: 24px; min-height: 580px"}>
+    <${Paper} style=${`padding: 24px; min-height: ${plotHeight}`}>
     <${FormControlLabel}
       control=${html`<${Switch}
         defaultChecked
@@ -237,6 +237,7 @@ export function HexbinChart({ bridgeData, plotType }) {
                     initialData=${totalValues}
                     natData=${bridgeData.natData}
                     field=${bridgeData.field}
+                    plotHeight=${plotHeight}
                     />
 </${Grid}>`;
 }
