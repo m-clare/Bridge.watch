@@ -43,8 +43,8 @@ export function PropertyPanel({ hexSelected, objData, initialData, natData, fiel
   }
 
   return html`
-<${Grid} item xs=${12} md=${4}>
-  <${Paper} variant=${"outlined"} style=${"padding: 16px"}> 
+<${Grid} item xs=${12} md=${4} >
+  <${Paper} style=${"padding: 24px; min-height: 580px"}> 
     <${Grid} item>
       <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
       <${BarChart}

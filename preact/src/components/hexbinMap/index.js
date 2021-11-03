@@ -47,7 +47,9 @@ const myHexbin = hexbin()
 const tickExtremes = {
   rating: ["Failed", "Excellent"],
   percent_poor: ["None in poor condition (%)", "All in poor condition (%)"],
-  year_built: [],
+  year_built: [1900, 2021],
+  repair_cost_per_foot: ["$1,000", "$100,000"]
+
 };
 
 const getInterestValue = (plotType, hexValues) => {
@@ -202,8 +204,10 @@ export function HexbinChart({ bridgeData, plotType }) {
   }, [bridgeData, hexSize, plotType]);
 
   return html`
-<${Grid} item container spacing=${2}>
+<${Grid} item container spacing=${3}>
+  
   <${Grid} item xs=${12} md=${8}>
+    <${Paper} style=${"padding: 24px; min-height: 580px"}>
     <${FormControlLabel}
       control=${html`<${Switch}
         defaultChecked
@@ -226,6 +230,7 @@ export function HexbinChart({ bridgeData, plotType }) {
         d=${d3.geoPath()(mesh(us, us.objects.states))}
         />
     </svg>
+</${Paper}>
   </${Grid}>
   <${PropertyPanel} hexSelected=${hexSelected}
                     objData=${activeHex}

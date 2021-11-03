@@ -103,11 +103,11 @@ export default function Country() {
   const scaledHexBool = hexSize;
 
   return html`
-<${Box} sx=${{ padding: "16px"}}>
+<${Box} sx=${{ padding: "24px"}}>
   <${Container} maxWidth="lg">
-    <${Grid} container spacing=${2}>
+    <${Grid} container spacing=${3}>
       <${Grid} item xs=${12}>
-        <${Paper} variant=${"outlined"} style=${"padding: 24px; "}>
+        <${Paper} style=${"padding: 24px; "}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
               <${Typography} variant="h3" component="h1">National Bridge Inventory</${Typography}>

@@ -18,7 +18,7 @@ export function HistTextSummary({ selected, objData, natData, field }) {
   }
   const fieldDisplay = plotOptions[field]['histogram'];
   return html`
-      <div style=${"min-height: 200px"}>
+      <div>
         <${List} dense=${true}>
         <${ListItem}>Number of Bridges: ${data.count}</${ListItem}>
         <${ListItem}>${fieldDisplay} minimum: ${Math.round(data.min)}</${ListItem}>
