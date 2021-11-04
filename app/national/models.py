@@ -189,6 +189,16 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
+class Fips(models.Model):
+    code = models.IntegerField(unique=True, blank=True, null=True)
+    county = models.CharField(max_length=36, blank=True, null=True)
+    state = models.CharField(max_length=36, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'fips'
+
+
 class FunctionalClassificationOfInventoryRoute(models.Model):
     code = models.CharField(unique=True, max_length=2, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -235,7 +245,7 @@ class Bridge(models.Model):
     inventory_route_number = models.TextField(blank=True, null=True)
     inventory_route_direction = models.TextField(blank=True, null=True)
     highway_agency_district = models.TextField(blank=True, null=True)
-    county_code = models.TextField(blank=True, null=True)
+    county_code = models.CharField(max_length=3, blank=True, null=True)
     place_code = models.TextField(blank=True, null=True)
     features_intersected = models.CharField(max_length=28, blank=True, null=True)
     critical_facility = models.TextField(blank=True, null=True)
@@ -350,6 +360,8 @@ class Bridge(models.Model):
     structure_kind = models.ForeignKey('StructureKind', models.DO_NOTHING, blank=True, null=True)
     structure_type = models.ForeignKey('StructureType', models.DO_NOTHING, blank=True, null=True)
     type_of_service_on_bridge = models.ForeignKey('TypeOfServiceOnBridge', models.DO_NOTHING, blank=True, null=True)
+    test_column = models.CharField(max_length=5, blank=True, null=True)
+    fips = models.ForeignKey(Fips, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False

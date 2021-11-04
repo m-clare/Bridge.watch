@@ -16,10 +16,27 @@ import Container from "@mui/material/Container"
 import { makeStyles } from "@mui/styles";
 import { useEffect } from 'react';
 import KofiButton from "kofi-button"
+import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
 
 
 export default function Footer() {
+  const widthCheck = useMediaQuery("(min-width:600)")
+
+  let kofiAlignment;
+  let RCAlignment;
+
+  if (widthCheck) {
+    kofiAlignment = "flex-start"
+    RCAlignment = "flex-end"
+  } else {
+    kofiAlignment = "center"
+    RCAlignment = "center"
+  }
+
+
+   
+
   return html`
 <${Box} sx=${{ flexGrow: 1, padding: "16px", boxShadow: 3, bgcolor: "primary.main", color: "primary.contrastText"}} >
   <${Container} maxWidth="lg">
@@ -77,7 +94,7 @@ export default function Footer() {
       <${Grid} item xs=${12}>
         <${Divider} style=${"border-color: #ffffff"} />
       </${Grid}>
-      <${Grid} item xs=${12} md=${4} style=${"padding-top: 8px"}>
+      <${Grid} item xs=${12} md=${4} style=${"padding-top: 8px;"}>
       <${KofiButton} color="#c44436" kofiID="mclare" title="Support this project" />
       </${Grid}>
       <${Grid} item xs=${12} md=${4} style=${"padding-top: 8px"}>

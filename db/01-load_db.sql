@@ -433,6 +433,28 @@ ALTER TABLE nbi ALTER COLUMN bridge_improvement_cost TYPE DOUBLE PRECISION USING
 ALTER TABLE nbi ALTER COLUMN roadway_improvement_cost TYPE DOUBLE PRECISION USING roadway_improvement_cost::double precision;
 ALTER TABLE nbi ALTER COLUMN length_of_structure_improvement TYPE DOUBLE PRECISION USING length_of_structure_improvement::double precision;
 
+-- Create fips code and mapping
+ALTER TABLE nbi ALTER COLUMN county_code SET DATA TYPE CHAR(3);
+ALTER TABLE nbi ADD COLUMN fips_code CHAR(5);
+UPDATE nbi SET fips_code = state.fips_code || nbi.county_code FROM state WHERE nbi.state_id = state.id;
+ALTER TABLE nbi ALTER COLUMN fips_code SET DATA TYPE INTEGER USING fips_code::integer;
+
+DROP TABLE IF EXISTS fips;
+CREATE TABLE fips (
+  id SERIAL,
+  code INTEGER UNIQUE,
+  county VARCHAR(36),
+  state VARCHAR(36),
+  
+  PRIMARY KEY (id)
+);
+
+\copy fips(code,county,state) FROM './db/fk_csvs/state_and_county_fips_master.csv' WITH DELIMITER ',' CSV HEADER;
+ALTER TABLE nbi ADD COLUMN fips_id INTEGER REFERENCES fips(id) ON DELETE CASCADE;
+UPDATE nbi SET fips_id = (SELECT fips.id FROM fips where fips.code = nbi.fips_code::INTEGER);
+ALTER TABLE nbi DROP COLUMN fips_code;
+
+
 
 CREATE TABLE abbrev_rating AS SELECT structure_number, state_id, latitude, longitude, structure_type_id, structure_kind_id, lowest_rating_id, year_built, superstructure_condition_id, substructure_condition_id, deck_condition_id, type_of_service_on_bridge_id from nbi;
 ALTER TABLE abbrev_rating ADD CONSTRAINT lowest_rating_id FOREIGN KEY (lowest_rating_id) REFERENCES lowest_rating(id);

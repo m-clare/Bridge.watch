@@ -99,7 +99,6 @@ function getHexbinData(data) {
     }
     const emptyHist = object(domain, new Array(domain.length).fill(0));
     const d3Histogram = d3.histogram().domain([min, max+1]).thresholds(domain.length);
-    console.log(d3Histogram.domain())
     rawHistogram = d3Histogram(bridgeInfo.map((d) => d[field]));
     rawHistogram = rawHistogram.map((d) => ({
       count: d.length,
@@ -110,11 +109,9 @@ function getHexbinData(data) {
       rawHistogram.map((d) => d.count)
     );
     const allCount = { ...emptyHist, ...histogram };
-    
     const allHistogram = Object.keys(allCount)
           .sort(function(a, b) { return a - b})
           .map((d) => ({ [field]: +d, count: allCount[d] }));
-    console.log(allHistogram)
 
     const rawHex = customHexbin(bridgeInfo);
 

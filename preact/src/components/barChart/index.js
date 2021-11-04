@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "preact/hooks";
 import { isEmpty } from "lodash-es";
 import Typography from "@mui/material/Typography";
 import { colorDict } from "../colorPalette";
+import { plotOptions } from "../Options";
 const html = htm.bind(h);
 
 
@@ -49,6 +50,7 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
   const y = domain.y;
 
   const height = dimensions.height;
+  const width = dimensions.width;
   const margins = dimensions.margins;
 
   const getBars = () => {
@@ -99,6 +101,27 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
       .attr("font-size", "1.2em");
   }
 
+  const displayName = plotOptions[field]['histogram'];
+
+  const getXAxisLabel = () => {
+    if (!document.getElementById("xaxislabelContainer")) {
+      xAxisNode.append("g").attr("id", "xaxislabelContainer");
+    }
+    return svg.select("#xaxislabelContainer");
+  };
+
+  const xAxisLabelNode = getXAxisLabel();
+  xAxisLabelNode.select("text").remove();
+
+  xAxisLabelNode
+    .append("text")
+    .attr("x", width)
+    .attr("y", margins.bottom - 6)
+    .attr("fill", "currentColor")
+    .attr("text-anchor", "end")
+    .text(displayName + " →")
+
+
   // add labels
   svg
     .select("g")
@@ -134,7 +157,8 @@ export function BarChart({
     left: 0.005 * width,
     right: 0.005 * width,
     top: 0.08 * height,
-    bottom: 0.08 * height,
+    bottom: Math.min(0.16* height, 48),
+
   };
 
   const dimensions = { width: width, height: height, margins: margins };
@@ -150,7 +174,7 @@ export function BarChart({
       const x = d3
         .scaleBand()
         .domain(initialData.map((d) => d[field]))
-        .range([margins.left, width - margins.right])
+            .range([margins.left + 8, width - (margins.right + 8)])
         .padding(0.1);
 
       // handle empty histogram

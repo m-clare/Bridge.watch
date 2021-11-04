@@ -23,6 +23,7 @@ from national import views
 
 urlpatterns = [
     re_path(r'^api/bridges/national', views.national_bridges_csv),
+    re_path(r'^api/bridges/state', views.state_bridges_csv),
     path('national/', include('national.urls')),
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls))

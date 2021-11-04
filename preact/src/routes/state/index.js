@@ -1,6 +1,6 @@
 import { h } from "preact";
 import htm from "htm";
-import { getNationalBridges } from "../../utils/nbi-api";
+import { getStateBridges } from "../../utils/nbi-api";
 import { useEffect, useState, useRef } from "preact/hooks";
 import { HexbinChart } from "../../components/hexbinMap";
 import { isEmpty } from "lodash-es";
@@ -31,7 +31,8 @@ import { filters, plotOptions } from "../../components/Options";
 
 const html = htm.bind(h);
 
-const countryFilters = (({ material, type, service  }) => ({ material, type, service  }))(filters);
+const stateFilters = (({ state, material, type, service  }) => ({ state, material, type, service  }))(filters);
+
 
 function constructURI(query) {
   const searchParams = new URLSearchParams()
@@ -43,7 +44,7 @@ function constructURI(query) {
     }
     else {
       if (query[item].length !== 0) {
-        const filterMap = countryFilters[item].options
+        const filterMap = filters[item].options
         searchParams.set(item, query[item].map(d => filterMap[d]).sort())
       }
     }
@@ -55,16 +56,18 @@ function constructURI(query) {
 function updateQuery(queryState, type, updatedParam) {
   return {...queryState, [type]: updatedParam}
 }
-export default function CountryBridges() {
-  const [bridges, setBridges] = useState({});
+
+export default function StateBridges() {
+  const [stateBridges, setStateBridges] = useState({});
+
   const [queryState, setQueryState] = useState({'plot_type': 'percent_poor',
                                                 'material': [],
                                                 'type': [],
-                                                'service': []
+                                                'service': [],
+                                                'state': ['California']
                                                })
   const [queryURI, setQueryURI] = useState('plot_type=percent_poor')
   const [submitted, setSubmitted] = useState(true);
-  const [hexSize, setHexSize] = useState(true)
   const [plotType, setPlotType] = useState(queryState.plot_type)
 
   const handleChange = (event, type) => {
@@ -94,27 +97,26 @@ export default function CountryBridges() {
 
   useEffect(async () => {
     const newURI = constructURI(queryState)
-    const bridgeData = await getNationalBridges(newURI);
+    const bridgeData = await getStateBridges(newURI);
     setQueryURI(newURI);
-    setBridges(bridgeData);
+    setStateBridges(bridgeData);
     setSubmitted(false);
   }, [submitted]);
 
   const renderPlotType = plotType;
   const renderSubmitted = submitted;
-  const scaledHexBool = hexSize;
-
-  const colWidth = {'single': 4, 'multi': 4}
+  const colWidth = {'single': 6, 'multi': 4}
+  console.log(colWidth)
 
   return html`
 <${Box} sx=${{ padding: "24px"}}>
   <${Container} maxWidth="lg">
     <${Grid} container spacing=${3}>
-      <${Grid} item xs=${12}>
+      <${Grid} item xs=${12} md=${6}>
         <${Paper} style=${"padding: 24px; "}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
-              <${Typography} variant="h3" component="h1">National Bridge Inventory</${Typography}>
+              <${Typography} variant="h3" component="h1">State Bridge Inventory</${Typography}>
             </${Grid}>
             <${QueryForm} queryState=${queryState}
                           handleChange=${handleChange}
@@ -122,42 +124,45 @@ export default function CountryBridges() {
                           handleSingleChange=${handleSingleChange}
                           submitted=${renderSubmitted}
                           plotOptions=${plotOptions}
-                          filters=${countryFilters}
+                          filters=${stateFilters}
                           colWidth=${colWidth}
                           />
           </${Grid}>
         </${Paper}>
       </${Grid}>
-      ${renderSubmitted ? (
-      html`<${Grid} item xs=${12}>
-        <${Paper} style=${"padding: 16px; "}>
-          <${Grid} container>
+<${Grid} item xs=${12} md=${6}>
+        <${Paper} style=${"padding: 24px; "}>
+          <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
-              <${Typography} style=${"text-align: center"}
-                             variant="h6"
-                             color=${grey[500]}>
-                <i>Loading query...</i>
-                  </${Typography}>
-              <${LinearProgress} />
+              <${Typography} variant="h3" component="h1">${queryState.state}</${Typography}>
             </${Grid}>
           </${Grid}>
         </${Paper}>
-      </${Grid}>`) : (null)}
-      ${(!isEmpty(bridges) && !bridges.hasOwnProperty('message'))  ?
-      (html`<${CountryDescription} summaryType=${renderPlotType} keyValues=${{
-                                   field: renderPlotType,
-                                   count: bridges.natData.count,
-                                   filters: queryState
-                                   }}/><${HexbinChart} bridgeData=${bridges} plotType=${renderPlotType} hexSize=${scaledHexBool}/>`) : null}
-      ${(!renderSubmitted && bridges.hasOwnProperty('message'))  ?
+      </${Grid}>
+      ${renderSubmitted ? (
+      html`<${Grid} item xs=${12}>
+  <${Paper} style=${"padding: 16px; "}>
+  <${Grid} container>
+  <${Grid} item xs=${12}>
+  <${Typography} style=${"text-align: center"}
+  variant="h6"
+  color=${grey[500]}>
+  <i>Loading query...</i>
+  </${Typography}>
+  <${LinearProgress} />
+  </${Grid}>
+  </${Grid}>
+  </${Paper}>
+  </${Grid}>`) : (null)}
+      ${(!renderSubmitted && stateBridges.hasOwnProperty('message'))  ?
       (html`<${Grid} item xs=${12}>
-        <${Paper} style=${"padding: 16px; "}>
-          <${Grid} container>
-            <${Grid} item xs=${12}>
-              <${Typography} style=${"text-align: center"}
+  <${Paper} style=${"padding: 16px; "}>
+  <${Grid} container>
+  <${Grid} item xs=${12}>
+  <${Typography} style=${"text-align: center"}
                              variant="h6"
                              color=${grey[500]}>
-                <i>${bridges.message}</i>
+                <i>${stateBridges.message}</i>
               </${Typography}>
             </${Grid}>
           </${Grid}>
