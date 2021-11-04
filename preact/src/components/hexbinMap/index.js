@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
+
 import * as d3 from "d3";
 import { hexbin } from "d3-hexbin";
 import { mesh } from "topojson-client";
@@ -18,7 +17,6 @@ import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
 import { PropertyPanel } from "../../components/propertyPanel";
 
-import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 
@@ -205,7 +203,6 @@ export function HexbinChart({ bridgeData, plotType }) {
 
   return html`
 <${Grid} item container spacing=${3}>
-  
   <${Grid} item xs=${12} md=${8}>
     <${Paper} style=${`padding: 24px; min-height: ${plotHeight}`}>
     <${FormControlLabel}

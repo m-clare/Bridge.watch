@@ -2,7 +2,7 @@ import { h } from "preact";
 import htm from "htm";
 import { getStateBridges } from "../../utils/nbi-api";
 import { useEffect, useState, useRef } from "preact/hooks";
-import { HexbinChart } from "../../components/hexbinMap";
+import { ChoroplethMap } from "../../components/choroplethMap";
 import { isEmpty } from "lodash-es";
 import { isEqual } from "lodash-es";
 import { makeStyles } from "@mui/styles";
@@ -64,7 +64,7 @@ export default function StateBridges() {
                                                 'material': [],
                                                 'type': [],
                                                 'service': [],
-                                                'state': ['California']
+                                                'state': ['Nevada']
                                                })
   const [queryURI, setQueryURI] = useState('plot_type=percent_poor')
   const [submitted, setSubmitted] = useState(true);
@@ -104,9 +104,8 @@ export default function StateBridges() {
   }, [submitted]);
 
   const renderPlotType = plotType;
-  const renderSubmitted = submitted;
+  const renderSubmitted = submitted
   const colWidth = {'single': 6, 'multi': 4}
-  console.log(colWidth)
 
   return html`
 <${Box} sx=${{ padding: "24px"}}>
@@ -130,12 +129,14 @@ export default function StateBridges() {
           </${Grid}>
         </${Paper}>
       </${Grid}>
-<${Grid} item xs=${12} md=${6}>
+      <${Grid} item xs=${12} md=${6}>
         <${Paper} style=${"padding: 24px; "}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
-              <${Typography} variant="h3" component="h1">${queryState.state}</${Typography}>
+              <${Typography} variant="h4" component="h1">${queryState.state}</${Typography}>
             </${Grid}>
+            <${ChoroplethMap} bridgeCountyData=${stateBridges} displayStates=${queryState.state} plotType=${plotType} />
+
           </${Grid}>
         </${Paper}>
       </${Grid}>

@@ -93,17 +93,19 @@ export function QueryForm({
 
   const multiFilters = Object.values((({ material, type, service  }) => ({ material, type, service  }))(filters));
 
-  const stateFilter = Object.values((({ state  }) => ({ state  }))(filters));
-
-  console.log(!stateFilter)
-  console.log(stateFilter.length)
+  let stateValue = false;
+  let stateFilter;
+  if ('state' in filters) {
+    stateValue = true;
+    stateFilter = Object.values((({ state  }) => ({ state  }))(filters));
+  }
 
   filters = Object.values(multiFilters)
 
   return html`
- ${(stateFilter.length !== 0) ?
+ ${(stateValue) ?
 (html`<${Grid} item xs=${12}>
-                  <${Typography} 
+                  <${Typography}
                     variant="h6"
                     component="h2"
                     color="${grey[500]}">
@@ -113,7 +115,7 @@ export function QueryForm({
     ${stateFilter.map((value) => multiFilter(value, queryState, formHandlers, colWidth.single))}`)
 : null}
  <${Grid} item xs=${12}>
-                  <${Typography} 
+                  <${Typography}
                     variant="h6"
                     component="h2"
                     color="${grey[500]}">

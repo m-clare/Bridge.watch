@@ -38,7 +38,7 @@ const serviceTypeOptions = {
   Other: "0",
 };
 
-const stateOptions = {
+export const stateOptions = {
   Alabama: "01",
   Alaska: "02",
   Arizona: "04",
