@@ -110,13 +110,22 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
       const fipsStates = displayStates.map((d) => stateOptions[d]);
       const selectedStates = getSelectedStates(fipsStates, us);
 
+      const tooltip = d3
+        .select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .attr("class", "tooltooltip")
+        .style("font-family", "Fira Sans")
+        .style("font-size", "0.8rem");
+
       const selectedCounties = feature(
         selectedStates,
         selectedStates.objects.counties
       );
       const projection = d3.geoIdentity().fitExtent(
         [
-          [stdMargin, stdMargin + 20],
+          [stdMargin, stdMargin, stdMargin, stdMargin + 20],
           [width - stdMargin, height - stdMargin - 20],
         ],
         selectedCounties
@@ -134,11 +143,15 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
         });
       }
 
+      // add legend
       const legendNode = getLegend(svg);
       legendNode.select("#legend").remove();
 
       legendNode
-        .attr("transform", `translate(${0.4* width}, ${height - stdMargin - 10})`)
+        .attr(
+          "transform",
+          `translate(${0.35 * width}, ${height - stdMargin - 10})`
+        )
         .append(() =>
           legend({
             color: color,
@@ -150,13 +163,25 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
           })
         );
 
+      // add counties with data
       const svgCounties = getCountyNode(svg);
       svgCounties
         .selectAll("path")
         .data(countyMerged)
         .join("path")
         .attr("fill", (d) => color(getInterestValue(plotType, d)))
-        .attr("d", path);
+        .attr("d", path)
+        .on("mouseover", function (e, d) {
+          tooltip.style("visibility", "visible").html(`${d.properties.name}`);
+        })
+        .on("mousemove", function (e, d) {
+          return tooltip
+            .style("top", e.pageY - 20 + "px")
+            .style("left", e.pageX + 20 + "px");
+        })
+        .on("mouseout", function (e, d) {
+          tooltip.style("visibility", "hidden");
+        });
 
       svgCounties
         .join("path")
@@ -187,7 +212,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
       );
       const projection = d3.geoIdentity().fitExtent(
         [
-          [stdMargin, stdMargin + 20],
+          [stdMargin, stdMargin, stdMargin, stdMargin + 20],
           [width - stdMargin, height - stdMargin - 20],
         ],
         selectedCounties
@@ -225,7 +250,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
     </${Grid}>`
       : null
   }
-  <${Grid} item xs=${12} sx=${{paddingTop: 0}}>
+  <${Grid} item xs=${12} sx=${{ paddingTop: 0 }}>
     <svg class="d3-component"
        viewBox="0 0 ${width} ${height}"
        ref=${d3Container}
