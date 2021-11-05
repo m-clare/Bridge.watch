@@ -154,6 +154,7 @@ CREATE TABLE state (
 ALTER TABLE nbi ADD COLUMN state_id INTEGER REFERENCES state(id) ON DELETE CASCADE;
 UPDATE nbi SET state_id = (SELECT state.id FROM state WHERE state.fips_code = nbi.state);
 ALTER TABLE nbi DROP COLUMN state;
+CREATE INDEX nbi_state_idx ON nbi (state_id);
 
 DROP TABLE IF EXISTS toll;
 CREATE TABLE toll (
@@ -168,6 +169,7 @@ CREATE TABLE toll (
 ALTER TABLE nbi ADD COLUMN toll_id INTEGER REFERENCES toll(id) ON DELETE CASCADE;
 UPDATE nbi SET toll_id = (SELECT toll.id FROM toll WHERE toll.code = nbi.toll);
 ALTER TABLE nbi DROP COLUMN toll;
+CREATE INDEX nbi_toll_idx ON nbi (toll_id);
 
 DROP TABLE IF EXISTS traffic_safety_features_approach_guardrail_ends;
 CREATE TABLE traffic_safety_features_approach_guardrail_ends (
@@ -182,7 +184,7 @@ id SERIAL,
 ALTER TABLE nbi ADD COLUMN traffic_safety_features_approach_guardrail_ends_id INTEGER REFERENCES traffic_safety_features_approach_guardrail_ends(id) ON DELETE CASCADE;
 UPDATE nbi SET traffic_safety_features_approach_guardrail_ends_id = (SELECT traffic_safety_features_approach_guardrail_ends.id FROM traffic_safety_features_approach_guardrail_ends where traffic_safety_features_approach_guardrail_ends.code = nbi.traffic_safety_features_approach_guardrail_ends);
 ALTER TABLE nbi DROP COLUMN traffic_safety_features_approach_guardrail_ends;
-
+CREATE INDEX nbi_tsf_approach_guardrail_ends_idx ON nbi (traffic_safety_features_approach_guardrail_ends_id);
 DROP TABLE IF EXISTS design_load;
 CREATE TABLE design_load (
 id SERIAL,
@@ -211,6 +213,7 @@ id SERIAL,
 ALTER TABLE nbi ADD COLUMN traffic_safety_features_approach_guardrail_id INTEGER REFERENCES traffic_safety_features_approach_guardrail(id) ON DELETE CASCADE;
 UPDATE nbi SET traffic_safety_features_approach_guardrail_id = (SELECT traffic_safety_features_approach_guardrail.id FROM traffic_safety_features_approach_guardrail where traffic_safety_features_approach_guardrail.code = nbi.traffic_safety_features_approach_guardrail);
 ALTER TABLE nbi DROP COLUMN traffic_safety_features_approach_guardrail;
+CREATE INDEX nbi_tsf_approach_guardrail_idx ON nbi (traffic_safety_features_approach_guardrail_id);
 
 DROP TABLE IF EXISTS deck_condition;
 CREATE TABLE deck_condition (
@@ -227,6 +230,7 @@ UPDATE nbi SET deck_condition = NULL WHERE deck_condition = 'N';
 ALTER TABLE nbi ADD COLUMN deck_condition_id INTEGER REFERENCES deck_condition(id) ON DELETE CASCADE;
 UPDATE nbi SET deck_condition_id = (SELECT deck_condition.id FROM deck_condition where deck_condition.code = nbi.deck_condition::INTEGER);
 ALTER TABLE nbi DROP COLUMN deck_condition;
+CREATE INDEX nbi_deck_condition_idx ON nbi (deck_condition_id);
 
 DROP TABLE IF EXISTS functional_classification_of_inventory_route;
 CREATE TABLE functional_classification_of_inventory_route (
@@ -241,6 +245,7 @@ id SERIAL,
 ALTER TABLE nbi ADD COLUMN functional_classification_of_inventory_route_id INTEGER REFERENCES functional_classification_of_inventory_route(id) ON DELETE CASCADE;
 UPDATE nbi SET functional_classification_of_inventory_route_id = (SELECT functional_classification_of_inventory_route.id FROM functional_classification_of_inventory_route where functional_classification_of_inventory_route.code = nbi.functional_classification_of_inventory_route);
 ALTER TABLE nbi DROP COLUMN functional_classification_of_inventory_route;
+CREATE INDEX nbi_fci_route_idx ON nbi (functional_classification_of_inventory_route);
 
 DROP TABLE IF EXISTS historical_significance;
 CREATE TABLE historical_significance (
@@ -255,6 +260,7 @@ id SERIAL,
 ALTER TABLE nbi ADD COLUMN historical_significance_id INTEGER REFERENCES historical_significance(id) ON DELETE CASCADE;
 UPDATE nbi SET historical_significance_id = (SELECT historical_significance.id FROM historical_significance where historical_significance.code = nbi.historical_significance);
 ALTER TABLE nbi DROP COLUMN historical_significance;
+CREATE INDEX nbi_historical_significance_idx ON nbi (historical_significance_id);
 
 DROP TABLE IF EXISTS substructure_condition;
 CREATE TABLE substructure_condition (
@@ -272,6 +278,7 @@ UPDATE nbi SET substructure_condition = NULL WHERE substructure_condition = 'N';
 ALTER TABLE nbi ADD COLUMN substructure_condition_id INTEGER REFERENCES substructure_condition(id) ON DELETE CASCADE;
 UPDATE nbi SET substructure_condition_id = (SELECT substructure_condition.id FROM substructure_condition where substructure_condition.code = nbi.substructure_condition::INTEGER);
 ALTER TABLE nbi DROP COLUMN substructure_condition;
+CREATE INDEX nbi_substructure_condition_idx ON nbi (substructure_condition_id);
 
 DROP TABLE IF EXISTS traffic_safety_features_bridge_railings ;
 CREATE TABLE traffic_safety_features_bridge_railings (
@@ -286,6 +293,7 @@ id SERIAL,
 ALTER TABLE nbi ADD COLUMN traffic_safety_features_bridge_railings_id INTEGER REFERENCES traffic_safety_features_bridge_railings(id) ON DELETE CASCADE;
 UPDATE nbi SET traffic_safety_features_bridge_railings_id = (SELECT traffic_safety_features_bridge_railings.id FROM traffic_safety_features_bridge_railings where traffic_safety_features_bridge_railings.code = nbi.traffic_safety_features_bridge_railings);
 ALTER TABLE nbi DROP COLUMN traffic_safety_features_bridge_railings;
+CREATE INDEX nbi_tsf_bridge_railings_idx ON nbi (traffic_safety_features_bridge_railings_id);
 
 DROP TABLE IF EXISTS superstructure_condition;
 CREATE TABLE superstructure_condition (
@@ -303,6 +311,7 @@ UPDATE nbi SET superstructure_condition = NULL WHERE superstructure_condition = 
 ALTER TABLE nbi ADD COLUMN superstructure_condition_id INTEGER REFERENCES superstructure_condition(id) ON DELETE CASCADE;
 UPDATE nbi SET superstructure_condition_id = (SELECT superstructure_condition.id FROM superstructure_condition where superstructure_condition.code = nbi.superstructure_condition::INTEGER);
 ALTER TABLE nbi DROP COLUMN superstructure_condition;
+CREATE INDEX nbi_superstructure_condition_idx ON nbi (superstructure_condition_id);
 
 DROP TABLE IF EXISTS bridge_median;
 CREATE TABLE bridge_median (
@@ -317,6 +326,7 @@ id SERIAL,
 ALTER TABLE nbi ADD COLUMN bridge_median_id INTEGER REFERENCES bridge_median(id) ON DELETE CASCADE;
 UPDATE nbi SET bridge_median_id = (SELECT bridge_median.id FROM bridge_median where bridge_median.code = nbi.bridge_median);
 ALTER TABLE nbi DROP COLUMN bridge_median;
+CREATE INDEX nbi_bridge_median_idx ON nbi (bridge_median_id);
 
 DROP TABLE IF EXISTS lowest_rating;
 CREATE TABLE lowest_rating (
@@ -334,6 +344,8 @@ UPDATE nbi SET lowest_rating = NULL WHERE lowest_rating = 'N';
 ALTER TABLE nbi ADD COLUMN lowest_rating_id INTEGER REFERENCES lowest_rating(id) ON DELETE CASCADE;
 UPDATE nbi SET lowest_rating_id = (SELECT lowest_rating.id FROM lowest_rating where lowest_rating.code = nbi.lowest_rating::INTEGER);
 ALTER TABLE nbi DROP COLUMN lowest_rating;
+CREATE INDEX nbi_lowest_rating_idx ON nbi (lowest_rating_id);
+
 
 DROP TABLE IF EXISTS owner;
 CREATE TABLE owner (
@@ -346,8 +358,9 @@ id SERIAL,
 \copy owner(code,description) FROM './db/fk_csvs/owner.csv' WITH DELIMITER ',' CSV HEADER;
 
 ALTER TABLE nbi ADD COLUMN owner_id INTEGER REFERENCES owner(id) ON DELETE CASCADE;
-UPDATE nbi SET owner_id = (SELECT owner.id FROM owner where owner.code = nbi.owner);
+UPDATE nbi SET owner_id = (SELECT owner.id FROM owner where onwner.code = nbi.owner);
 ALTER TABLE nbi DROP COLUMN owner;
+CREATE INDEX nbi_owner_idx ON nbi (owner_id);
 
 DROP TABLE IF EXISTS maintenance_responsibility;
 CREATE TABLE maintenance_responsibility (
@@ -362,6 +375,7 @@ id SERIAL,
 ALTER TABLE nbi ADD COLUMN maintenance_responsibility_id INTEGER REFERENCES maintenance_responsibility(id) ON DELETE CASCADE;
 UPDATE nbi SET maintenance_responsibility_id = (SELECT maintenance_responsibility.id FROM maintenance_responsibility where maintenance_responsibility.code = nbi.maintenance_responsibility);
 ALTER TABLE nbi DROP COLUMN maintenance_responsibility;
+CREATE INDEX nbi_maintenance_responsibility_idx ON nbi (maintenance_responsibility_id);
 
 DROP TABLE IF EXISTS traffic_safety_features_transitions;
 CREATE TABLE traffic_safety_features_transitions (
@@ -376,6 +390,7 @@ id SERIAL,
 ALTER TABLE nbi ADD COLUMN traffic_safety_features_transitions_id INTEGER REFERENCES traffic_safety_features_transitions(id) ON DELETE CASCADE;
 UPDATE nbi SET traffic_safety_features_transitions_id = (SELECT traffic_safety_features_transitions.id FROM traffic_safety_features_transitions where traffic_safety_features_transitions.code = nbi.traffic_safety_features_transitions);
 ALTER TABLE nbi DROP COLUMN traffic_safety_features_transitions;
+CREATE INDEX nbi_tsf_transitions_idx ON nbi (traffic_safety_features_transitions_id);
 
 DROP TABLE IF EXISTS structure_kind;
 CREATE TABLE structure_kind (
@@ -392,6 +407,7 @@ UPDATE nbi SET structure_kind = NULL WHERE structure_kind = 'N';
 ALTER TABLE nbi ADD COLUMN structure_kind_id INTEGER REFERENCES structure_kind(id) ON DELETE CASCADE;
 UPDATE nbi SET structure_kind_id = (SELECT structure_kind.id FROM structure_kind where structure_kind.code = nbi.structure_kind::INTEGER);
 ALTER TABLE nbi DROP COLUMN structure_kind;
+CREATE INDEX nbi_structure_kind_idx ON nbi (structure_kind_id);
 
 DROP TABLE IF EXISTS structure_type;
 CREATE TABLE structure_type (
@@ -406,6 +422,7 @@ CREATE TABLE structure_type (
 ALTER TABLE nbi ADD COLUMN structure_type_id INTEGER REFERENCES structure_type(id) ON DELETE CASCADE;
 UPDATE nbi SET structure_type_id = (SELECT structure_type.id FROM structure_type where structure_type.code = nbi.structure_type::INTEGER);
 ALTER TABLE nbi DROP COLUMN structure_type;
+CREATE INDEX nbi_structure_type_idx ON nbi (structure_type_id);
 
 DROP TABLE IF EXISTS type_of_service_on_bridge;
 CREATE TABLE type_of_service_on_bridge (
@@ -420,6 +437,7 @@ CREATE TABLE type_of_service_on_bridge (
 ALTER TABLE nbi ADD COLUMN type_of_service_on_bridge_id INTEGER REFERENCES type_of_service_on_bridge(id) ON DELETE CASCADE;
 UPDATE nbi SET type_of_service_on_bridge_id = (SELECT type_of_service_on_bridge.id FROM type_of_service_on_bridge where type_of_service_on_bridge.code = nbi.type_of_service_on_bridge::INTEGER);
 ALTER TABLE nbi DROP COLUMN type_of_service_on_bridge;
+CREATE INDEX nbi_type_of_service_on_bridge_idx ON nbi (type_of_service_on_bridge_id);
 
 -- Fix data types
 ALTER TABLE nbi ALTER COLUMN features_intersected SET DATA TYPE VARCHAR(28);
@@ -453,8 +471,7 @@ CREATE TABLE fips (
 ALTER TABLE nbi ADD COLUMN fips_id INTEGER REFERENCES fips(id) ON DELETE CASCADE;
 UPDATE nbi SET fips_id = (SELECT fips.id FROM fips where fips.code = nbi.fips_code::INTEGER);
 ALTER TABLE nbi DROP COLUMN fips_code;
-
-
+CREATE INDEX nbi_fips_idx ON nbi (fips_id);
 
 CREATE TABLE abbrev_rating AS SELECT structure_number, state_id, latitude, longitude, structure_type_id, structure_kind_id, lowest_rating_id, year_built, superstructure_condition_id, substructure_condition_id, deck_condition_id, type_of_service_on_bridge_id from nbi;
 ALTER TABLE abbrev_rating ADD CONSTRAINT lowest_rating_id FOREIGN KEY (lowest_rating_id) REFERENCES lowest_rating(id);
@@ -480,8 +497,5 @@ ALTER TABLE abbrev_year_built ADD CONSTRAINT deck_condition_id FOREIGN KEY (deck
 ALTER TABLE abbrev_year_built ADD CONSTRAINT type_of_service_on_bridge_id FOREIGN KEY (type_of_service_on_bridge_id) REFERENCES type_of_service_on_bridge(id);
 ALTER TABLE abbrev_year_built ADD CONSTRAINT state_id FOREIGN KEY (state_id) REFERENCES state(id);
 
--- CREATE UNIQUE INDEX structure_type_idx ON abbrev_year_built (structure_type_id);
--- CREATE UNIQUE INDEX structure_kind_idx ON abbrev_year_built (structure_kind_id);
--- CREATE UNIQUE INDEX type_of_service_on_bridge_idx ON abbrev_year_built (type_of_service_on_bridge_id);
 
 

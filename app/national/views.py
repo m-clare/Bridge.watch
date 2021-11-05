@@ -14,7 +14,6 @@ def state_bridges_csv(request):
     if request.method =="GET":
         fields = []
 
-        
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
             bridges = Bridge.objects.all()
@@ -37,14 +36,13 @@ def state_bridges_csv(request):
         state = request.query_params.get("state")
         if state is not None:
             state_list = state.split(',')
-            bridges = bridges.filter(state__code__in=state_list)
+            bridges = bridges.filter(state__fips_code__in=state_list)
             bridges = bridges.annotate(state_name=F('state__name'))
         bridges = bridges.annotate(fips_code=F('fips__code'))
         bridges = bridges.annotate(county_name=F('fips__county'))
         fields.append('county_name')
         fields.append('state_name')
         fields.append('fips_code')
-        
 
         # material type
         material = request.query_params.get("material")
@@ -67,6 +65,12 @@ def state_bridges_csv(request):
             bridges = bridges.annotate(rating=F('lowest_rating__code'))
         if ('repair_cost_per_foot' in fields):
             bridges = bridges.annotate(repair_cost_per_foot=(F('total_project_improvement_cost') / (F('length_of_structure_improvement') * 3.28)))
+        # Get other interesting fields
+        bridges = bridges.annotate(material=F('structure_kind__code'))
+        bridges = bridges.annotate(type=F('structure_type__code'))
+        bridges = bridges.annotate(service=F('type_of_service_on_bridge__code'))
+        fields.extend(['material', 'type', 'service'])
+
         bridges = bridges.values_list(*fields)
 
         # limit query results for troubleshooting
