@@ -104,7 +104,7 @@ export default function StateBridges() {
 
   const renderPlotType = plotType;
   const renderSubmitted = submitted
-  const colWidth = {'single': 6, 'multi': 4}
+  const colWidth = {'single': 12, 'multi': 12}
 
   return html`
 <${Box} sx=${{ padding: "24px"}}>

@@ -80,12 +80,19 @@ const getAllCountyNode = (svg) => {
   return svg.select("#AllCounties");
 };
 
+const getLegend = (svg) => {
+  if (!document.getElementById("legendContainer")) {
+    svg.append("g").attr("id", "legendContainer");
+  }
+  return svg.select("#legendContainer");
+};
+
 export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
   const [activeCounty, setActiveCounty] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [countySelected, setCountySelected] = useState(false);
   const d3Container = useRef(null);
-  console.log(displayStates)
+  console.log(displayStates);
 
   const svg = d3.select(d3Container.current);
 
@@ -109,8 +116,8 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
       );
       const projection = d3.geoIdentity().fitExtent(
         [
-          [stdMargin, stdMargin],
-          [width - stdMargin, height - stdMargin],
+          [stdMargin, stdMargin + 20],
+          [width - stdMargin, height - stdMargin - 20],
         ],
         selectedCounties
       );
@@ -126,6 +133,22 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
           ),
         });
       }
+
+      const legendNode = getLegend(svg);
+      legendNode.select("#legend").remove();
+
+      legendNode
+        .attr("transform", `translate(${0.4* width}, ${height - stdMargin - 10})`)
+        .append(() =>
+          legend({
+            color: color,
+            width: width * 0.3,
+            tickFormat: ".0f",
+            tickSize: 0,
+            ticks: 8,
+            tickExtremes: tickExtremes[plotType],
+          })
+        );
 
       const svgCounties = getCountyNode(svg);
       svgCounties
@@ -155,7 +178,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
       const svg = d3.select(d3Container.current);
 
       const fipsStates = displayStates.map((d) => stateOptions[d]);
-      console.log(fipsStates)
+      console.log(fipsStates);
       const selectedStates = getSelectedStates(fipsStates, us);
 
       const selectedCounties = feature(
@@ -164,8 +187,8 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
       );
       const projection = d3.geoIdentity().fitExtent(
         [
-          [stdMargin, stdMargin],
-          [width - stdMargin, height - stdMargin],
+          [stdMargin, stdMargin + 20],
+          [width - stdMargin, height - stdMargin - 20],
         ],
         selectedCounties
       );
@@ -192,7 +215,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
       const svgCounties = getAllCountyNode(svg);
       svg.remove(svgCounties);
     }
-  }, [displayStates])
+  }, [displayStates]);
 
   return html`
   ${
@@ -202,7 +225,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
     </${Grid}>`
       : null
   }
-  <${Grid} item xs=${12}>
+  <${Grid} item xs=${12} sx=${{paddingTop: 0}}>
     <svg class="d3-component"
        viewBox="0 0 ${width} ${height}"
        ref=${d3Container}
