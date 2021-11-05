@@ -27,11 +27,11 @@ import Button from "@mui/material/Button";
 
 import { CountryDescription } from "../../components/countryDescription";
 import { QueryForm } from "../../components/queryForm";
-import { filters, plotOptions } from "../../components/Options";
+import { singleFilters, multiFilters } from "../../components/Options";
 
 const html = htm.bind(h);
 
-const countryFilters = (({ material, type, service  }) => ({ material, type, service  }))(filters);
+const countryFilters = (({ material, type, service  }) => ({ material, type, service  }))(multiFilters);
 
 function constructURI(query) {
   const searchParams = new URLSearchParams()
@@ -39,7 +39,7 @@ function constructURI(query) {
   keys.forEach(item => {
     if (item === 'plot_type') {
       const value = query['plot_type']
-      searchParams.set(item, plotOptions[value].query)
+      searchParams.set(item, singleFilters.plot_type.options[value].query)
     }
     else {
       if (query[item].length !== 0) {
@@ -121,7 +121,7 @@ export default function CountryBridges() {
                           handleClose=${handleFormClose}
                           handleSingleChange=${handleSingleChange}
                           submitted=${renderSubmitted}
-                          plotOptions=${plotOptions}
+                          plotChoices=${singleFilters.plot_type}
                           filters=${countryFilters}
                           colWidth=${colWidth}
                           />

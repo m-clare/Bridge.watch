@@ -27,11 +27,11 @@ import Button from "@mui/material/Button";
 
 import { CountryDescription } from "../../components/countryDescription";
 import { QueryForm } from "../../components/queryForm";
-import { filters, plotOptions } from "../../components/Options";
+import { singleFilters, multiFilters } from "../../components/Options";
 
 const html = htm.bind(h);
 
-const stateFilters = (({ state, material, type, service  }) => ({ state, material, type, service  }))(filters);
+const stateFilters = (({ state, material, type, service  }) => ({ state, material, type, service  }))(multiFilters);
 
 
 function constructURI(query) {
@@ -40,21 +40,16 @@ function constructURI(query) {
   keys.forEach(item => {
     if (item === 'plot_type') {
       const value = query['plot_type']
-      searchParams.set(item, plotOptions[value].query)
-    }
-    else {
+      searchParams.set(item, singleFilters.plot_type.options[value].query)
+    } else {
       if (query[item].length !== 0) {
-        const filterMap = filters[item].options
+        const filterMap = multiFilters[item].options
         searchParams.set(item, query[item].map(d => filterMap[d]).sort())
       }
     }
   })
   const uriString = searchParams.toString().toLowerCase();
   return uriString
-}
-
-function updateQuery(queryState, type, updatedParam) {
-  return {...queryState, [type]: updatedParam}
 }
 
 export default function StateBridges() {
@@ -64,11 +59,12 @@ export default function StateBridges() {
                                                 'material': [],
                                                 'type': [],
                                                 'service': [],
-                                                'state': ['Nevada']
+                                                'state': ['California']
                                                })
   const [queryURI, setQueryURI] = useState('plot_type=percent_poor')
   const [submitted, setSubmitted] = useState(true);
   const [plotType, setPlotType] = useState(queryState.plot_type)
+  const [stateType, setStateType] = useState(queryState.state)
 
   const handleChange = (event, type) => {
     const value = event.target.value
@@ -77,13 +73,15 @@ export default function StateBridges() {
   };
 
   const handleSingleChange = (event, type) => {
+    console.log(event.target.value)
     const value = event.target.value.replace(' ', '_')
+    console.log(value)
     setQueryState({...queryState, [type]: value})
     const newURI = constructURI({...queryState, [type]: value})
     if (newURI !== queryURI ) {
       setSubmitted(true)
     }
-    if (plotType !== value ) {
+    if (type === 'plot_type' && plotType !== value ) {
       setPlotType(value)
     }
   }
@@ -95,6 +93,7 @@ export default function StateBridges() {
     }
   }
 
+  // run every time submitted is updated
   useEffect(async () => {
     const newURI = constructURI(queryState)
     const bridgeData = await getStateBridges(newURI);
@@ -122,7 +121,7 @@ export default function StateBridges() {
                           handleClose=${handleFormClose}
                           handleSingleChange=${handleSingleChange}
                           submitted=${renderSubmitted}
-                          plotOptions=${plotOptions}
+                          plotChoices=${singleFilters.plot_type}
                           filters=${stateFilters}
                           colWidth=${colWidth}
                           />
@@ -136,7 +135,6 @@ export default function StateBridges() {
               <${Typography} variant="h4" component="h1">${queryState.state}</${Typography}>
             </${Grid}>
             <${ChoroplethMap} bridgeCountyData=${stateBridges} displayStates=${queryState.state} plotType=${plotType} />
-
           </${Grid}>
         </${Paper}>
       </${Grid}>

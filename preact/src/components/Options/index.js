@@ -114,7 +114,16 @@ export const plotOptions = {
   },
 };
 
-export const filters = {
+
+export const singleFilters = {
+  plot_type: {
+    'name': 'plot_type',
+    'label': 'Plot Type',
+    'options': plotOptions
+  }
+}
+
+export const multiFilters = {
   material: {
     name: "material",
     label: "Bridge Material",

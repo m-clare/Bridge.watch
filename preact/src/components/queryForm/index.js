@@ -19,23 +19,23 @@ import { grey } from "@mui/material/colors";
 
 const html = htm.bind(h);
 
-function singleSelect(plotOptions, queryState, submitted, handleSingleChange, colWidth) {
+function singleSelect(plotChoices, queryState, submitted, handleSingleChange, colWidth) {
 
 return html`
 
 <${Grid} item xs=${12} md=${colWidth} style=${"padding-top: 8px"}>
   <${FormControl} fullWidth>
-    <${InputLabel}>Plot Type</${InputLabel}>
-    <${Select} value=${queryState.plot_type}
+    <${InputLabel}>${plotChoices.label}</${InputLabel}>
+    <${Select} value=${queryState[plotChoices.name]}
                label="Plot Type"
                disabled=${submitted}
-               onChange=${(e) => handleSingleChange(e, 'plot_type')}
+               onChange=${(e) => handleSingleChange(e, plotChoices.name)}
       >
-      ${Object.keys(plotOptions).map((name, index) => {
-      return html`<${MenuItem} key=${name}
-                               value=${name}
+      ${Object.keys(plotChoices.options).map((shortName, index) => {
+      return html`<${MenuItem} key=${shortName}
+                               value=${shortName}
                                >
-        ${plotOptions[name].display}</${MenuItem}>`
+        ${plotChoices.options[shortName].display}</${MenuItem}>`
       })};
     </${Select}>
   </${FormControl}>
@@ -82,7 +82,7 @@ export function QueryForm({
   handleClose,
   handleSingleChange,
   submitted,
-  plotOptions,
+  plotChoices,
   filters,
   colWidth
 }) {
@@ -97,10 +97,14 @@ export function QueryForm({
   let stateFilter;
   if ('state' in filters) {
     stateValue = true;
+    // stateFilter = filters.state.options
     stateFilter = Object.values((({ state  }) => ({ state  }))(filters));
   }
 
   filters = Object.values(multiFilters)
+
+  // multi state filter
+  
 
   return html`
  ${(stateValue) ?
@@ -112,7 +116,8 @@ export function QueryForm({
                     <i>State</i>
                   </${Typography}>
                 </${Grid}>
-    ${stateFilter.map((value) => multiFilter(value, queryState, formHandlers, colWidth.single))}`)
+    ${stateFilter.map((value) => multiFilter(value, queryState, formHandlers, colWidth.single))}
+    `)
 : null}
  <${Grid} item xs=${12}>
                   <${Typography}
@@ -122,7 +127,7 @@ export function QueryForm({
                     <i>Display Options</i>
                   </${Typography}>
                 </${Grid}>
- ${singleSelect(plotOptions, queryState, submitted, handleSingleChange, colWidth.single)}
+ ${singleSelect(plotChoices, queryState, submitted, handleSingleChange, colWidth.single)}
   <${Grid} item xs=${12}>
     <${Typography} variant="h6"
                    component="h2"

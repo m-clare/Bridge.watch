@@ -52,9 +52,6 @@ const getInterestValue = (plotType, countyValues) => {
   }
 };
 
-console.log("original us")
-console.log(us)
-
 function getSelectedStates(states, us) {
   // deep copy object to avoid overwriting it
   const newStates = JSON.parse(JSON.stringify(us))
@@ -67,8 +64,6 @@ function getSelectedStates(states, us) {
   return newStates;
 }
 
-const color = d3.scaleQuantize([1, 10], d3.schemeBlues[9])
-
 const getCountyNode = (svg) => {
   if (!document.getElementById("Counties")) {
     svg.append("g").attr("id", "Counties");
@@ -77,19 +72,28 @@ const getCountyNode = (svg) => {
 };
 
 export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
-  // const [activeCounty, setActiveCounty] = useState({})
-  // const [totalValues, setTotalValues] = useState({})
-  // const [countySelected, setCountySelected] = useState(false);
+  const [activeCounty, setActiveCounty] = useState({})
+  const [totalValues, setTotalValues] = useState({})
+  const [countySelected, setCountySelected] = useState(false);
   const d3Container = useRef(null);
 
   const svg = d3.select(d3Container.current)
 
   useEffect(() => {
-    if (displayStates.length !== 0) {
+    if (!isEmpty(bridgeCountyData)) {
+      setTotalValues(bridgeCountyData.totalValues);
+    }
+  }, [bridgeCountyData]);
+
+  useEffect(() => {
+    if (!isEmpty(bridgeCountyData) && d3Container.current) {
       const svg = d3.select(d3Container.current)
+
+      const color = colorDict[plotType]
 
       const fipsStates = displayStates.map((d) => stateOptions[d]);
       const selectedStates = getSelectedStates(fipsStates, us)
+
       const selectedCounties = feature(selectedStates,  selectedStates.objects.counties);
       const projection = d3
             .geoIdentity()
@@ -99,19 +103,29 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
             );
       const path = d3.geoPath(projection);
 
+      const countyBin = bridgeCountyData.countyBin.reduce((acc, curr) => ({...acc, [curr.fips]: curr}), {})
+      console.log(countyBin)
+      console.log(selectedCounties.features)
+
+      const id = selectedCounties.features[0].id
+      console.log(id)
+      const test = getInterestValue(plotType, countyBin[id])
+      console.log(countyBin[id])
+      console.log(color(test))
+
       const svgCounties = getCountyNode(svg)
       svgCounties
         .selectAll("path")
         .data(selectedCounties.features)
         .join("path")
-        .attr("fill", d => color(d.properties.name.length))
+        .attr("fill", d => color(getInterestValue(plotType, countyBin[d.id])))
         .attr("d", path)
 
       svgCounties
         .join("path")
         .datum(mesh(us, us.objects.counties, (a, b) => a !== b))
         .attr("fill", "none")
-        .attr("stroke", "black")
+        .attr("stroke", "white")
         .attr("stroke-linejoin", "round")
         .attr("d", path);
 
@@ -120,7 +134,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
       const svgCounties = getCountyNode(svg)
       svg.remove(svgCounties)
     }
-  }, [displayStates]);
+  }, [bridgeCountyData, plotType]);
 
   // useEffect(() => {
     // if (!isEmpty(bridgeCountyData)) {
