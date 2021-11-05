@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
 import * as d3 from "d3";
 import { hexbin } from "d3-hexbin";
@@ -29,7 +30,6 @@ const height = 610;
 const scaleValue = 1300;
 const stdMargin = 30;
 
-
 const tickExtremes = {
   rating: ["Failed", "Excellent"],
   percent_poor: ["None in poor condition (%)", "All in poor condition (%)"],
@@ -54,13 +54,15 @@ const getInterestValue = (plotType, countyValues) => {
 
 function getSelectedStates(states, us) {
   // deep copy object to avoid overwriting it
-  const newStates = JSON.parse(JSON.stringify(us))
-  newStates.objects.states.geometries = newStates.objects.states.geometries.filter(function(d){
-    return states.includes(d.id.slice(0,2));
-  })
-  newStates.objects.counties.geometries = newStates.objects.counties.geometries.filter(function(d) {
-    return states.includes(d.id.slice(0, 2))
-  })
+  const newStates = JSON.parse(JSON.stringify(us));
+  newStates.objects.states.geometries =
+    newStates.objects.states.geometries.filter(function (d) {
+      return states.includes(d.id.slice(0, 2));
+    });
+  newStates.objects.counties.geometries =
+    newStates.objects.counties.geometries.filter(function (d) {
+      return states.includes(d.id.slice(0, 2));
+    });
   return newStates;
 }
 
@@ -71,13 +73,21 @@ const getCountyNode = (svg) => {
   return svg.select("#Counties");
 };
 
+const getAllCountyNode = (svg) => {
+  if (!document.getElementById("AllCounties")) {
+    svg.append("g").attr("id", "AllCounties");
+  }
+  return svg.select("#AllCounties");
+};
+
 export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
-  const [activeCounty, setActiveCounty] = useState({})
-  const [totalValues, setTotalValues] = useState({})
+  const [activeCounty, setActiveCounty] = useState({});
+  const [totalValues, setTotalValues] = useState({});
   const [countySelected, setCountySelected] = useState(false);
   const d3Container = useRef(null);
+  console.log(displayStates)
 
-  const svg = d3.select(d3Container.current)
+  const svg = d3.select(d3Container.current);
 
   useEffect(() => {
     if (!isEmpty(bridgeCountyData)) {
@@ -87,68 +97,111 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
 
   useEffect(() => {
     if (!isEmpty(bridgeCountyData) && d3Container.current) {
-      const svg = d3.select(d3Container.current)
-
-      const color = colorDict[plotType]
+      const svg = d3.select(d3Container.current);
+      const color = colorDict[plotType];
 
       const fipsStates = displayStates.map((d) => stateOptions[d]);
-      const selectedStates = getSelectedStates(fipsStates, us)
+      const selectedStates = getSelectedStates(fipsStates, us);
 
-      const selectedCounties = feature(selectedStates,  selectedStates.objects.counties);
-      const projection = d3
-            .geoIdentity()
-            .fitExtent(
-              [[stdMargin, stdMargin], [width - stdMargin, height - stdMargin]],
-              selectedCounties
-            );
+      const selectedCounties = feature(
+        selectedStates,
+        selectedStates.objects.counties
+      );
+      const projection = d3.geoIdentity().fitExtent(
+        [
+          [stdMargin, stdMargin],
+          [width - stdMargin, height - stdMargin],
+        ],
+        selectedCounties
+      );
       const path = d3.geoPath(projection);
 
-      const countyBin = bridgeCountyData.countyBin.reduce((acc, curr) => ({...acc, [curr.fips]: curr}), {})
-      console.log(countyBin)
-      console.log(selectedCounties.features)
+      // merge data array with geometry array
+      let countyMerged = [];
+      for (let i = 0; i < bridgeCountyData.countyBin.length; i++) {
+        countyMerged.push({
+          ...bridgeCountyData.countyBin[i],
+          ...selectedCounties.features.find(
+            (itmInner) => itmInner.id === bridgeCountyData.countyBin[i].fips
+          ),
+        });
+      }
 
-      const id = selectedCounties.features[0].id
-      console.log(id)
-      const test = getInterestValue(plotType, countyBin[id])
-      console.log(countyBin[id])
-      console.log(color(test))
-
-      const svgCounties = getCountyNode(svg)
+      const svgCounties = getCountyNode(svg);
       svgCounties
         .selectAll("path")
-        .data(selectedCounties.features)
+        .data(countyMerged)
         .join("path")
-        .attr("fill", d => color(getInterestValue(plotType, countyBin[d.id])))
-        .attr("d", path)
+        .attr("fill", (d) => color(getInterestValue(plotType, d)))
+        .attr("d", path);
 
       svgCounties
         .join("path")
         .datum(mesh(us, us.objects.counties, (a, b) => a !== b))
         .attr("fill", "none")
-        .attr("stroke", "white")
+        .attr("stroke", "#777")
         .attr("stroke-linejoin", "round")
         .attr("d", path);
-
     } else if (displayStates.length === 0) {
-      const svg = d3.select(d3Container.current)
-      const svgCounties = getCountyNode(svg)
-      svg.remove(svgCounties)
+      const svg = d3.select(d3Container.current);
+      const svgCounties = getCountyNode(svg);
+      svg.remove(svgCounties);
     }
-  }, [bridgeCountyData, plotType]);
+  }, [bridgeCountyData, displayStates, plotType]);
 
-  // useEffect(() => {
-    // if (!isEmpty(bridgeCountyData)) {
-      // setTotalValues(bridgeCountyData.totalValues);
-    // }
-  // }, [bridgeCountyData]);
+  // Create county outline regardless of whether data exists or not
+  useEffect(() => {
+    if (displayStates.length !== 0) {
+      const svg = d3.select(d3Container.current);
 
-  // useEffect(() => {
-  //   if (!isEmpty(bridgeCountyData) && d3Container.current) {
-  //     const svg = d3.select(d3Container.current);
-  //   }
-  // }, [bridgeCountyData, plotType]);
+      const fipsStates = displayStates.map((d) => stateOptions[d]);
+      console.log(fipsStates)
+      const selectedStates = getSelectedStates(fipsStates, us);
+
+      const selectedCounties = feature(
+        selectedStates,
+        selectedStates.objects.counties
+      );
+      const projection = d3.geoIdentity().fitExtent(
+        [
+          [stdMargin, stdMargin],
+          [width - stdMargin, height - stdMargin],
+        ],
+        selectedCounties
+      );
+      const path = d3.geoPath(projection);
+
+      const svgCounties = getAllCountyNode(svg);
+
+      svgCounties
+        .selectAll("path")
+        .data(selectedCounties.features)
+        .join("path")
+        .attr("fill", "none")
+        .attr("d", path);
+
+      svgCounties
+        .join("path")
+        .datum(mesh(us, us.objects.counties, (a, b) => a !== b))
+        .attr("fill", "none")
+        .attr("stroke", "#777")
+        .attr("stroke-linejoin", "round")
+        .attr("d", path);
+    } else {
+      const svg = d3.select(d3Container.current);
+      const svgCounties = getAllCountyNode(svg);
+      svg.remove(svgCounties);
+    }
+  }, [displayStates])
 
   return html`
+  ${
+    displayStates.length !== 0
+      ? html`<${Grid} item xs=${12}>
+    <${Typography} variant="h4" component="h1">${displayStates}</${Typography}>
+    </${Grid}>`
+      : null
+  }
   <${Grid} item xs=${12}>
     <svg class="d3-component"
        viewBox="0 0 ${width} ${height}"

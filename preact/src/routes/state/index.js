@@ -88,7 +88,7 @@ export default function StateBridges() {
 
   const handleFormClose = (event) => {
     const newURI = constructURI(queryState)
-    if (newURI !== queryURI) {
+    if (newURI !== queryURI && queryState.state.length !== 0) {
       setSubmitted(true);
     }
   }
@@ -131,10 +131,9 @@ export default function StateBridges() {
       <${Grid} item xs=${12} md=${6}>
         <${Paper} style=${"padding: 24px; "}>
           <${Grid} container spacing=${3}>
-            <${Grid} item xs=${12}>
-              <${Typography} variant="h4" component="h1">${queryState.state}</${Typography}>
-            </${Grid}>
-            <${ChoroplethMap} bridgeCountyData=${stateBridges} displayStates=${queryState.state} plotType=${plotType} />
+            
+            ${(!stateBridges.hasOwnProperty('message')) ? (html`
+            <${ChoroplethMap} bridgeCountyData=${stateBridges} displayStates=${queryState.state} plotType=${plotType} />`) : null }
           </${Grid}>
         </${Paper}>
       </${Grid}>
