@@ -24,47 +24,50 @@ import Switch from "@mui/material/Switch";
 import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
 
-export function HorizontalPropertyPanel({ objSelected, objData, initialHistData, initialKeyData, field, plotHeight }) {
-
+export function HorizontalPropertyPanel({
+  objSelected,
+  objData,
+  initialHistData,
+  initialKeyData,
+  field,
+  plotHeight,
+}) {
   let locality;
   if (objSelected) {
-    locality = "Selected Hex";
+    locality = objData.countyName;
   } else {
-    locality = "National";
+    locality = "Selected State(s)";
   }
 
   const widthCheck = useMediaQuery("(min-width:900px)");
 
   let barHeight;
   if (widthCheck) {
-    barHeight = 600;
+    barHeight = 400;
   } else {
     barHeight = 300;
   }
 
-
   return html`
-<${Grid} item xs=${12} md=${4} >
-  <${Paper} style=${`padding: 24px; min-height: ${plotHeight}`}> 
-    <${Grid} item>
-      <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
-      <${BarChart}
-        selected=${objSelected}
-        objData=${objData.objHistogram}
-        initialHistData=${initialHistData}
-        barHeight=${barHeight}
-        field=${field}
-        />
-    </${Grid}>
-    <${Grid} item>
-      <${Typography} variant="h5" component="h2">${locality} Properties</${Typography}>
-      <${HistTextSummary}
-        selected=${objSelected}
-        objData=${objData.objKeyValues}
-        initialKeyData=${initialKeyData}
-        field=${field}
-        />
-    </${Grid}>
-  </${Paper}>
-</${Grid}>`
+<${Grid} container spacing=${3}>
+  <${Grid} item xs=${12} md=${6}>
+    <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
+    <${BarChart}
+      selected=${objSelected}
+      objData=${objData.objHistogram}
+      initialHistData=${initialHistData}
+      barHeight=${barHeight}
+      field=${field}
+      />
+  </${Grid}>
+  <${Grid} item xs=${12} md=${6}>
+    <${Typography} variant="h5" component="h2">${locality} Properties</${Typography}>
+    <${HistTextSummary}
+      selected=${objSelected}
+      objData=${objData.objKeyValues}
+      initialKeyData=${initialKeyData}
+      field=${field}
+      />
+  </${Grid}>
+</${Grid}>`;
 }

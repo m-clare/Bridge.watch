@@ -99,13 +99,12 @@ function getStatebinData(data) {
     // add leading zero to fips where necessary (db is #, d3 maps are strings)
     const parsedFips = parsedData.map((d) => ({...d, 'fips_code': d['fips_code'].padStart(5, "0")}))
     const infoByCounty = groupBy(parsedFips, "fips_code")
-    console.log(infoByCounty)
 
     let countyBin = Object.keys(infoByCounty).map(function(d) {
       const county_code = d;
       const objKeyValues = getKeyProps(infoByCounty[d], field)
       const count = objKeyValues.count
-
+      const countyName = infoByCounty[d][0].county_name;
       let histogram;
       const statebinHistogram = d3Histogram(infoByCounty[d].map((d) => d[field]));
       const stateRawHistogram = statebinHistogram.map((d) => ({
@@ -121,7 +120,7 @@ function getStatebinData(data) {
             .sort(function(a, b) { return a - b})
             .map((d) => ({ [field]: +d, count: histogram[d] }));
 
-      return ({'fips': d, objKeyValues, objHistogram, count})
+      return ({'fips': d, 'countyName': countyName, objKeyValues, objHistogram, count})
     })
 
     const stateBridge = {

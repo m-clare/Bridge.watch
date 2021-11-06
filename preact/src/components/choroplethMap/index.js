@@ -17,7 +17,7 @@ import { colorDict } from "../colorPalette";
 
 import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
-import { PropertyPanel } from "../../components/propertyPanel";
+import { HorizontalPropertyPanel } from "../../components/horizontalPropertyPanel";
 
 import { stateOptions } from "../../components/Options";
 
@@ -92,15 +92,59 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
   const [totalValues, setTotalValues] = useState({});
   const [countySelected, setCountySelected] = useState(false);
   const d3Container = useRef(null);
-  console.log(displayStates);
 
   const svg = d3.select(d3Container.current);
+  const plotHeight = 600;
 
   useEffect(() => {
     if (!isEmpty(bridgeCountyData)) {
       setTotalValues(bridgeCountyData.totalValues);
     }
   }, [bridgeCountyData]);
+
+  // Create county outline regardless of whether data exists or not
+  useEffect(() => {
+    if (displayStates.length !== 0) {
+      const svg = d3.select(d3Container.current);
+
+      const fipsStates = displayStates.map((d) => stateOptions[d]);
+      const selectedStates = getSelectedStates(fipsStates, us);
+
+      const selectedCounties = feature(
+        selectedStates,
+        selectedStates.objects.counties
+      );
+      const projection = d3.geoIdentity().fitExtent(
+        [
+          [stdMargin, stdMargin, stdMargin, stdMargin + 20],
+          [width - stdMargin, height - stdMargin - 20],
+        ],
+        selectedCounties
+      );
+      const path = d3.geoPath(projection);
+
+      const svgCounties = getAllCountyNode(svg);
+
+      svgCounties
+        .selectAll("path")
+        .data(selectedCounties.features)
+        .join("path")
+        .attr("fill", "none")
+        .attr("d", path);
+
+      svgCounties
+        .join("path")
+        .datum(mesh(us, us.objects.counties, (a, b) => a !== b))
+        .attr("fill", "none")
+        .attr("stroke", "#777")
+        .attr("stroke-linejoin", "round")
+        .attr("d", path);
+    } else {
+      const svg = d3.select(d3Container.current);
+      const svgCounties = getAllCountyNode(svg);
+      svg.remove(svgCounties);
+    }
+  }, [displayStates]);
 
   useEffect(() => {
     if (!isEmpty(bridgeCountyData) && d3Container.current) {
@@ -173,6 +217,15 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
         .attr("d", path)
         .on("mouseover", function (e, d) {
           tooltip.style("visibility", "visible").html(`${d.properties.name}`);
+          let data = d3.select(this).data()[0];
+          setActiveCounty(data);
+          setCountySelected(true);
+          d3.select(this)
+            .raise()
+            .transition()
+            .duration(200)
+            .attr("stroke-width", "0.25em")
+            .attr("stroke", "#fff");
         })
         .on("mousemove", function (e, d) {
           return tooltip
@@ -181,6 +234,12 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
         })
         .on("mouseout", function (e, d) {
           tooltip.style("visibility", "hidden");
+          setCountySelected(false);
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("stroke-width", "0.05em")
+            .attr("stroke", "#777")
         });
 
       svgCounties
@@ -188,6 +247,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
         .datum(mesh(us, us.objects.counties, (a, b) => a !== b))
         .attr("fill", "none")
         .attr("stroke", "#777")
+        .attr("stroke-width", "0.05em")
         .attr("stroke-linejoin", "round")
         .attr("d", path);
     } else if (displayStates.length === 0) {
@@ -197,67 +257,31 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
     }
   }, [bridgeCountyData, displayStates, plotType]);
 
-  // Create county outline regardless of whether data exists or not
-  useEffect(() => {
-    if (displayStates.length !== 0) {
-      const svg = d3.select(d3Container.current);
-
-      const fipsStates = displayStates.map((d) => stateOptions[d]);
-      console.log(fipsStates);
-      const selectedStates = getSelectedStates(fipsStates, us);
-
-      const selectedCounties = feature(
-        selectedStates,
-        selectedStates.objects.counties
-      );
-      const projection = d3.geoIdentity().fitExtent(
-        [
-          [stdMargin, stdMargin, stdMargin, stdMargin + 20],
-          [width - stdMargin, height - stdMargin - 20],
-        ],
-        selectedCounties
-      );
-      const path = d3.geoPath(projection);
-
-      const svgCounties = getAllCountyNode(svg);
-
-      svgCounties
-        .selectAll("path")
-        .data(selectedCounties.features)
-        .join("path")
-        .attr("fill", "none")
-        .attr("d", path);
-
-      svgCounties
-        .join("path")
-        .datum(mesh(us, us.objects.counties, (a, b) => a !== b))
-        .attr("fill", "none")
-        .attr("stroke", "#777")
-        .attr("stroke-linejoin", "round")
-        .attr("d", path);
-    } else {
-      const svg = d3.select(d3Container.current);
-      const svgCounties = getAllCountyNode(svg);
-      svg.remove(svgCounties);
-    }
-  }, [displayStates]);
+  
 
   return html`
   ${
-    displayStates.length !== 0
+    (displayStates.length !== 0 && !isEmpty(bridgeCountyData))
       ? html`<${Grid} item xs=${12}>
     <${Typography} variant="h4" component="h1">${displayStates}</${Typography}>
+    </${Grid}>
+    <${Grid} item xs=${12} sx=${{ paddingTop: 0 }}>
+    <svg class="d3-component"
+  viewBox="0 0 ${width} ${height}"
+  ref=${d3Container}
+    >
+    </svg>
+    </${Grid}>
+    <${Grid} item xs=${12}>
+    <${HorizontalPropertyPanel} objSelected=${countySelected}
+  objData=${activeCounty}
+  initialHistData=${totalValues}
+  initialKeyData=${bridgeCountyData.keyData}
+  field=${bridgeCountyData.field}
+  plotHeight=${plotHeight}
+  />
     </${Grid}>`
       : null
   }
-  <${Grid} item xs=${12} sx=${{ paddingTop: 0 }}>
-    <svg class="d3-component"
-       viewBox="0 0 ${width} ${height}"
-       ref=${d3Container}
-    >
-  </svg>
-  </${Grid}>
-  <${Grid} item xs=${12}>
-  </${Grid}>
 `;
 }

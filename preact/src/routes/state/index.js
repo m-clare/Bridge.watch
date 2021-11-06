@@ -131,8 +131,7 @@ export default function StateBridges() {
       <${Grid} item xs=${12} md=${8}>
         <${Paper} style=${"padding: 24px; "}>
           <${Grid} container spacing=${3}>
-            
-            ${(!stateBridges.hasOwnProperty('message')) ? (html`
+            ${(!isEmpty(stateBridges) && !stateBridges.hasOwnProperty('message') && !renderSubmitted) ? (html`
             <${ChoroplethMap} bridgeCountyData=${stateBridges} displayStates=${queryState.state} plotType=${plotType} />`) : null }
           </${Grid}>
         </${Paper}>
