@@ -8,13 +8,13 @@ import ListItem from "@mui/material/ListItem";
 import { plotOptions } from "../Options";
 const html = htm.bind(h);
 
-export function HistTextSummary({ selected, objData, natData, field }) {
+export function HistTextSummary({ selected, objData, initialKeyData, field }) {
 
   let data;
   if (selected) {
     data = objData
   } else {
-    data = natData
+    data = initialKeyData
   }
   const fieldDisplay = plotOptions[field]['histogram'];
   return html`

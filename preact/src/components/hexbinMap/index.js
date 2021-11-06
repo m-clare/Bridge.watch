@@ -15,7 +15,7 @@ import { colorDict } from "../colorPalette";
 
 import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
-import { PropertyPanel } from "../../components/propertyPanel";
+import { VerticalPropertyPanel } from "../../components/verticalPropertyPanel";
 
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
@@ -229,10 +229,10 @@ export function HexbinChart({ bridgeData, plotType }) {
     </svg>
 </${Paper}>
   </${Grid}>
-  <${PropertyPanel} hexSelected=${hexSelected}
+  <${VerticalPropertyPanel} objSelected=${hexSelected}
                     objData=${activeHex}
-                    initialData=${totalValues}
-                    natData=${bridgeData.natData}
+                    initialHistData=${totalValues}
+                    initialKeyData=${bridgeData.natData}
                     field=${bridgeData.field}
                     plotHeight=${plotHeight}
                     />

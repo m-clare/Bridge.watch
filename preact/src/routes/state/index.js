@@ -27,7 +27,7 @@ import Button from "@mui/material/Button";
 
 import { CountryDescription } from "../../components/countryDescription";
 import { QueryForm } from "../../components/queryForm";
-import { singleFilters, multiFilters } from "../../components/Options";
+import { singleFilters, multiFilters } from "../../components/options";
 
 const html = htm.bind(h);
 
@@ -110,11 +110,11 @@ export default function StateBridges() {
 <${Box} sx=${{ padding: "24px"}}>
   <${Container} maxWidth="lg">
     <${Grid} container spacing=${3}>
-      <${Grid} item xs=${12} md=${6}>
+      <${Grid} item xs=${12} md=${4}>
         <${Paper} style=${"padding: 24px; "}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
-              <${Typography} variant="h3" component="h1">State Bridge Inventory</${Typography}>
+              <${Typography} variant="h4" component="h1">Bridges By State</${Typography}>
             </${Grid}>
             <${QueryForm} queryState=${queryState}
                           handleChange=${handleChange}
@@ -128,7 +128,7 @@ export default function StateBridges() {
           </${Grid}>
         </${Paper}>
       </${Grid}>
-      <${Grid} item xs=${12} md=${6}>
+      <${Grid} item xs=${12} md=${8}>
         <${Paper} style=${"padding: 24px; "}>
           <${Grid} container spacing=${3}>
             

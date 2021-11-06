@@ -140,7 +140,7 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
 
 export function BarChart({
   selected,
-  initialData,
+  initialHistData,
   objData,
   colorPalette,
   barHeight,
@@ -165,15 +165,15 @@ export function BarChart({
 
   // Initial setup
   useEffect(() => {
-    if (!isEmpty(initialData) && d3Container.current) {
+    if (!isEmpty(initialHistData) && d3Container.current) {
       const svg = d3.select(d3Container.current);
 
       const color = colorDict[field]
-      const data = initialData;
+      const data = initialHistData;
 
       const x = d3
         .scaleBand()
-        .domain(initialData.map((d) => d[field]))
+        .domain(initialHistData.map((d) => d[field]))
             .range([margins.left + 8, width - (margins.right + 8)])
         .padding(0.1);
 
@@ -194,7 +194,7 @@ export function BarChart({
 
       initializeBarChart(svg, data, domain, color, field, dimensions);
     }
-  }, [initialData]);
+  }, [initialHistData]);
 
   // Refresh setup
   useEffect(() => {
@@ -207,10 +207,10 @@ export function BarChart({
 
   // Return to global on hover-out
   useEffect(() => {
-    if (!isEmpty(initialData) && !selected) {
+    if (!isEmpty(initialHistData) && !selected) {
       const svg = d3.select(d3Container.current);
 
-      updateBarChart(svg, initialData, dimensions);
+      updateBarChart(svg, initialHistData, dimensions);
     }
   });
 

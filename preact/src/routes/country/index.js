@@ -27,7 +27,7 @@ import Button from "@mui/material/Button";
 
 import { CountryDescription } from "../../components/countryDescription";
 import { QueryForm } from "../../components/queryForm";
-import { singleFilters, multiFilters } from "../../components/Options";
+import { singleFilters, multiFilters } from "../../components/options";
 
 const html = htm.bind(h);
 
@@ -114,7 +114,7 @@ export default function CountryBridges() {
         <${Paper} style=${"padding: 24px; "}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
-              <${Typography} variant="h3" component="h1">National Bridge Inventory</${Typography}>
+              <${Typography} variant="h3" component="h1">U.S. Bridges</${Typography}>
             </${Grid}>
             <${QueryForm} queryState=${queryState}
                           handleChange=${handleChange}
