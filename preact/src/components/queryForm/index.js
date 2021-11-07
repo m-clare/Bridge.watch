@@ -42,13 +42,14 @@ return html`
 </${Grid}>`
 }
 
-function multiFilter(filter, queryState, formHandlers, colWidth) {
+function multiFilter(filter, queryState, formHandlers, colWidth, required) {
   const handleChange = formHandlers.handleChange;
   const renderSubmitted = formHandlers.submitted;
   const handleClose = formHandlers.handleClose;
 
-  return html`<${Grid} item xs=${12} md=${colWidth} style=${"padding-top: 8px"}>
-  <${FormControl} fullWidth>
+  return html`
+<${Grid} item xs=${12} md=${colWidth} style=${"padding-top: 8px"}>
+  <${FormControl} required=${required} fullWidth>
     <${InputLabel}>${filter.label}</${InputLabel}>
     <${Select}
       value=${queryState[filter.name]}
@@ -58,8 +59,8 @@ function multiFilter(filter, queryState, formHandlers, colWidth) {
       multiple
       disabled=${renderSubmitted}
       input=${html`<${OutlinedInput}
-        id="select-multiple-chip"
-        label=${filter.label}
+                     id="select-multiple-chip"
+                     label=${filter.label}
       />`}
       renderValue=${(selected) =>
         html`<${Box} sx=${{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -116,7 +117,7 @@ export function QueryForm({
                     <i>State</i>
                   </${Typography}>
                 </${Grid}>
-    ${stateFilter.map((value) => multiFilter(value, queryState, formHandlers, colWidth.single))}
+    ${stateFilter.map((value) => multiFilter(value, queryState, formHandlers, colWidth.single, true))}
     `)
 : null}
  <${Grid} item xs=${12}>
@@ -135,6 +136,6 @@ export function QueryForm({
       <i>Filters</i>
     </${Typography}>
   </${Grid}>
-  ${filters.map((value) => multiFilter(value, queryState, formHandlers, colWidth.multi))}
+  ${filters.map((value) => multiFilter(value, queryState, formHandlers, colWidth.multi, false))}
   `;
 }
