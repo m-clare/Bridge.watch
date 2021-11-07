@@ -25,7 +25,7 @@ import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Button from "@mui/material/Button";
 
-import { CountryDescription } from "../../components/countryDescription";
+import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
 import { singleFilters, multiFilters } from "../../components/options";
 
@@ -108,6 +108,8 @@ export default function CountryBridges() {
   const renderSubmitted = submitted;
   const scaledHexBool = hexSize;
   const renderWaiting = waiting;
+  const locality = "the U.S."
+
 
   const colWidth = {'single': 4, 'multi': 4}
 
@@ -149,10 +151,11 @@ export default function CountryBridges() {
         </${Paper}>
       </${Grid}>`) : (null)}
       ${(!isEmpty(bridges) && !bridges.hasOwnProperty('message'))  ?
-      (html`<${CountryDescription} summaryType=${renderPlotType}
+      (html`<${LocaleDescription} summaryType=${renderPlotType}
                                    keyValues=${{
                                    field: renderPlotType,
-                                   count: bridges.natData.count,
+                                   count: bridges.keyData.count,
+                                   locality: locality,
                                    filters: queryState
                                    }}
                                    waiting=${renderWaiting}

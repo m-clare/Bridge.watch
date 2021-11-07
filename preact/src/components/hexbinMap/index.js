@@ -232,7 +232,7 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
   <${VerticalPropertyPanel} objSelected=${hexSelected}
                     objData=${activeHex}
                     initialHistData=${totalValues}
-                    initialKeyData=${bridgeData.natData}
+                    initialKeyData=${bridgeData.keyData}
                     field=${bridgeData.field}
                     plotHeight=${plotHeight}
                     />

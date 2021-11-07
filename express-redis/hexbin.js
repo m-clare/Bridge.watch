@@ -150,7 +150,7 @@ function getHexbinData(data) {
 
     const hexBridge = {
       totalValues: allHistogram,
-      natData: allKeyData,
+      keyData: allKeyData,
       hexBin: hexBin,
       field: field,
     };

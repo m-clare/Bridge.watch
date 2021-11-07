@@ -25,7 +25,7 @@ import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Button from "@mui/material/Button";
 
-import { CountryDescription } from "../../components/countryDescription";
+import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
 import { singleFilters, multiFilters } from "../../components/options";
 
@@ -63,6 +63,7 @@ export default function StateBridges() {
                                                })
   const [queryURI, setQueryURI] = useState('plot_type=percent_poor')
   const [submitted, setSubmitted] = useState(true);
+  const [waiting, setWaiting] = useState(false);
   const [plotType, setPlotType] = useState(queryState.plot_type)
   const [stateType, setStateType] = useState(queryState.state)
 
@@ -70,6 +71,7 @@ export default function StateBridges() {
     const value = event.target.value
     const valueArray = typeof(value) === 'string' ? value.split(',').sort() : value.sort()
     setQueryState({...queryState, [type]: valueArray})
+    setWaiting(true)
   };
 
   const handleSingleChange = (event, type) => {
@@ -78,6 +80,7 @@ export default function StateBridges() {
     const newURI = constructURI({...queryState, [type]: value})
     if (newURI !== queryURI ) {
       setSubmitted(true)
+      setWaiting(true)
     }
     if (type === 'plot_type' && plotType !== value ) {
       setPlotType(value)
@@ -98,10 +101,22 @@ export default function StateBridges() {
     setQueryURI(newURI);
     setStateBridges(bridgeData);
     setSubmitted(false);
+    setWaiting(false);
   }, [submitted]);
+
+  let localityString;
+  if (queryState.state.length > 1) {
+        localityString = [
+          queryState.state.slice(0, -1).join(", "),
+          queryState.state.slice(-1)[0],
+        ].join(queryState.state.length < 2 ? "" : "  and ");
+      } else {
+        localityString = queryState.state;
+      }
 
   const renderPlotType = plotType;
   const renderSubmitted = submitted
+  const renderWaiting = waiting;
   const colWidth = {'single': 12, 'multi': 12}
 
   return html`
@@ -166,6 +181,16 @@ export default function StateBridges() {
           </${Grid}>
         </${Paper}>
       </${Grid}>`) : null}
+      ${(!isEmpty(stateBridges) && !stateBridges.hasOwnProperty('message')) ?
+      (html`<${LocaleDescription} summaryType=${renderPlotType}
+                            keyValues=${{
+                            field: renderPlotType,
+                            count: stateBridges.keyData.count,
+                            locality: localityString,
+                            filters: queryState
+                            }}
+                            waiting=${renderWaiting}
+                            />`) : null}
     </${Grid}>
   </${Container}>
 </${Box}>`;

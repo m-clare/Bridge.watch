@@ -32,21 +32,33 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-const textSummary = function (summaryType, count) {
-  if (summaryType === "rating") {
+const textSummary = function (summaryType, count, locality) {
+  if (summaryType === "rating" && locality === "the U.S.") {
     return html`
-            <${Typography} variant="body1">This map aggregates the locations of ${count} bridges in the U.S. with their overall "rating" based on the lowest value of superstructure, substructure, and deck condition as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}> on a scale of 0 to 9. Bridges that are missing ratings are omitted from the plot. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the median rating in the corresponding histogram. Additional filtering can be performed using the options above. </${Typography}>`;
-  } else if (summaryType === "year_built") {
+            <${Typography} variant="body1">This map aggregates the locations of ${count} bridges in ${locality} with their overall "rating" based on the lowest value of superstructure, substructure, and deck condition as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}> on a scale of 0 to 9. Bridges that are missing ratings are omitted from the plot. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the median rating in the corresponding histogram. Additional filtering can be performed using the options above. </${Typography}>`;
+  } else if (summaryType === "year_built" && locality === "the U.S.") {
     return html`
-            <${Typography}>This map aggregates the locations of ${count} bridges in the U.S. with their year built as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the median year built in the corresponding histogram. Additional filtering can be performed using the options above. </${Typography}>`;
-  } else if (summaryType === "percent_poor") {
+            <${Typography} variant="body1">This map aggregates the locations of ${count} bridges in ${locality} with their year built as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the median year built in the corresponding histogram. Additional filtering can be performed using the options above. </${Typography}>`;
+  } else if (summaryType === "percent_poor" && locality === "the U.S.") {
     return html`
-            <${Typography}>This map aggregates the locations of ${count} bridges in the U.S. with the percent of poorly rated bridges within a given hexbin as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. Poorly rated bridges have a numerical rating of 4 or lower. Bridges that are missing ratings are omitted from the plot. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents percentage of poorly rated bridges. Additional filtering can be performed using the options above. </${Typography}>`;
-  } else if (summaryType === "repair_cost_per_foot") {
+            <${Typography} variant="body1">This map aggregates the locations of ${count} bridges in ${locality} with the percent of poorly rated bridges within a given hexbin as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. Poorly rated bridges have a numerical rating of 4 or lower. Bridges that are missing ratings are omitted from the plot. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents percentage of poorly rated bridges. Additional filtering can be performed using the options above. </${Typography}>`;
+  } else if (summaryType === "repair_cost_per_foot" && locality === "the U.S.") {
     return html`
-<${Typography}> This map aggregates the locations of ${count} bridges in the U.S. with the estimated repair cost in (in thousands of dollars) per foot of bridge using the length of structure improvement and total project cost fields from the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. This value is calculated based only on bridges that have been marked within the past 8 years as in need of repair with an estimated repair cost provided (there may be other bridges in need of repair, but no information has been provided for the estimated cost or length of repair). If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the median cost per foot estimate. Additional filtering can be performed using the options above.</${Typography}>
+<${Typography} variant="body1"> This map aggregates the locations of ${count} bridges in ${locality} with the estimated repair cost in (in thousands of dollars) per foot of bridge using the length of structure improvement and total project cost fields from the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. This value is calculated based only on bridges that have been marked within the past 8 years as in need of repair with an estimated repair cost provided (there may be other bridges in need of repair, but no information has been provided for the estimated cost or length of repair). If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the median cost per foot estimate. Additional filtering can be performed using the options above. These values should be taken with a grain of salt due to their wide variance from state to state. Some states do not self report these values as other states do.</${Typography}>
 `;
-  } else return html`<div></div>`;
+  } else if (summaryType === "rating") {
+    return html`
+<${Typography} variant="body1">This map aggregates the locations of ${count} bridges in ${locality} with their overall "rating" based on the lowest value of superstructure, substructure, and deck condition as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}> on a scale of 0 to 9. Bridges that are missing ratings are omitted from the plot. The color represents the median rating in the corresponding histogram, which can also be viewed by hovering over a county. Additional filtering can be performed using the options dropdown menu.</${Typography}>`;}
+else if (summaryType === "year_built") {
+    return html`
+<${Typography} variant="body1">This map aggregates the locations of ${count} bridges in ${locality} with their year built as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. The color represents the median year built in the corresponding histogram. Additional filtering can be performed using the options dropdown menu. </${Typography}>`;}
+else if (summaryType === "percent_poor") {
+    return html`
+<${Typography} variant="body1">This map aggregates the locations of ${count} bridges in ${locality} with the percent of poorly rated bridges within a county as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. Poorly rated bridges have a numerical rating of 4 or lower. Bridges that are missing ratings are omitted from the plot. The color represents percentage of poorly rated bridges. Additional filtering can be performed using the options dropdown menu.</${Typography}>`;}
+else if (summaryType === "repair_cost_per_foot") {
+    return html`
+<${Typography}>This map aggregates the locations of ${count} bridges in ${locality} with the estimated repair cost in (in thousands of dollars) per foot of bridge using the length of structure improvement and total project cost fields from the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. This value is calculated based only on bridges that have been marked within the past 8 years as in need of repair with an estimated repair cost provided (there may be other bridges in need of repair, but no information has been provided for the estimated cost or length of repair). The color represents the median cost per foot estimate. Additional filtering can be performed using the options dropdown menu. These values should be taken with a grain of salt due to their wide variance from state to state. Some states do not self report these values as other states do.</${Typography}>`;}
+  else return html`<div></div>`;
 };
 
 const textMoreInfo = function (summaryType) {
@@ -130,7 +142,6 @@ function getFiltersAsString(filters) {
         })
         .join(" ");
       let filteredPropString;
-      console.log(prop);
       if (prop.length > 1) {
         filteredPropString = [
           filters[prop].slice(0, -1).join(", "),
@@ -145,7 +156,7 @@ function getFiltersAsString(filters) {
   return filterStringArray;
 }
 
-export function CountryDescription({ summaryType, keyValues, waiting}) {
+export function LocaleDescription({ summaryType, keyValues, waiting}) {
   const [expanded, setExpanded] = useState(false);
   const [activeFilters, setActiveFilters] = useState([]);
 
@@ -155,6 +166,7 @@ export function CountryDescription({ summaryType, keyValues, waiting}) {
 
   const field = keyValues.field;
   const count = keyValues.count;
+  const locality = keyValues.locality
   const { plot_type, ...filters } = keyValues.filters;
   const hasMoreInfo = moreInfo.includes(field);
 
@@ -181,7 +193,7 @@ export function CountryDescription({ summaryType, keyValues, waiting}) {
                                 style=${"font-weight:400"}>
               ${d}</${Typography}>`
             )}
-            ${textSummary(summaryType, count)}
+            ${textSummary(summaryType, count, locality)}
           </${CardContent}>
           ${
             hasMoreInfo
