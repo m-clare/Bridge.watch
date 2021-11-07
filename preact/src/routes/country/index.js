@@ -66,19 +66,22 @@ export default function CountryBridges() {
   const [submitted, setSubmitted] = useState(true);
   const [hexSize, setHexSize] = useState(true)
   const [plotType, setPlotType] = useState(queryState.plot_type)
+  const [waiting, setWaiting] = useState(false);
 
   const handleChange = (event, type) => {
     const value = event.target.value
     const valueArray = typeof(value) === 'string' ? value.split(',').sort() : value.sort()
     setQueryState({...queryState, [type]: valueArray})
+    setWaiting(true)
   };
 
   const handleSingleChange = (event, type) => {
-    const value = event.target.value.replace(' ', '_')
+    const value = event.target.value
     setQueryState({...queryState, [type]: value})
     const newURI = constructURI({...queryState, [type]: value})
     if (newURI !== queryURI ) {
       setSubmitted(true)
+      setWaiting(true)
     }
     if (plotType !== value ) {
       setPlotType(value)
@@ -98,11 +101,13 @@ export default function CountryBridges() {
     setQueryURI(newURI);
     setBridges(bridgeData);
     setSubmitted(false);
+    setWaiting(false);
   }, [submitted]);
 
   const renderPlotType = plotType;
   const renderSubmitted = submitted;
   const scaledHexBool = hexSize;
+  const renderWaiting = waiting;
 
   const colWidth = {'single': 4, 'multi': 4}
 
@@ -144,11 +149,17 @@ export default function CountryBridges() {
         </${Paper}>
       </${Grid}>`) : (null)}
       ${(!isEmpty(bridges) && !bridges.hasOwnProperty('message'))  ?
-      (html`<${CountryDescription} summaryType=${renderPlotType} keyValues=${{
+      (html`<${CountryDescription} summaryType=${renderPlotType}
+                                   keyValues=${{
                                    field: renderPlotType,
                                    count: bridges.natData.count,
                                    filters: queryState
-                                   }}/><${HexbinChart} bridgeData=${bridges} plotType=${renderPlotType} hexSize=${scaledHexBool}/>`) : null}
+                                   }}
+                                   waiting=${renderWaiting}
+                                   /><${HexbinChart} bridgeData=${bridges}
+                                                     plotType=${renderPlotType}
+                                                     hexSize=${scaledHexBool}
+                                                     submitted=${submitted}/>`) : null}
       ${(!renderSubmitted && bridges.hasOwnProperty('message'))  ?
       (html`<${Grid} item xs=${12}>
         <${Paper} style=${"padding: 16px; "}>

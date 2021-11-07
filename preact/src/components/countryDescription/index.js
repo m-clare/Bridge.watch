@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import htm from "htm";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
@@ -9,7 +9,6 @@ import { grey } from "@mui/material/colors";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
@@ -46,7 +45,7 @@ const textSummary = function (summaryType, count) {
   } else if (summaryType === "repair_cost_per_foot") {
     return html`
 <${Typography}> This map aggregates the locations of ${count} bridges in the U.S. with the estimated repair cost in (in thousands of dollars) per foot of bridge using the length of structure improvement and total project cost fields from the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2020 National Bridge Inventory</b></${Link}>. This value is calculated based only on bridges that have been marked within the past 8 years as in need of repair with an estimated repair cost provided (there may be other bridges in need of repair, but no information has been provided for the estimated cost or length of repair). If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the median cost per foot estimate. Additional filtering can be performed using the options above.</${Typography}>
-`
+`;
   } else return html`<div></div>`;
 };
 
@@ -117,7 +116,7 @@ const summaryTitle = {
   percent_poor: "Percent of Bridges in Poor Condition",
   rating: "Overall Rating",
   year_built: "Year Built",
-  repair_cost_per_foot: "Repair Cost Per Foot of Bridge"
+  repair_cost_per_foot: "Repair Cost Per Foot of Bridge",
 };
 
 function getFiltersAsString(filters) {
@@ -130,14 +129,25 @@ function getFiltersAsString(filters) {
           return word[0].toUpperCase() + word.substring(1);
         })
         .join(" ");
-      filterStringArray.push(`${propCapped}: ${filters[prop].join(" or ")}`);
+      let filteredPropString;
+      console.log(prop);
+      if (prop.length > 1) {
+        filteredPropString = [
+          filters[prop].slice(0, -1).join(", "),
+          filters[prop].slice(-1)[0],
+        ].join(filters[prop].length < 2 ? "" : "  or ");
+      } else {
+        filteredPropString = prop;
+      }
+      filterStringArray.push(`${propCapped}: ${filteredPropString}`);
     }
   }
   return filterStringArray;
 }
 
-export function CountryDescription({ summaryType, keyValues }) {
+export function CountryDescription({ summaryType, keyValues, waiting}) {
   const [expanded, setExpanded] = useState(false);
+  const [activeFilters, setActiveFilters] = useState([]);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -148,6 +158,13 @@ export function CountryDescription({ summaryType, keyValues }) {
   const { plot_type, ...filters } = keyValues.filters;
   const hasMoreInfo = moreInfo.includes(field);
 
+  useEffect(() => {
+    if (!waiting) {
+    const { plot_type, ...filters} = keyValues.filters;
+    setActiveFilters(filters)
+    }
+  }, [keyValues])
+
   return html`
     <${Grid} item container>
       <${Card}>
@@ -155,12 +172,10 @@ export function CountryDescription({ summaryType, keyValues }) {
           <${CardContent} style=${"padding: 24px"}>
             <${Typography} 
                            variant="h4"
-                           component="h2">${
-              summaryTitle[field]
-              }</${Typography}>
-            ${getFiltersAsString(filters).map(
-            (d) =>
-            html`<${Typography} 
+                           component="h2">${summaryTitle[field]}</${Typography}>
+            ${getFiltersAsString(activeFilters).map(
+              (d) =>
+                html`<${Typography} 
                                 variant="h6"
                                 component="h3"
                                 style=${"font-weight:400"}>
@@ -169,8 +184,8 @@ export function CountryDescription({ summaryType, keyValues }) {
             ${textSummary(summaryType, count)}
           </${CardContent}>
           ${
-          hasMoreInfo
-          ? html`<${CardActions} disableSpacing>
+            hasMoreInfo
+              ? html`<${CardActions} disableSpacing>
             <${Button} variant="text" onClick=${handleExpandClick} fullWidth>More information</${Button}>
             <${ExpandMore}
               expand=${expanded}
@@ -184,10 +199,9 @@ export function CountryDescription({ summaryType, keyValues }) {
           <${Collapse} in=${expanded} timeout="auto" unmountOnExit>
             ${textMoreInfo(summaryType)}
           </${Collapse}>`
-          : null
+              : null
           }
         </${Grid}>
       </${Card}>
     </${Grid}>`;
 }
-

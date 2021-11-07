@@ -50,8 +50,11 @@ export function HorizontalPropertyPanel({
 
   return html`
 <${Grid} container spacing=${3}>
-  <${Grid} item xs=${12} md=${6}>
-    <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
+  <${Grid} item xs=${12}>
+  <${Typography} variant="h5" component="h2">${locality}</${Typography}>
+  </${Grid}>
+  <${Grid} item style=${"padding-top: 0px"} xs=${12} md=${6}>
+    <${Typography} variant="h6" component="h3">Histogram</${Typography}>
     <${BarChart}
       selected=${objSelected}
       objData=${objData.objHistogram}
@@ -60,8 +63,8 @@ export function HorizontalPropertyPanel({
       field=${field}
       />
   </${Grid}>
-  <${Grid} item xs=${12} md=${6}>
-    <${Typography} variant="h5" component="h2">${locality} Properties</${Typography}>
+  <${Grid} item style=${"padding-top: 0px"} xs=${12} md=${6}>
+    <${Typography} variant="h6" component="h3">Key Properties</${Typography}>
     <${HistTextSummary}
       selected=${objSelected}
       objData=${objData.objKeyValues}

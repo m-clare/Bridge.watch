@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "preact/hooks";
 import { isEmpty } from "lodash-es";
 import Typography from "@mui/material/Typography";
 import { colorDict } from "../colorPalette";
-import { plotOptions } from "../Options";
+import { plotOptions } from "../options";
 const html = htm.bind(h);
 
 

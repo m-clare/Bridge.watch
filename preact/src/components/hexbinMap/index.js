@@ -80,7 +80,7 @@ const getRadius = (hexBin) => {
   );
 };
 
-export function HexbinChart({ bridgeData, plotType }) {
+export function HexbinChart({ bridgeData, plotType, submitted }) {
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
@@ -109,13 +109,13 @@ export function HexbinChart({ bridgeData, plotType }) {
   }
 
   useEffect(() => {
-    if (!isEmpty(bridgeData)) {
+    if (!isEmpty(bridgeData) && !submitted) {
       setTotalValues(bridgeData.totalValues);
     }
   }, [bridgeData]);
 
   useEffect(() => {
-    if (!isEmpty(bridgeData) && d3Container.current) {
+    if (!isEmpty(bridgeData) && d3Container.current && !submitted) {
       const svg = d3.select(d3Container.current);
 
       const hexBridge = {

@@ -19,7 +19,7 @@ import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
 import { HorizontalPropertyPanel } from "../../components/horizontalPropertyPanel";
 
-import { stateOptions } from "../../components/Options";
+import { stateOptions } from "../../components/options";
 
 import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
@@ -92,10 +92,11 @@ const getLegend = (svg) => {
   return svg.select("#legendContainer");
 };
 
-export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
+export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submitted }) {
   const [activeCounty, setActiveCounty] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [countySelected, setCountySelected] = useState(false);
+  const [titleSelected, setTitleSelected] = useState('');
   const d3Container = useRef(null);
 
   const svg = d3.select(d3Container.current);
@@ -109,7 +110,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
 
   // Create county outline regardless of whether data exists or not
   useEffect(() => {
-    if (displayStates.length !== 0) {
+    if (displayStates.length !== 0 && !submitted) {
       const svg = d3.select(d3Container.current);
 
       const fipsStates = displayStates.map((d) => stateOptions[d]);
@@ -149,10 +150,16 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
       const svgCounties = getAllCountyNode(svg);
       svg.remove(svgCounties);
     }
-  }, [displayStates]);
+  }, [bridgeCountyData]);
 
   useEffect(() => {
-    if (!isEmpty(bridgeCountyData) && d3Container.current) {
+    if (!isEmpty(bridgeCountyData) && d3Container.current && !submitted) {
+      setTitleSelected(displayStates.sort());
+    }
+  }, [bridgeCountyData])
+
+  useEffect(() => {
+    if (!isEmpty(bridgeCountyData) && d3Container.current && !submitted) {
       const svg = d3.select(d3Container.current);
       const color = colorDict[plotType];
 
@@ -266,12 +273,20 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
       const svgCounties = getCountyNode(svg);
       svg.remove(svgCounties);
     }
-  }, [bridgeCountyData, displayStates, plotType]);
+  }, [bridgeCountyData, plotType]);
+
+  let title
+  if (titleSelected.length > 1) {
+    title = [titleSelected.slice(0, -1).join(', '), titleSelected.slice(-1)[0]].join(titleSelected.length < 2 ? '' : ' and ');
+} else if (titleSelected.length === 1) {
+  title = titleSelected
+}
+
 
   return html`
     ${displayStates.length !== 0 && !isEmpty(bridgeCountyData)
       ? html`<${Grid} item xs=${12}>
-    <${Typography} variant="h4" component="h1">${displayStates}</${Typography}>
+    <${Typography} variant="h4" component="h1">${title}</${Typography}>
     </${Grid}>
     <${Grid} item xs=${12} sx=${{ paddingTop: 0 }}>
     <svg class="d3-component"

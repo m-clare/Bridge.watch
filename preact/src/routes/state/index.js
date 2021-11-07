@@ -73,9 +73,7 @@ export default function StateBridges() {
   };
 
   const handleSingleChange = (event, type) => {
-    console.log(event.target.value)
-    const value = event.target.value.replace(' ', '_')
-    console.log(value)
+    const value = event.target.value
     setQueryState({...queryState, [type]: value})
     const newURI = constructURI({...queryState, [type]: value})
     if (newURI !== queryURI ) {
@@ -111,7 +109,7 @@ export default function StateBridges() {
   <${Container} maxWidth="lg">
     <${Grid} container spacing=${3}>
       <${Grid} item xs=${12} md=${4}>
-        <${Paper} style=${"padding: 24px; "}>
+        <${Paper} sx=${{padding: "24px", minHeight: "850px"}}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
               <${Typography} variant="h4" component="h1">Bridges By State</${Typography}>
@@ -129,34 +127,37 @@ export default function StateBridges() {
         </${Paper}>
       </${Grid}>
       <${Grid} item xs=${12} md=${8}>
-        <${Paper} style=${"padding: 24px; "}>
+        <${Paper} sx=${{padding: "24px", minHeight: "850px"}}>
           <${Grid} container spacing=${3}>
-            ${(!isEmpty(stateBridges) && !stateBridges.hasOwnProperty('message') && !renderSubmitted) ? (html`
-            <${ChoroplethMap} bridgeCountyData=${stateBridges} displayStates=${queryState.state} plotType=${plotType} />`) : null }
+            ${(!isEmpty(stateBridges) && !stateBridges.hasOwnProperty('message')) ? (html`
+            <${ChoroplethMap} bridgeCountyData=${stateBridges}
+                              displayStates=${queryState.state}
+                              plotType=${plotType}
+                              submitted=${renderSubmitted}/>`) : null }
           </${Grid}>
         </${Paper}>
       </${Grid}>
       ${renderSubmitted ? (
       html`<${Grid} item xs=${12}>
-  <${Paper} style=${"padding: 16px; "}>
-  <${Grid} container>
-  <${Grid} item xs=${12}>
-  <${Typography} style=${"text-align: center"}
-  variant="h6"
-  color=${grey[500]}>
-  <i>Loading query...</i>
-  </${Typography}>
-  <${LinearProgress} />
-  </${Grid}>
-  </${Grid}>
-  </${Paper}>
-  </${Grid}>`) : (null)}
+        <${Paper} style=${"padding: 16px; "}>
+          <${Grid} container>
+            <${Grid} item xs=${12}>
+              <${Typography} style=${"text-align: center"}
+                             variant="h6"
+                             color=${grey[500]}>
+                <i>Loading query...</i>
+              </${Typography}>
+              <${LinearProgress} />
+            </${Grid}>
+          </${Grid}>
+        </${Paper}>
+      </${Grid}>`) : (null)}
       ${(!renderSubmitted && stateBridges.hasOwnProperty('message'))  ?
       (html`<${Grid} item xs=${12}>
-  <${Paper} style=${"padding: 16px; "}>
-  <${Grid} container>
-  <${Grid} item xs=${12}>
-  <${Typography} style=${"text-align: center"}
+        <${Paper} style=${"padding: 16px; "}>
+          <${Grid} container>
+            <${Grid} item xs=${12}>
+              <${Typography} style=${"text-align: center"}
                              variant="h6"
                              color=${grey[500]}>
                 <i>${stateBridges.message}</i>
