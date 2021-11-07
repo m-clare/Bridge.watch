@@ -58,7 +58,6 @@ function constructURI(query) {
 
 export default function StateBridges() {
   const [stateBridges, setStateBridges] = useState({});
-
   const [queryState, setQueryState] = useState({
     plot_type: "percent_poor",
     material: [],

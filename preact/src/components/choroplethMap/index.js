@@ -172,8 +172,9 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
         .style("position", "absolute")
         .style("z-index", "10")
         .attr("class", "tooltooltip")
+        .style("visibility", "hidden")
         .style("font-family", "Fira Sans")
-        .style("font-size", "0.8rem");
+        .style("font-size", "0.8rem")
 
       const selectedCounties = feature(
         selectedStates,
