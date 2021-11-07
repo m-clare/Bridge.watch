@@ -51,7 +51,7 @@ const getInterestValue = (plotType, countyValues) => {
     return { stringDescription: stringDescription, value: value };
   } else {
     return {
-      stringDescription: "Median value: ${countyValues.objKeyValues.median} ",
+      stringDescription: `Median value: ${Math.round(countyValues.objKeyValues.median)}`,
       value: countyValues.objKeyValues.median,
     };
   }

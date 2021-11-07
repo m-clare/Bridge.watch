@@ -159,6 +159,7 @@ export default function CountryBridges() {
                                    filters: queryState
                                    }}
                                    waiting=${renderWaiting}
+                                   submitted=${renderSubmitted}
                                    /><${HexbinChart} bridgeData=${bridges}
                                                      plotType=${renderPlotType}
                                                      hexSize=${scaledHexBool}

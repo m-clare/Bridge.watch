@@ -156,7 +156,7 @@ function getFiltersAsString(filters) {
   return filterStringArray;
 }
 
-export function LocaleDescription({ summaryType, keyValues, waiting}) {
+export function LocaleDescription({ summaryType, keyValues, waiting, submitted }) {
   const [expanded, setExpanded] = useState(false);
   const [activeFilters, setActiveFilters] = useState([]);
 
@@ -175,10 +175,11 @@ export function LocaleDescription({ summaryType, keyValues, waiting}) {
     const { plot_type, ...filters} = keyValues.filters;
     setActiveFilters(filters)
     }
-  }, [keyValues])
+  }, [summaryType, keyValues])
 
   return html`
-    <${Grid} item container>
+  <${Grid} item container>
+    ${!submitted ? (html`
       <${Card}>
         <${Grid} item xs=${12}>
           <${CardContent} style=${"padding: 24px"}>
@@ -214,6 +215,6 @@ export function LocaleDescription({ summaryType, keyValues, waiting}) {
               : null
           }
         </${Grid}>
-      </${Card}>
+      </${Card}>`) : null}
     </${Grid}>`;
 }

@@ -190,6 +190,7 @@ export default function StateBridges() {
                             filters: queryState
                             }}
                             waiting=${renderWaiting}
+                            submitted=${renderSubmitted}
                             />`) : null}
     </${Grid}>
   </${Container}>
