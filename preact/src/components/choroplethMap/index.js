@@ -46,9 +46,14 @@ const getInterestValue = (plotType, countyValues) => {
       histogram[2].count +
       histogram[3].count +
       histogram[4].count;
-    return Math.round((numPoor / countyValues.count) * 100);
+    const value = Math.round((numPoor / countyValues.count) * 100);
+    const stringDescription = "Rated below 4: " + value + "%";
+    return { stringDescription: stringDescription, value: value };
   } else {
-    return countyValues.objKeyValues.median;
+    return {
+      stringDescription: "Median value: ${countyValues.objKeyValues.median} ",
+      value: countyValues.objKeyValues.median,
+    };
   }
 };
 
@@ -213,10 +218,16 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
         .selectAll("path")
         .data(countyMerged)
         .join("path")
-        .attr("fill", (d) => color(getInterestValue(plotType, d)))
+        .attr("fill", (d) => color(getInterestValue(plotType, d).value))
         .attr("d", path)
         .on("mouseover", function (e, d) {
-          tooltip.style("visibility", "visible").html(`${d.properties.name}`);
+          tooltip
+            .style("visibility", "visible")
+            .html(
+              `${d.properties.name}<br>${
+                getInterestValue(plotType, d).stringDescription
+              }`
+            );
           let data = d3.select(this).data()[0];
           setActiveCounty(data);
           setCountySelected(true);
@@ -239,7 +250,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
             .transition()
             .duration(200)
             .attr("stroke-width", "0.05em")
-            .attr("stroke", "#777")
+            .attr("stroke", "#777");
         });
 
       svgCounties
@@ -257,11 +268,8 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
     }
   }, [bridgeCountyData, displayStates, plotType]);
 
-  
-
   return html`
-  ${
-    (displayStates.length !== 0 && !isEmpty(bridgeCountyData))
+    ${displayStates.length !== 0 && !isEmpty(bridgeCountyData)
       ? html`<${Grid} item xs=${12}>
     <${Typography} variant="h4" component="h1">${displayStates}</${Typography}>
     </${Grid}>
@@ -281,7 +289,6 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType }) {
   plotHeight=${plotHeight}
   />
     </${Grid}>`
-      : null
-  }
-`;
+      : null}
+  `;
 }

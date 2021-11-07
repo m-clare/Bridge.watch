@@ -197,7 +197,7 @@ export function HexbinChart({ bridgeData, plotType }) {
               myHexbin.hexagon(getHexSize(hexBool, radius, d.count))
             )
             .attr("stroke-width", "0.1em");
-        });s
+        });
     }
   }, [bridgeData, hexSize, plotType]);
 
