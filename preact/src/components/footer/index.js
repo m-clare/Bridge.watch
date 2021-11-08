@@ -40,17 +40,24 @@ export default function Footer() {
     <${Grid} container sx=${{padding: 2}} spacing=${3}>
       <${Grid} item xs=${12} sm=${4}>
         <${Typography} variant="h6" >Bridge.watch</${Typography}>
-        <p >
+        <${Typography} variant="body1" >
           Bridge.watch provides interactive data visualization for open-access data records of bridges located in the United States.
-        </p>
+        </${Typography}>
       </${Grid}>
       <${Grid} item xs=${12} sm=${4}>
+        <${Typography} variant="h6">License</${Typography}>
+        <${Typography} variant="body1">
+        This work is licensed under a <${Link} variant="body1"
+                                               underline="hover"
+                                               color="inherit"
+                                               href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons-Attribution-Non Commercial-Share Alike 4.0 License</${Link}>. Contact the author for more information.
+        </${Typography}>
       </${Grid}>
       <${Grid} item xs=${12} sm=${4}>
         <${Grid} container>
           <${Grid} item xs=${12}>
             <${Typography} variant="h6" >Contact</${Typography}>
-            <p >Maryanne Wachter</p>
+            <${Typography} variant="body1">Maryanne Wachter</${Typography}>
           </${Grid}>
           <${Grid} container spacing=${2}>
             <${Grid} item>

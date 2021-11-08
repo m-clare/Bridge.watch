@@ -12,6 +12,8 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import TopMenu from "../topMenu";
+import SideMenu from "../sideMenu";
+import Grid from "@mui/material/Grid";
 
 const html = htm.bind(h);
 
@@ -21,19 +23,20 @@ export default function Header() {
 <${Box} sx=${{ flexGrow: 1 }}>
   <${AppBar} position="static">
     <${Toolbar}>
+      <${SideMenu} />
       <${Typography} variant="h6" component="div" sx=${{ flexGrow: 1 }}>
       Bridge.watch
       </${Typography}>
       <${Box} sx=${{display: {xs: "none", md: "inline"}}}>
-      <${Button} color="inherit"><${RouterLink} href='/country'
-                                                style=${"color: #fff; text-decoration: none"}>
-          Country</${RouterLink}>
-      </${Button}>
-      <${Button} color="inherit"><${RouterLink} href='/state'
-                                                style=${"color: #fff; text-decoration: none"}>
-          State</${RouterLink}>
-      </${Button}>
-      <${TopMenu} />
+          <${Button} sx=${{pr: 4}}  color="inherit"><${RouterLink} href='/country'
+                                                     style=${"color: #fff; text-decoration: none"}>
+              U.S. Overview</${RouterLink}>
+          </${Button}>
+          <${Button} sx=${{pr: 4}} color="inherit"><${RouterLink} href='/state'
+                                                    style=${"color: #fff; text-decoration: none"}>
+              Info By State</${RouterLink}>
+          </${Button}>
+          <${TopMenu}/>
       </${Box}>
     </${Toolbar}>
   </${AppBar}>
