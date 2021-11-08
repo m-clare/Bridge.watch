@@ -15,16 +15,6 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
 
-// form only imports...
-import Chip from "@mui/material/Chip";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Button from "@mui/material/Button";
-
 import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
 import { singleFilters, multiFilters } from "../../components/options";
