@@ -147,6 +147,18 @@ export default function StateBridges() {
                           filters=${stateFilters}
                           colWidth=${colWidth}
                           />
+            <${Grid} item xs=${12}>
+              ${renderSubmitted ? html`
+              <${Paper} style=${"padding: 16px"} variant="outlined">
+                <${Typography} style=${"text-align: center"}
+                               variant="h6"
+                               color=${grey[500]}>
+                  <i>Loading query...</i>
+                </${Typography}>
+                <${LinearProgress} />
+                </${Paper}>
+                  ` : null}
+            </${Grid}>
           </${Grid}>
         </${Paper}>
       </${Grid}>
@@ -166,46 +178,18 @@ export default function StateBridges() {
               />`
             : null
             }
-          </${Grid}>
-        </${Paper}>
-      </${Grid}>
-      ${
-        renderSubmitted
-          ? html`
-      <${Grid} item xs=${12}>
-        <${Paper} style=${"padding: 16px; "}>
-          <${Grid} container>
-            <${Grid} item xs=${12}>
-              <${Typography} style=${"text-align: center"}
-                             variant="h6"
-                             color=${grey[500]}>
-                <i>Loading query...</i>
-              </${Typography}>
-              <${LinearProgress} />
-            </${Grid}>
-          </${Grid}>
-        </${Paper}>
-      </${Grid}>`
-          : null
-      }
-      ${
-      !renderSubmitted && stateBridges.hasOwnProperty("message")
-      ? html`
-      <${Grid} item xs=${12}>
-        <${Paper} style=${"padding: 16px; "}>
-          <${Grid} container>
+            ${(!renderSubmitted && stateBridges.hasOwnProperty("message")) ?
+            html`
             <${Grid} item xs=${12}>
               <${Typography} style=${"text-align: center"}
                              variant="h6"
                              color=${grey[500]}>
                 <i>${stateBridges.message}</i>
               </${Typography}>
-            </${Grid}>
+            </${Grid}>` : null}
           </${Grid}>
         </${Paper}>
-      </${Grid}>`
-          : null
-      }
+      </${Grid}>
       ${
       !isEmpty(stateBridges) &&
       !stateBridges.hasOwnProperty("message") &&
