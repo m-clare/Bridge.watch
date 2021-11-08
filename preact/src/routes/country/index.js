@@ -47,12 +47,12 @@ function updateQuery(queryState, type, updatedParam) {
 }
 export default function CountryBridges() {
   const [bridges, setBridges] = useState({});
-  const [queryState, setQueryState] = useState({'plot_type': 'percent_poor',
+  const [queryState, setQueryState] = useState({'plot_type': 'rating',
                                                 'material': [],
                                                 'type': [],
                                                 'service': []
                                                })
-  const [queryURI, setQueryURI] = useState('plot_type=percent_poor')
+  const [queryURI, setQueryURI] = useState('plot_type=rating')
   const [submitted, setSubmitted] = useState(true);
   const [hexSize, setHexSize] = useState(true)
   const [plotType, setPlotType] = useState(queryState.plot_type)

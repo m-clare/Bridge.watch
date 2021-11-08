@@ -33,11 +33,11 @@ function difference(setA, setB) {
 }
 
 function getKeyProps(dataArray, field) {
-  const min = d3.min(dataArray, (d) => d[field]);
-  const max = d3.max(dataArray, (d) => d[field]);
-  const avg = d3.mean(dataArray, (d) => d[field]);
-  const median = d3.median(dataArray, (d) => d[field]);
-  const mode = d3.mode(dataArray, (d) => d[field]);
+  const min = d3.min(dataArray.map((d) => +d[field]));
+  const max = d3.max(dataArray.map((d) => +d[field]));
+  const avg = d3.mean(dataArray.map((d) => +d[field]));
+  const median = d3.median(dataArray.map((d) => +d[field]));
+  const mode = d3.mode(dataArray.map((d) => +d[field]));
   const count = dataArray.length;
   return {
     min: min,

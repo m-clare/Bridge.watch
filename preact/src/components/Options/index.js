@@ -114,6 +114,13 @@ export const plotOptions = {
   },
 };
 
+const otherOptions = {
+  repair_cost_per_foot: {
+    query: "repair_cost_per_foot",
+    display: "Estimated repair cost per foot of bridge (in $1000s)",
+    histogram: "Repair $1000s / ft bridge",
+  },
+}
 
 export const singleFilters = {
   plot_type: {

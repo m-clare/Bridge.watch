@@ -49,13 +49,13 @@ function constructURI(query) {
 export default function StateBridges() {
   const [stateBridges, setStateBridges] = useState({});
   const [queryState, setQueryState] = useState({
-    plot_type: "percent_poor",
+    plot_type: "rating",
     material: [],
     type: [],
     service: [],
     state: ["California"],
   });
-  const [queryURI, setQueryURI] = useState("plot_type=percent_poor");
+  const [queryURI, setQueryURI] = useState("rating");
   const [submitted, setSubmitted] = useState(true);
   const [waiting, setWaiting] = useState(false);
   const [plotType, setPlotType] = useState(queryState.plot_type);
