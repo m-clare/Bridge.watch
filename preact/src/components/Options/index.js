@@ -137,7 +137,7 @@ export const multiFilters = {
   },
   state: {
     name: "state",
-    label: "State",
+    label: "State(s)",
     options: stateOptions,
   },
 };

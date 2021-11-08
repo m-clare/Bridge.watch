@@ -138,7 +138,7 @@ export default function StateBridges() {
         <${Paper} sx=${{ padding: "24px", minHeight: `${minPanelHeight}`}}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
-              <${Typography} variant="h4" component="h1">Bridges By State</${Typography}>
+              <${Typography} variant="h4" component="h1">Bridges By State Selection</${Typography}>
             </${Grid}>
             <${QueryForm} queryState=${queryState}
                           handleChange=${handleChange}

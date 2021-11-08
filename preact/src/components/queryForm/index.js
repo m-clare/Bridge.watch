@@ -114,7 +114,7 @@ export function QueryForm({
                     variant="h6"
                     component="h2"
                     color="${grey[500]}">
-                    <i>State</i>
+                    <i>States</i>
                   </${Typography}>
                 </${Grid}>
     ${stateFilter.map((value) => multiFilter(value, queryState, formHandlers, colWidth.single, true))}
