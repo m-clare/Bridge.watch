@@ -104,11 +104,11 @@ export default function CountryBridges() {
   const colWidth = {'single': 4, 'multi': 4}
 
   return html`
-<${Box} sx=${{ padding: "24px"}}>
+<${Box} sx=${{ padding: 3}}>
   <${Container} maxWidth="lg">
     <${Grid} container spacing=${3}>
       <${Grid} item xs=${12}>
-        <${Paper} style=${"padding: 24px; "}>
+        <${Paper} sx=${{padding: 3}}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
               <${Typography} variant="h3" component="h1">U.S. Bridges</${Typography}>
@@ -127,7 +127,7 @@ export default function CountryBridges() {
       </${Grid}>
       ${renderSubmitted ? (
       html`<${Grid} item xs=${12}>
-        <${Paper} style=${"padding: 16px; "}>
+        <${Paper} sx=${{padding: 2}}>
           <${Grid} container>
             <${Grid} item xs=${12}>
               <${Typography} style=${"text-align: center"}
@@ -156,7 +156,7 @@ export default function CountryBridges() {
                                                      submitted=${submitted}/>`) : null}
       ${(!renderSubmitted && bridges.hasOwnProperty('message'))  ?
       (html`<${Grid} item xs=${12}>
-        <${Paper} style=${"padding: 16px; "}>
+        <${Paper} sx=${{padding: 2}}>
           <${Grid} container>
             <${Grid} item xs=${12}>
               <${Typography} style=${"text-align: center"}

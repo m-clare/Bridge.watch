@@ -24,7 +24,7 @@ import Switch from "@mui/material/Switch";
 import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
 
-export function VerticalPropertyPanel({ objSelected, objData, initialHistData, initialKeyData, field, plotHeight }) {
+export function VerticalPropertyPanel({ objSelected, objData, initialHistData, initialKeyData, field }) {
 
   let locality;
   if (objSelected) {
@@ -45,7 +45,7 @@ export function VerticalPropertyPanel({ objSelected, objData, initialHistData, i
 
   return html`
 <${Grid} item xs=${12} md=${4} >
-  <${Paper} style=${`padding: 24px; min-height: ${plotHeight}`}> 
+  <${Paper} sx=${{padding: 3, minHeight: {xs: 0, md: 600}}}> 
     <${Grid} item>
       <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
       <${BarChart}

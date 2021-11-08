@@ -19,8 +19,6 @@ import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
 import { singleFilters, multiFilters } from "../../components/options";
 
-import useMediaQuery from "@mui/material/useMediaQuery";
-
 const html = htm.bind(h);
 
 const stateFilters = (({ state, material, type, service }) => ({
@@ -62,16 +60,6 @@ export default function StateBridges() {
   const [waiting, setWaiting] = useState(false);
   const [plotType, setPlotType] = useState(queryState.plot_type);
   const [showPlot, setShowPlot] = useState(true);
-
-  const widthCheck = useMediaQuery("(min-width:900px)");
-
-  let minPanelHeight;
-  if (widthCheck) {
-    minPanelHeight: "850px";
-  } else {
-    minPanelHeight: "0px";
-  }
-
 
   const handleChange = (event, type) => {
     const value = event.target.value;
@@ -131,11 +119,11 @@ export default function StateBridges() {
   const colWidth = { single: 12, multi: 12 };
 
   return html`
-<${Box} sx=${{ padding: "24px" }}>
+<${Box} sx=${{ padding: 3 }}>
   <${Container} maxWidth="lg">
     <${Grid} container spacing=${3}>
       <${Grid} item xs=${12} md=${4}>
-        <${Paper} sx=${{ padding: "24px", minHeight: `${minPanelHeight}`}}>
+        <${Paper} sx=${{ padding: 3, minHeight: {xs: 0, md: 850}}}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
               <${Typography} variant="h4" component="h1">Bridges By State Selection</${Typography}>
@@ -151,7 +139,7 @@ export default function StateBridges() {
                           />
             <${Grid} item xs=${12}>
               ${renderSubmitted ? html`
-              <${Paper} style=${"padding: 16px"} variant="outlined">
+              <${Paper} sx=${{padding: 2}} variant="outlined">
                 <${Typography} style=${"text-align: center"}
                                variant="h6"
                                color=${grey[500]}>
@@ -165,13 +153,13 @@ export default function StateBridges() {
         </${Paper}>
       </${Grid}>
       <${Grid} item xs=${12} md=${8}>
-        <${Paper} sx=${{ padding: "24px", minHeight: `${minPanelHeight}` }}>
+        <${Paper} sx=${{ padding: 3, minHeight: {xs: 0, md: 850} }}>
           <${Grid} container spacing=${3}>
             ${
-              !isEmpty(stateBridges) &&
-              !stateBridges.hasOwnProperty("message") &&
-              showPlot
-                ? html`
+            !isEmpty(stateBridges) &&
+            !stateBridges.hasOwnProperty("message") &&
+            showPlot
+            ? html`
             <${ChoroplethMap}
               bridgeCountyData=${stateBridges}
               displayStates=${queryState.state}

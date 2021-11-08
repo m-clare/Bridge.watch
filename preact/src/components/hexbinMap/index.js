@@ -204,7 +204,7 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
   return html`
 <${Grid} item container spacing=${3}>
   <${Grid} item xs=${12} md=${8}>
-    <${Paper} style=${`padding: 24px; min-height: ${plotHeight}`}>
+    <${Paper} sx=${{padding: 3, minHeight: {sx: 0, md: 600}}}>
     <${FormControlLabel}
       control=${html`<${Switch}
         defaultChecked
@@ -234,7 +234,6 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
                     initialHistData=${totalValues}
                     initialKeyData=${bridgeData.keyData}
                     field=${bridgeData.field}
-                    plotHeight=${plotHeight}
                     />
 </${Grid}>`;
 }
