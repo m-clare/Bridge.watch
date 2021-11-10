@@ -162,8 +162,6 @@ def national_bridges_csv(request):
         return Response("", status=status.HTTP_400_BAD_REQUEST)
 
 def check_conditions(query_dict, value, bool_tuple):
-    print(query_dict)
-    print(value)
     deck_bool = query_dict["deck_cond"] == value
     superstructure_bool = query_dict["superstructure_cond"] == value
     substructure_bool = query_dict["substructure_cond"] == value
@@ -174,7 +172,6 @@ def check_new_conditions(query_dict, value, permutation_mapping):
     deck_bool = query_dict["deck_cond"] == value
     superstructure_bool = query_dict["superstructure_cond"] == value
     substructure_bool = query_dict["substructure_cond"] == value
-    # check with tuple
     return permutation_mapping[(deck_bool, superstructure_bool, substructure_bool)]
 
 @api_view(["GET"])
@@ -206,7 +203,7 @@ def bridge_conditions(request):
         "0": "Failed",
     }
     cond_dict = {"G": {}, "F": {}, "P": {}}
-    output_dict = {"name": "2021 Bridge Condition Data", "children": []}
+    output_dict = {"name": "2021 Bridge Condition Data", "type": "material", "children": []}
     # TODO: Make more generic function to generate permutations
     permutation_dict = {
         "all components": (True, True, True),
@@ -226,6 +223,7 @@ def bridge_conditions(request):
         (True, False, False): "deck",
         (False, True, False): "superstructure",
         (False, False, True): "substructure",
+        (False, False, False): "mismatched or missing component ratings"
     }
     if request.method == "GET":
         state = request.query_params.get("state")
@@ -251,7 +249,6 @@ def bridge_conditions(request):
                        "superstructure_cond",
                        "substructure_cond"])
 
-        test_distinct = list(bridges.distinct("material").values_list("material", flat=True))
         # limit query results for troubleshooting
         limit = request.query_params.get("limit")
         if (limit != None):
@@ -276,7 +273,7 @@ def bridge_conditions(request):
                                 ]
         # sorting and aggregating for lowest value
         for field, cond_dict in field_cond_dict.items():
-            field_dict = {'name': field, 'type': "material", "children": []}
+            field_dict = {'name': field, "children": []}
             for condition_letter, rating_dictionary in cond_dict.items():
                 name_dict = {"name": condition_letter, "children": []}
                 for rating, matching_counts in rating_dictionary.items():
@@ -292,7 +289,8 @@ def bridge_conditions(request):
                                         "super/substructure": 0,
                                         "deck": 0,
                                         "superstructure": 0,
-                                        "substructure": 0}
+                                        "substructure": 0,
+                                        "mismatched or missing component ratings": 0}
                     for unique_condition in matching_counts:
                         component_state = check_new_conditions(unique_condition, rating, permutation_mapping)
                         component_counts[component_state] += unique_condition['count']

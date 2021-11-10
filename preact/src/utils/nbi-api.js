@@ -21,4 +21,13 @@ function getStateBridges(uriString) {
     .catch((error) => console.error(`Error: ${error}`));
 }
 
-export { getNationalBridges, getStateBridges };
+function getConditionBridges(uriString) {
+  const url=`${process.env.PREACT_APP_API_URL}/conditions?${uriString}`;
+  console.log(url);
+  return axios
+    .get(url)
+    .then((response) => response.data)
+    .catch((error) => console.error(`Error: ${error}`));
+}
+
+export { getNationalBridges, getStateBridges, getConditionBridges };
