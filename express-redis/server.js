@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from 'dotenv';
 import ExpressRedisCache from "express-redis-cache";
-import { getCountryData, getStateData } from "./api.js";
+import { getCountryData, getStateData, getConditionData } from "./api.js";
 
 dotenv.config();
 
@@ -32,11 +32,22 @@ async function returnStateData(req, res) {
   res.json(data);
 }
 
+async function returnConditionData(req, res) {
+  const qs = req.originalUrl.substring(1);
+  const startTime = Date.now();
+  const data = await getConditionData(qs);
+  const msElapsed = Date.now() - startTime;
+  console.log(`Async condition function took ${msElapsed / 1000} seconds to complete.`);
+  res.json(data);
+}
+
 app.use(cors())
 
 app.get("/national/", cache.route(), returnCountryData);
 
 app.get("/state/", cache.route(), returnStateData);
+
+app.get("/conditions/", cache.route(), returnConditionData)
 
 
 app.listen(port, () => {

@@ -63,4 +63,25 @@ const getStateData = async (qs) => {
     })
 };
 
-export { getCountryData, getStateData };
+const getConditionData = async (qs) => {
+  console.log(qs)
+  console.log(`http://${host}:${port}/api/bridges/${qs}`)
+  return await fetch(`http://${host}:${port}/api/bridges/${qs}`)
+    .then((response) => {
+      if (response.ok) {
+        return response
+      } else if (response.status >= 400 && response.status < 600) {
+        throw new Error("Bad response from server");
+      } else if (typeof response === 'undefined') {
+        throw new Error('Response was undefined')
+      } else {
+        throw new Error('Unknown error in fetch response.')
+      }
+    })
+    .then((returnedResponse) => returnedResponse.json()
+   ).catch((error) => {
+     console.log(error)
+   })
+};
+
+export { getCountryData, getStateData, getConditionData };
