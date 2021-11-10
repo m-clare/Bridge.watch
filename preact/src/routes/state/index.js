@@ -92,6 +92,15 @@ export default function StateBridges() {
     }
   };
 
+  const handleClick = (event) => {
+    const clearedQueryState = {...queryState, 'material': [], 'type': [], 'service': []}
+    setQueryState(clearedQueryState)
+    const newURI = constructURI(clearedQueryState);
+    if (newURI !== queryURI && queryState.state.length !== 0) {
+      setSubmitted(true);
+    }
+  }
+
   // run every time submitted is updated
   useEffect(async () => {
     const newURI = constructURI(queryState);
@@ -135,6 +144,7 @@ export default function StateBridges() {
                           submitted=${renderSubmitted}
                           plotChoices=${singleFilters.plot_type}
                           filters=${stateFilters}
+                          handleClick=${handleClick}
                           colWidth=${colWidth}
                           />
             <${Grid} item xs=${12}>

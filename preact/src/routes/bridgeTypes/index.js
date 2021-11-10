@@ -69,7 +69,7 @@ export default function BridgeTypes() {
       ${bridgeTypes.map(
         (bridgeType, index) =>
           html`
-      <${Grid} item xs=${12} sm=${6} md=${4} key=${index}>
+      <${Grid} item xs=${12} sm=${6} key=${index}>
         <${Card} className=${classes.card}>
           <${CardHeader} title=${
             bridgeType.type

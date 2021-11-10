@@ -38,6 +38,19 @@ const serviceTypeOptions = {
   Other: "0",
 };
 
+const ratingOptions = {
+  'Excellent Condition (9)': 9,
+  'Very Good Condition (8)': 8,
+  'Good Condition (7)': 7,
+  'Satisfactory Condition  (6)': 6,
+  'Fair Condition (5)': 5,
+  'Poor Condition (4)': 4,
+  'Serious Condition (3)': 3,
+  'Critical Condition (2)': 2,
+  'Imminent Failure Condition (1)': 1,
+  'Failed Condition (0)': 0
+}
+
 export const stateOptions = {
   Alabama: "01",
   Alaska: "02",
@@ -113,6 +126,10 @@ export const plotOptions = {
     histogram: "Repair $1000s / ft bridge",
   },
 };
+
+export const detailedOptions = {
+
+}
 
 const otherOptions = {
   repair_cost_per_foot: {

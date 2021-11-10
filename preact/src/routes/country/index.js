@@ -85,6 +85,15 @@ export default function CountryBridges() {
     }
   }
 
+  const handleClick = (event) => {
+    const clearedQueryState = {...queryState, 'material': [], 'type': [], 'service': []}
+    setQueryState(clearedQueryState)
+    const newURI = constructURI(clearedQueryState);
+    if (newURI !== queryURI) {
+      setSubmitted(true);
+    }
+  }
+
   useEffect(async () => {
     const newURI = constructURI(queryState)
     const bridgeData = await getNationalBridges(newURI);
@@ -120,6 +129,7 @@ export default function CountryBridges() {
                           submitted=${renderSubmitted}
                           plotChoices=${singleFilters.plot_type}
                           filters=${countryFilters}
+                          handleClick=${handleClick}
                           colWidth=${colWidth}
                           />
           </${Grid}>

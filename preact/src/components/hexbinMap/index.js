@@ -80,6 +80,14 @@ const getRadius = (hexBin) => {
   );
 };
 
+const getAttribution = (svg) => {
+  if (!document.getElementById("attributionContainer")) {
+    svg.append("g").attr("id", "attributionContainer");
+  }
+  return svg.select("#attributionContainer");
+};
+
+
 export function HexbinChart({ bridgeData, plotType, submitted }) {
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
@@ -198,13 +206,30 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
             )
             .attr("stroke-width", "0.1em");
         });
+
+      //add attribution
+      const attrNode = getAttribution(svg);
+      attrNode.select("#attribution").remove();
+
+      attrNode
+        .attr(
+          "transform",
+          `translate(${0.53 * width}, ${height - (stdMargin - 20)})`)
+        .raise()
+        .append("g")
+        .attr("id", "attribution")
+        .append("text")
+        .attr("stroke", "#d3d3d3")
+        .append("svg:a")
+        .attr("xlink:href", "https://twitter.com/eng_mclare")
+        .text("www.bridge.watch @eng_mclare");
     }
   }, [bridgeData, hexSize, plotType]);
 
   return html`
 <${Grid} item container spacing=${3}>
   <${Grid} item xs=${12} md=${8}>
-    <${Paper} sx=${{padding: 3, minHeight: {sx: 0, md: 600}}}>
+    <${Paper} sx=${{padding: 3, minHeight: {sx: 0, md: 570}}}>
     <${FormControlLabel}
       control=${html`<${Switch}
         defaultChecked

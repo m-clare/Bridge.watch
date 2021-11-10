@@ -92,6 +92,13 @@ const getLegend = (svg) => {
   return svg.select("#legendContainer");
 };
 
+const getAttribution = (svg) => {
+  if (!document.getElementById("attributionContainer")) {
+    svg.append("g").attr("id", "attributionContainer");
+  }
+  return svg.select("#attributionContainer");
+};
+
 export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submitted }) {
   const [activeCounty, setActiveCounty] = useState({});
   const [totalValues, setTotalValues] = useState({});
@@ -200,6 +207,8 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
         });
       }
 
+      
+
       // add legend
       const legendNode = getLegend(svg);
       legendNode.select("#legend").remove();
@@ -269,6 +278,24 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
         .attr("stroke-width", "0.05em")
         .attr("stroke-linejoin", "round")
         .attr("d", path);
+
+      //add attribution
+      const attrNode = getAttribution(svg);
+      attrNode.select("#attribution").remove();
+
+      attrNode
+        .attr(
+          "transform",
+          `translate(${0.7 * width}, ${height - stdMargin - 20})`)
+        .raise()
+        .append("g")
+        .attr("id", "attribution")
+        .append("text")
+        .attr("stroke", "#d3d3d3")
+        .append("svg:a")
+        .attr("xlink:href", "https://twitter.com/eng_mclare")
+        .text("www.bridge.watch @eng_mclare");
+
     } else if (displayStates.length === 0) {
       const svg = d3.select(d3Container.current);
       const svgCounties = getCountyNode(svg);

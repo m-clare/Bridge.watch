@@ -30,6 +30,7 @@ html`
       <${BridgeTypes} path="/bridge_types" />
       <${CountryBridges} path="/country" />
       <${StateBridges} path="/state" />
+      <${About} path="/about" />
     </${Router}>
     </div>
     <div style=${"bottom: 0; left: 0; right; 0"}>

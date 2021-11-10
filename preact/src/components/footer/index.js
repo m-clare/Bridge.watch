@@ -59,7 +59,7 @@ export default function Footer() {
             <${Typography} variant="h6" >Contact</${Typography}>
             <${Typography} variant="body1">Maryanne Wachter</${Typography}>
           </${Grid}>
-          <${Grid} container spacing=${2}>
+          <${Grid} sx=${{pt: 1}} container spacing=${2}>
             <${Grid} item>
               <${Link} href="mailto:m.wachter@utsv.net"
                        target="_blank"}>

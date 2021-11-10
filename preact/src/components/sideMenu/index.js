@@ -41,7 +41,6 @@ export default function SideMenu() {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-
     setState(open);
   };
 
@@ -87,6 +86,11 @@ export default function SideMenu() {
              </${ListItem}>
            </${RouterLink}>`
            ))}
+         <${RouterLink} className=${classes.link} activeClassName="active" href="/about">
+         <${ListItem} button key=${"About"}
+                      onClick=${toggleDrawer(false)}>
+           <${ListItemText} primary="About"/></${ListItem}>
+         </${RouterLink}>
         </${List}>
       </${Box}>
     </${Drawer}>

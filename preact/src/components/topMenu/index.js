@@ -19,7 +19,7 @@ export default function TopMenu() {
   };
 
   return (html`
-      <${Button}
+      <${Button} sx=${{px: 2}}
         color="inherit"
         id="background-info-button"
         aria-controls="background-info-menu"

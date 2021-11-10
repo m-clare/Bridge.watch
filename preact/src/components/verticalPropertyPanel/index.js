@@ -45,7 +45,7 @@ export function VerticalPropertyPanel({ objSelected, objData, initialHistData, i
 
   return html`
 <${Grid} item xs=${12} md=${4} >
-  <${Paper} sx=${{padding: 3, minHeight: {xs: 0, md: 600}}}> 
+  <${Paper} sx=${{padding: 3, minHeight: {xs: 0, md: 570}}}> 
     <${Grid} item>
       <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
       <${BarChart}

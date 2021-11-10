@@ -85,6 +85,7 @@ export function QueryForm({
   submitted,
   plotChoices,
   filters,
+  handleClick,
   colWidth
 }) {
   const formHandlers = {};
@@ -98,15 +99,9 @@ export function QueryForm({
   let stateFilter;
   if ('state' in filters) {
     stateValue = true;
-    // stateFilter = filters.state.options
     stateFilter = Object.values((({ state  }) => ({ state  }))(filters));
   }
-
   filters = Object.values(multiFilters)
-
-  // multi state filter
-  
-
   return html`
  ${(stateValue) ?
 (html`<${Grid} item xs=${12}>
@@ -137,5 +132,8 @@ export function QueryForm({
     </${Typography}>
   </${Grid}>
   ${filters.map((value) => multiFilter(value, queryState, formHandlers, colWidth.multi, false))}
+  <${Grid} item xs=${12} md=${colWidth.single}>
+  <${Button} fullWidth disabled=${submitted} variant="contained" color="primary" onClick=${handleClick}>Clear filters</${Button}>
+  </${Grid}>
   `;
 }
