@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv("2020AllRecordsDelimitedAllStates.csv", dtype=str)
+df = pd.read_csv("2021AllRecordsDelimitedAllStates.csv", dtype=str)
 # df = pd.read_csv("2020BadLatLong.csv", dtype=str)
 print("Removing leading and lagging whitespace...")
 columns = df.columns.values.tolist()
@@ -84,6 +84,8 @@ df.loc[(~eastern_hemisphere), "LONG_017"] = "-" + df.loc[~eastern_hemisphere, "L
 
 # remove lat/long for terrible set of Maryland data
 # lat = 38, 39, 40, long = -70
+# remove negative country codes (-1)
+
 print("Writing cleaned file to csv...")
-df.to_csv("2020AllRecordsDelimitedAllStatesClean.csv", na_rep="NULL", index=False)
+df.to_csv("2021AllRecordsDelimitedAllStatesClean.csv", na_rep="NULL", index=False)
 # df.to_csv("BadCleaned.csv", na_rep="NULL", index=False)

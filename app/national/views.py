@@ -162,15 +162,35 @@ def national_bridges_csv(request):
         return Response("", status=status.HTTP_400_BAD_REQUEST)
 
 def check_conditions(query_dict, value, bool_tuple):
+    print(query_dict)
+    print(value)
     deck_bool = query_dict["deck_cond"] == value
     superstructure_bool = query_dict["superstructure_cond"] == value
     substructure_bool = query_dict["substructure_cond"] == value
     # check with tuple
     return (deck_bool, superstructure_bool, substructure_bool) == bool_tuple
 
+def check_new_conditions(query_dict, value, permutation_mapping):
+    deck_bool = query_dict["deck_cond"] == value
+    superstructure_bool = query_dict["superstructure_cond"] == value
+    substructure_bool = query_dict["substructure_cond"] == value
+    # check with tuple
+    return permutation_mapping[(deck_bool, superstructure_bool, substructure_bool)]
+
 @api_view(["GET"])
 def bridge_conditions(request):
     fields = []
+
+    material_options = {
+        "Reinforced Concrete": [1,2],
+        "Steel": [3,4],
+        "Prestressed or Post-tensioned Concrete": [5,6],
+        "Wood or Timber": [7],
+        "Masonry": [8],
+        "Aluminum, Wrought Iron, or Cast Iron": [9],
+        "Other": [0],
+    };
+
     condition_dictionary = {"G": [7, 8, 9], "F": [5, 6], "P": [0, 1, 2, 3, 4]}
 
     condition_ratings = {
@@ -197,6 +217,16 @@ def bridge_conditions(request):
         "superstructure": (False, True, False),
         "substructure": (False, False, True),
     }
+
+    permutation_mapping = {
+        (True, True, True): "all components",
+        (True, False, True): "deck and substructure",
+        (True, True, False): "deck and superstructure",
+        (False, True, True): "super/substructure",
+        (True, False, False): "deck",
+        (False, True, False): "superstructure",
+        (False, False, True): "substructure",
+    }
     if request.method == "GET":
         state = request.query_params.get("state")
         bridges = Bridge.objects.all()
@@ -215,11 +245,13 @@ def bridge_conditions(request):
         bridges = bridges.annotate(deck_cond=F('deck_condition__code'))
         bridges = bridges.annotate(superstructure_cond=F('superstructure_condition__code'))
         bridges = bridges.annotate(substructure_cond=F('substructure_condition__code'))
-        fields.extend(["bridge_condition",
+        fields.extend(["material",
+                       "bridge_condition",
                        "deck_cond",
                        "superstructure_cond",
                        "substructure_cond"])
 
+        test_distinct = list(bridges.distinct("material").values_list("material", flat=True))
         # limit query results for troubleshooting
         limit = request.query_params.get("limit")
         if (limit != None):
@@ -228,44 +260,54 @@ def bridge_conditions(request):
 
         bridge_cond_by_field = list(bridges.values(*fields).annotate(count=Count("pk")))
 
-        for key, value_list in condition_dictionary.items():
-            # first filter list of dictionaries to only those with relevant lowest rating
-            for value in value_list:
-                cond_dict[key][value] = [
-                    x
-                    for x in bridge_cond_by_field
-                    if (x["bridge_condition"] == key and x["rating"] == value)
-                ]
-        for condition_letter, rating_dictionary in cond_dict.items():
-            name_dict = {"name": condition_letter, "children": []}
-            for rating, matching_counts in rating_dictionary.items():
-                values_dict = {
-                    "name": f"{condition_ratings[str(rating)]} Condition ({str(rating)})",
-                    "children": [],
-                }
-                child_list = []
-                # Initialize condition dictionaries
-                component_counts = {}
-                for component_state, bool_tuple in permutation_dict.items():
-                    component_counts[component_state] = 0
-                for count in matching_counts:
-                    for component_state, bool_tuple in permutation_dict.items():
-                        condition_match = check_conditions(
-                            count, rating, bool_tuple
+        field_cond_dict = {}
+        for material_name in material_options.keys():
+            field_cond_dict[material_name] = cond_dict.copy()
+            material_codes = material_options[material_name]
+            for key, value_list in condition_dictionary.items():
+                # first filter list of dictionaries to only those with relevant lowest rating
+                for value in value_list:
+                    for x in bridge_cond_by_field:
+                        if x["material"] in material_codes:
+                            field_cond_dict[material_name][key][value] = [
+                                x
+                                for x in bridge_cond_by_field 
+                                if (x["bridge_condition"] == key and x["rating"] == value)
+                                ]
+        # sorting and aggregating for lowest value
+        for field, cond_dict in field_cond_dict.items():
+            field_dict = {'name': field, 'type': "material", "children": []}
+            for condition_letter, rating_dictionary in cond_dict.items():
+                name_dict = {"name": condition_letter, "children": []}
+                for rating, matching_counts in rating_dictionary.items():
+                    values_dict = {
+                        "name": f"{condition_ratings[str(rating)]} Condition ({str(rating)})",
+                        "children": [],
+                    }
+                    child_list = []
+                    # Initialize condition dictionaries
+                    component_counts = {"all components": 0,
+                                        "deck and substructure": 0,
+                                        "deck and superstructure": 0,
+                                        "super/substructure": 0,
+                                        "deck": 0,
+                                        "superstructure": 0,
+                                        "substructure": 0}
+                    for unique_condition in matching_counts:
+                        component_state = check_new_conditions(unique_condition, rating, permutation_mapping)
+                        component_counts[component_state] += unique_condition['count']
+                        # create arrays for d3
+                    for component, count in component_counts.items():
+                        child_list.append(
+                            {
+                                "name": component + " at " + str(rating),
+                                "value": count,
+                            }
                         )
-                        if condition_match:
-                            component_counts[component_state] += count["count"]
-                # create arrays for d3
-                for component, count in component_counts.items():
-                    child_list.append(
-                        {
-                            "name": component + " at " + str(rating),
-                            "value": count,
-                        }
-                    )
-                values_dict["children"] = child_list
-                name_dict["children"].append(values_dict)
-            output_dict["children"].append(name_dict)
+                    values_dict["children"] = child_list
+                    name_dict["children"].append(values_dict)
+                field_dict["children"].append(name_dict)
+            output_dict["children"].append(field_dict)
         return JsonResponse(output_dict)
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
