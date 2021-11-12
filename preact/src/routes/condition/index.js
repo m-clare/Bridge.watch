@@ -47,11 +47,11 @@ function constructURI(query) {
 export default function ConditionBridges() {
   const [conditionBridges, setConditionBridges] = useState({});
   const [queryState, setQueryState] = useState({
-    field: 'material',
+    field: 'service',
     material: [],
     type: [],
     service: [],
-    state: ["California"],
+    state: [],
   });
   const [field, setField] = useState(queryState.field)
   const [queryURI, setQueryURI] = useState("");

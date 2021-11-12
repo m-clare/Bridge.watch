@@ -179,27 +179,93 @@ def check_new_conditions(query_dict, value, permutation_mapping):
 def bridge_conditions(request):
     fields = []
 
-    material_options = {
-        "Reinforced Concrete": [1,2],
-        "Steel": [3,4],
-        "Prestressed or Post-tensioned Concrete": [5,6],
-        "Wood or Timber": [7],
-        "Masonry": [8],
-        "Aluminum, Wrought Iron, or Cast Iron": [9],
-        "Other": [0],
-    };
-
-    material_mapping = {
-        1: "Reinforced Concrete",
-        2: "Reinforced Concrete",
-        3: "Steel",
-        4: "Steel",
-        5: "Prestressed or Post-tensioned Concrete",
-        6: "Prestressed or Post-tensioned Concrete",
-        7: "Wood or Timber",
-        8: "Masonry",
-        9: "Aluminum, Wrought Iron, or Cast Iron",
-        0: "Other"
+    field_options = {
+        'material': {
+            "forward_map": {
+                "Reinforced Concrete": [1,2],
+                "Prestressed or Post-tensioned Concrete": [5,6],
+                "Masonry": [8],
+                "Steel": [3,4],
+                "Aluminum, Wrought Iron, or Cast Iron": [9],
+                "Wood or Timber": [7],
+                "Other": [0]
+            },
+            "reverse_map": {
+                1: "Reinforced Concrete",
+                2: "Reinforced Concrete",
+                3: "Steel",
+                4: "Steel",
+                5: "Prestressed or Post-tensioned Concrete",
+                6: "Prestressed or Post-tensioned Concrete",
+                7: "Wood or Timber",
+                8: "Masonry",
+                9: "Aluminum, Wrought Iron, or Cast Iron",
+                0: "Other"
+            }
+        },
+        'type' : {
+            'forward_map': {
+                "Slab": [1],
+                "Tee Beam": [4],
+                "Box Beam or Girders": [2,3,5,6],
+                "Frame": [7],
+                "Orthotropic": [8],
+                "Truss": [9,10],
+                "Arch": [11,12],
+                "Suspension": [13],
+                "Stayed Girder": [14],
+                "Movable (Lift, Bascule, or Swing)": [15,16,17],
+                "Segmental Box Girder": [21],
+                "Channel Beam": [22],
+            },
+            'reverse_map': {
+                1: "Slab",
+                4: "Tee Beam",
+                2 :"Box Beam or Girders",
+                3 :"Box Beam or Girders",
+                5 :"Box Beam or Girders",
+                6 :"Box Beam or Girders",
+                7: "Frame",
+                8: "Orthotropic",
+                9: "Truss",
+                10: "Truss",
+                11: "Arch",
+                12: "Arch",
+                13: "Suspension",
+                14: "Stayed Girder",
+                15: "Movable (Lift, Bascule, or Swing)",
+                16: "Movable (Lift, Bascule, or Swing)",
+                17: "Movable (Lift, Bascule, or Swing)",
+                21: "Segmental Box Girder",
+                22: "Channel Beam",
+            }
+        },
+        'service': {
+            'forward_map': {
+                "Highway": 1,
+                "Railroad": 2,
+                "Pedestrian / bicycle": 3,
+                "Highway / railroad": 4,
+                "Highway / pedestrian": 5,
+                "Overpass structure at an interchange": 6,
+                "Third level (interchange)": 7,
+                "Fourth level (interchange)": 8,
+                "Building or plaza": 9,
+                "Other": 0
+            },
+            'reverse_map': {
+                1: "Highway",
+                2: "Railroad",
+                3: "Pedestrian / bicycle",
+                4: "Highway / railroad",
+                5: "Highway / pedestrian",
+                6: "Overpass structure at an interchange",
+                7: "Third level (interchange)",
+                8: "Fourth level (interchange)",
+                9: "Building or plaza",
+                0: "Other"
+            }
+        }
     }
 
     condition_ratings = {
@@ -214,7 +280,7 @@ def bridge_conditions(request):
         "1": "Imminent Failure",
         "0": "Failed",
     }
-    output_dict = {"name": "2021 Bridge Condition Data", "type": "material", "children": []}
+    
 
     condition_mapping = {
         "G": "In Good Condition (7, 8, 9)",
@@ -242,25 +308,52 @@ def bridge_conditions(request):
         (False, False, False): "mismatched or missing component ratings"
     }
     if request.method == "GET":
-        state = request.query_params.get("state")
+
         bridges = Bridge.objects.all()
         bridges = bridges.exclude(lowest_rating__code=None)
+        bridges = bridges.annotate(rating=F('lowest_rating__code'))
         fields.append("rating")
 
-        if ('rating' in fields):
-            bridges = bridges.annotate(rating=F('lowest_rating__code'))
+        # Get outermost categories
+        field = request.query_params.get("field")
+        if field == 'material':
+            fields.append("material")
+            bridges = bridges.exclude(structure_kind__code=None)
+            bridges = bridges.annotate(material=F('structure_kind__code'))
+        if field == 'type':
+            fields.append("type")
+            bridges = bridges.exclude(structure_type__code=None)
+            bridges = bridges.annotate(type=F('structure_type__code'))
+        if field == 'service':
+            fields.append("service")
+            bridges = bridges.exclude(structure_type__code=None)
+            bridges = bridges.annotate(service=F('type_of_service_on_bridge__code'))
+
+        # Apply filters
+        state = request.query_params.get("state")
         if state is not None:
             state_list = state.split(',')
             bridges = bridges.filter(state__fips_code__in=state_list)
-            bridges = bridges.annotate(state_name=F('state__name'))
+        material = request.query_params.get("material")
+        if material is not None:
+            material_list = material.split(',')
+            bridges = bridges.filter(structure_kind__code__in=material_list)
+        # bridge type
+        type = request.query_params.get("type")
+        if type is not None:
+            type_list = type.split(',')
+            bridges = bridges.filter(structure_type__code__in=type_list)
+        # bridge service
+        service = request.query_params.get("service")
+        if service is not None:
+            service_list = service.split(',')
+            bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
 
-        bridges = bridges.annotate(material=F('structure_kind__code'))
         bridges = bridges.annotate(bridge_cond=F('bridge_condition'))
         bridges = bridges.annotate(deck_cond=F('deck_condition__code'))
         bridges = bridges.annotate(superstructure_cond=F('superstructure_condition__code'))
         bridges = bridges.annotate(substructure_cond=F('substructure_condition__code'))
-        fields.extend(["material",
-                       "bridge_condition",
+        fields.extend(["bridge_condition",
                        "deck_cond",
                        "superstructure_cond",
                        "substructure_cond"])
@@ -285,14 +378,19 @@ def bridge_conditions(request):
                                                3: component_counts.copy(),
                                                4: component_counts.copy()}}
 
-        for material_name in material_options.keys():
-            field_cond_dict[material_name] = copy.deepcopy(new_cond_dict)
+        for name in field_options[field]['forward_map'].keys():
+            field_cond_dict[name] = copy.deepcopy(new_cond_dict)
         for unique_condition in bridge_cond_by_field:
-            material_name = material_mapping[unique_condition["material"]]
+            if field == "state": # due to django field clash on state vs state_name
+                name = field_options[field]['reverse_map'][unique_condition["state_fips"]]
+            else:
+                name = field_options[field]['reverse_map'][unique_condition[field]]
             condition = condition_mapping[unique_condition["bridge_condition"]]
             rating = unique_condition["rating"]
             component_state = check_new_conditions(unique_condition, rating, permutation_mapping)
-            field_cond_dict[material_name][condition][rating][component_state] += unique_condition["count"]
+            field_cond_dict[name][condition][rating][component_state] += unique_condition["count"]
+
+        output_dict = {"name": "2021 Bridge Condition Data", "field": field, "children": []}
 
         # create d3 output
         for field, bridge_cond_dict in field_cond_dict.items():

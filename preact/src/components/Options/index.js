@@ -133,12 +133,12 @@ export const fieldOptions = {
     display: "Group by material",
   },
   type: {
-    query: "bridge_type",
+    query: "type",
     display: "Group by bridge type",
   },
-  state: {
-    query: "state",
-    display: "Group by state",
+  service: {
+    query: "service",
+    display: "Group by type of service on bridge",
   }
 }
 

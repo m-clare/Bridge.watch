@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import * as d3 from "d3";
 import { isEmpty } from "lodash-es";
 import { colorDict } from "../colorPalette";
+import { grey } from "@mui/material/colors";
 
 import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
@@ -46,8 +47,8 @@ const getLocateNode = (svg) => {
 }
 const partition = (data) => {
   const root = d3.hierarchy(data).sum((d) => d.value);
-  /* .sort((a, b) => b.value - a.value) */
-  /* optional sort large to small */
+   //      .sort((a, b) => b.value - a.value)
+  //optional sort large to small
   return d3.partition().size([2 * Math.PI, root.height + 1])(root);
 };
 
@@ -90,7 +91,7 @@ function wrap(text, width) {
       words = text.text().split(/\s+/).reverse(),
       word,
       line = [],
-      lineNumber = 0,
+      lineNumber = 1,
       lineHeight = 0.8, // ems
       x = text.attr("x"),
       y = text.attr("y"),
@@ -105,6 +106,7 @@ function wrap(text, width) {
       line.push(word);
       tspan.text(line.join(" "));
       if (tspan.node().getComputedTextLength() > width) {
+        lineNumber += 1
         line.pop();
         tspan.text(line.join(" "));
         line = [word];
@@ -149,23 +151,25 @@ const format = () => d3.format(",d");
 
 export function SunburstChart({ bridgeConditionData, field, submitted }) {
   const [totalValues, setTotalValues] = useState({});
+  const [rootValue, setRootValue] = useState(0);
   const d3Container = useRef(null);
 
   const svg = d3.select(d3Container.current);
 
   useEffect(() => {
     if (!isEmpty(bridgeConditionData)) {
-      setTotalValues(bridgeConditionData);
+      const root = d3.hierarchy(bridgeConditionData).sum((d) => d.value);
+      setRootValue(root.value);
     }
   }, [bridgeConditionData]);
-
+  
   useEffect(() => {
-    if (!isEmpty(bridgeConditionData) && d3Container.current && !submitted) {
+    if (!isEmpty(bridgeConditionData) && d3Container.current && !submitted && rootValue !== 0) {
 
-     const categoryColor = d3
+      const categoryColor = d3
         .scaleLinear()
         .domain([0, bridgeConditionData.children.length / 2, bridgeConditionData.children.length])
-        .range(["#8d090f","#00346a", "#8d0o0f"])
+        .range(["#1c5d99", "#c44436", "#1c5d99"])
         .interpolate(d3.interpolateRgb.gamma(1));
 
       // Color translation - explicit mapping
@@ -181,7 +185,6 @@ export function SunburstChart({ bridgeConditionData, field, submitted }) {
       const root = partition(bridgeConditionData);
 
       root.each((d) => (d.current = d));
-
       svg.style("font", "1.15rem sans-serif");
       svg.style("font-family", "Fira Sans");
 
@@ -281,8 +284,6 @@ export function SunburstChart({ bridgeConditionData, field, submitted }) {
         .attr("pointer-events", "all")
         .on("click", clicked);
 
-      /* attrNode.select("#testText").remove(); */
-
       function clicked(event, p) {
         parent.datum(p.parent || root);
 
@@ -357,7 +358,7 @@ export function SunburstChart({ bridgeConditionData, field, submitted }) {
   }, [bridgeConditionData]);
 
   return html`
-    ${!isEmpty(bridgeConditionData)
+    ${!isEmpty(bridgeConditionData) && rootValue !== 0
       ? html`<${Grid} item xs=${12}>
     <${Typography} variant="h4" component="h1">Sunburst Plot</${Typography}>
     </${Grid}>
@@ -365,9 +366,16 @@ export function SunburstChart({ bridgeConditionData, field, submitted }) {
     <svg class="d3-component"
          viewBox="0 0 ${width} ${height}"
          ref=${d3Container}
-         >
-    </svg>
-  </${Grid}>`
-      : null}
-  `;
+  >
+  </svg>
+  </${Grid}>` : null}
+   ${rootValue === 0 ? html
+  `<${Grid} item xs=${12}>
+      <${Typography} style=${"text-align: center"}
+                     variant="h6"
+                     color=${grey[500]}>
+        <i>No bridges with ratings available to create a sunburst plot!</i>
+      </${Typography}>
+    </${Grid}>` : null}
+`;
 }
