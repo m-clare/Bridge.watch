@@ -13,6 +13,7 @@ import Home from "../routes/home";
 import Profile from "../routes/profile";
 import CountryBridges from "../routes/country";
 import StateBridges from "../routes/state";
+import ConditionBridges from "../routes/condition";
 import About from "../routes/about";
 import BridgeTypes from "../routes/bridgeTypes";
 
@@ -30,6 +31,7 @@ html`
       <${BridgeTypes} path="/bridge_types" />
       <${CountryBridges} path="/country" />
       <${StateBridges} path="/state" />
+      <${ConditionBridges} path="/condition" />
       <${About} path="/about" />
     </${Router}>
     </div>

@@ -127,6 +127,21 @@ export const plotOptions = {
   },
 };
 
+export const fieldOptions = {
+  material: {
+    query: "material",
+    display: "Group by material",
+  },
+  type: {
+    query: "bridge_type",
+    display: "Group by bridge type",
+  },
+  state: {
+    query: "state",
+    display: "Group by state",
+  }
+}
+
 export const detailedOptions = {
 
 }
@@ -144,6 +159,11 @@ export const singleFilters = {
     'name': 'plot_type',
     'label': 'Plot Type',
     'options': plotOptions
+  },
+  field: {
+    'name': 'field',
+    'label': 'Field',
+    'options': fieldOptions
   }
 }
 

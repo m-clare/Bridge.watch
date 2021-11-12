@@ -31,7 +31,11 @@ function constructURI(query) {
   const searchParams = new URLSearchParams();
   const keys = Object.keys(query);
   keys.forEach((item) => {
-    if (query[item].length !== 0) {
+    if (item === "field") {
+      const value = query["field"];
+      searchParams.set(item, singleFilters.field.options[value].query)
+    }
+    else if (query[item].length !== 0) {
       const filterMap = multiFilters[item].options;
       searchParams.set(item, query[item].map((d) => filterMap[d]).sort());
     }
@@ -42,7 +46,6 @@ function constructURI(query) {
 
 export default function ConditionBridges() {
   const [conditionBridges, setConditionBridges] = useState({});
-  const [field, setField] = useState(queryState.field)
   const [queryState, setQueryState] = useState({
     field: 'material',
     material: [],
@@ -50,6 +53,7 @@ export default function ConditionBridges() {
     service: [],
     state: ["California"],
   });
+  const [field, setField] = useState(queryState.field)
   const [queryURI, setQueryURI] = useState("");
   const [submitted, setSubmitted] = useState(true);
   const [waiting, setWaiting] = useState(false);

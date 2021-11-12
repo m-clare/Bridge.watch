@@ -8,6 +8,7 @@ from .writers import get_streaming_response
 from django_pandas.io import read_frame
 from django.http import HttpResponse
 from django.http import JsonResponse
+import copy
 # Create your views here.
 
 @api_view(["GET"])
@@ -188,7 +189,18 @@ def bridge_conditions(request):
         "Other": [0],
     };
 
-    condition_dictionary = {"G": [7, 8, 9], "F": [5, 6], "P": [0, 1, 2, 3, 4]}
+    material_mapping = {
+        1: "Reinforced Concrete",
+        2: "Reinforced Concrete",
+        3: "Steel",
+        4: "Steel",
+        5: "Prestressed or Post-tensioned Concrete",
+        6: "Prestressed or Post-tensioned Concrete",
+        7: "Wood or Timber",
+        8: "Masonry",
+        9: "Aluminum, Wrought Iron, or Cast Iron",
+        0: "Other"
+    }
 
     condition_ratings = {
         "9": "Excellent",
@@ -202,24 +214,28 @@ def bridge_conditions(request):
         "1": "Imminent Failure",
         "0": "Failed",
     }
-    cond_dict = {"G": {}, "F": {}, "P": {}}
     output_dict = {"name": "2021 Bridge Condition Data", "type": "material", "children": []}
-    # TODO: Make more generic function to generate permutations
-    permutation_dict = {
-        "all components": (True, True, True),
-        "deck and substructure": (True, False, True),
-        "deck and superstructure": (True, True, False),
-        "super/substructure": (False, True, True),
-        "deck": (True, False, False),
-        "superstructure": (False, True, False),
-        "substructure": (False, False, True),
+
+    condition_mapping = {
+        "G": "In Good Condition (7, 8, 9)",
+        "F": "In Fair Condition (5, 6)",
+        "P": "In Poor Condition (0, 1, 2, 3, 4)",
     }
+
+    component_counts = {"all components": 0,
+                        "superstructure and substructure": 0,
+                        "deck and substructure": 0,
+                        "deck and superstructure": 0,
+                        "substructure": 0,
+                        "superstructure": 0,
+                        "deck": 0,
+                        "mismatched or missing component ratings": 0}
 
     permutation_mapping = {
         (True, True, True): "all components",
         (True, False, True): "deck and substructure",
         (True, True, False): "deck and superstructure",
-        (False, True, True): "super/substructure",
+        (False, True, True): "superstructure and substructure",
         (True, False, False): "deck",
         (False, True, False): "superstructure",
         (False, False, True): "substructure",
@@ -258,47 +274,44 @@ def bridge_conditions(request):
         bridge_cond_by_field = list(bridges.values(*fields).annotate(count=Count("pk")))
 
         field_cond_dict = {}
+        new_cond_dict = {"In Good Condition (7, 8, 9)": {7: component_counts.copy(),
+                                               8: component_counts.copy(),
+                                               9: component_counts.copy()},
+                         "In Fair Condition (5, 6)": {5: component_counts.copy(),
+                                               6: component_counts.copy()},
+                         "In Poor Condition (0, 1, 2, 3, 4)": {0: component_counts.copy(),
+                                               1: component_counts.copy(),
+                                               2: component_counts.copy(),
+                                               3: component_counts.copy(),
+                                               4: component_counts.copy()}}
+
         for material_name in material_options.keys():
-            field_cond_dict[material_name] = cond_dict.copy()
-            material_codes = material_options[material_name]
-            for key, value_list in condition_dictionary.items():
-                # first filter list of dictionaries to only those with relevant lowest rating
-                for value in value_list:
-                    for x in bridge_cond_by_field:
-                        if x["material"] in material_codes:
-                            field_cond_dict[material_name][key][value] = [
-                                x
-                                for x in bridge_cond_by_field 
-                                if (x["bridge_condition"] == key and x["rating"] == value)
-                                ]
-        # sorting and aggregating for lowest value
-        for field, cond_dict in field_cond_dict.items():
+            field_cond_dict[material_name] = copy.deepcopy(new_cond_dict)
+        for unique_condition in bridge_cond_by_field:
+            material_name = material_mapping[unique_condition["material"]]
+            condition = condition_mapping[unique_condition["bridge_condition"]]
+            rating = unique_condition["rating"]
+            component_state = check_new_conditions(unique_condition, rating, permutation_mapping)
+            field_cond_dict[material_name][condition][rating][component_state] += unique_condition["count"]
+
+        # create d3 output
+        for field, bridge_cond_dict in field_cond_dict.items():
             field_dict = {'name': field, "children": []}
-            for condition_letter, rating_dictionary in cond_dict.items():
-                name_dict = {"name": condition_letter, "children": []}
-                for rating, matching_counts in rating_dictionary.items():
+            # G, F, P
+            for condition_description, rating_dictionary in bridge_cond_dict.items():
+                name_dict = {"name": condition_description, "children": []}
+                # [7, 8, 9], [5, 6], [0, 1, 2, 3, 4]
+                for numerical_rating, rating_component_counts in rating_dictionary.items():
                     values_dict = {
-                        "name": f"{condition_ratings[str(rating)]} Condition ({str(rating)})",
+                        "name": f"{condition_ratings[str(numerical_rating)]} Condition ({str(numerical_rating)})",
                         "children": [],
                     }
                     child_list = []
-                    # Initialize condition dictionaries
-                    component_counts = {"all components": 0,
-                                        "deck and substructure": 0,
-                                        "deck and superstructure": 0,
-                                        "super/substructure": 0,
-                                        "deck": 0,
-                                        "superstructure": 0,
-                                        "substructure": 0,
-                                        "mismatched or missing component ratings": 0}
-                    for unique_condition in matching_counts:
-                        component_state = check_new_conditions(unique_condition, rating, permutation_mapping)
-                        component_counts[component_state] += unique_condition['count']
-                        # create arrays for d3
-                    for component, count in component_counts.items():
+                    # create arrays for d3
+                    for component, count in rating_component_counts.items():
                         child_list.append(
                             {
-                                "name": component + " at " + str(rating),
+                                "name": component + " at " + str(numerical_rating),
                                 "value": count,
                             }
                         )
