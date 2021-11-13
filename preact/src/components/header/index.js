@@ -5,6 +5,7 @@ import htm from "htm";
 import { Link as RouterLink } from "preact-router/match";
 import { Link as MaterialLink } from "@mui/material/Link"
 import AppBar from "@mui/material/AppBar";
+import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -21,8 +22,9 @@ export default function Header() {
 
   return html`
 <${Box} sx=${{ flexGrow: 1 }}>
-  <${AppBar} position="static">
-    <${Toolbar}>
+  <${AppBar}>
+  <${Container} maxWidth="lg">
+    <${Toolbar} >
       <${SideMenu} />
       <${Typography} variant="h6" component="div" sx=${{ flexGrow: 1 }}>
       Bridge.watch
@@ -36,6 +38,10 @@ export default function Header() {
                                                                   style=${"color: #fff; text-decoration: none"}>
               Info By State</${RouterLink}>
           </${Button}>
+          <${Button} sx=${{px: 2}} color="inherit"><${RouterLink} href='/condition'
+                                                                  style=${"color: #fff; text-decoration: none"}>
+              Info By Condition</${RouterLink}>
+          </${Button}>
           <${TopMenu}/>
           <${Button} sx=${{px: 2}} color="inherit"><${RouterLink} href='/about'
                                                                   style=${"color: #fff; text-decoration: none"}>
@@ -43,6 +49,7 @@ export default function Header() {
           </${Button}>
       </${Box}>
     </${Toolbar}>
+  </${Container}>
   </${AppBar}>
 </${Box}>`;
 }

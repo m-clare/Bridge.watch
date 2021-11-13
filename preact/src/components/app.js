@@ -16,6 +16,7 @@ import StateBridges from "../routes/state";
 import ConditionBridges from "../routes/condition";
 import About from "../routes/about";
 import BridgeTypes from "../routes/bridgeTypes";
+import HeadToHead from "../routes/headToHead"
 
 const THEME = createTheme(theme);
 
@@ -24,13 +25,15 @@ html`
 <${ThemeProvider} theme=${THEME}>
   <div id="app">
     <${Header} />
-    <div style=${"position: relative; min-height: 100vh;"}>
+    <div style=${"position: relative; min-height: 100vh; padding-top: 60px"}>
+    
     <${Router}>
       <${CountryBridges} path="/" />
       <${About} path="/about" />
       <${BridgeTypes} path="/bridge_types" />
       <${CountryBridges} path="/country" />
       <${StateBridges} path="/state" />
+      <${HeadToHead} path="/state_head_to_head" />
       <${ConditionBridges} path="/condition" />
       <${About} path="/about" />
     </${Router}>

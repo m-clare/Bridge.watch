@@ -12,7 +12,7 @@ export const bridgeTypes = [
       "Simplest and brute force method to span over a waterway or obstacle, but most inefficient use of material, and only short spans between supporting points possible",
     exampleName: "Coronado Bridge",
     exampleLocation: "San Diego, CA",
-    exampleStructuralEngineer: "Architect: Robert Mosher",
+    exampleStructuralEngineer: "California Department of Public Works (Jacob Dekema)",
     constructionImg:
       "/assets/images/bridgeTypes/Coronado_Bridge_Construction.jpg",
     cImgAttrLink:

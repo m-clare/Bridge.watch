@@ -25,26 +25,13 @@ const height = width;
 const radius = width / 6; // 2 layers visible
 const stdMargin = 30;
 
-const getAttribution = (svg) => {
-  if (!document.getElementById("attributionContainer")) {
-    svg.append("g").attr("id", "attributionContainer");
+const getNodeById = (svg, id) => {
+  if (svg.select("#" + id).empty()) {
+    svg.append("g").attr("id", id);
   }
-  return svg.select("#attributionContainer");
-};
-
-const getSunburstNode = (svg) => {
-  if (!document.getElementById("SunburstContainer")) {
-    svg.append("g").attr("id", "SunburstContainer");
-  }
-  return svg.select("#SunburstContainer");
-};
-
-const getLocateNode = (svg) => {
-  if (!document.getElementById("LocateContainer")) {
-    svg.append("g").attr("id", "LocateContainer");
-  }
-  return svg.select("#LocateContainer");
+  return svg.select("#" + id)
 }
+
 const partition = (data) => {
   const root = d3.hierarchy(data).sum((d) => d.value);
    //      .sort((a, b) => b.value - a.value)
@@ -149,12 +136,10 @@ const opacityMapping = (categories, name) => {
 
 const format = () => d3.format(",d");
 
-export function SunburstChart({ bridgeConditionData, field, submitted }) {
+export function SunburstChart({ bridgeConditionData, field, submitted, chartID }) {
   const [totalValues, setTotalValues] = useState({});
   const [rootValue, setRootValue] = useState(0);
   const d3Container = useRef(null);
-
-  const svg = d3.select(d3Container.current);
 
   useEffect(() => {
     if (!isEmpty(bridgeConditionData)) {
@@ -188,10 +173,10 @@ export function SunburstChart({ bridgeConditionData, field, submitted }) {
       svg.style("font", "1.15rem sans-serif");
       svg.style("font-family", "Fira Sans");
 
-      const sunburstNode = getSunburstNode(svg);
+      const sunburstNode = getNodeById(svg, "SunburstContainer")
       sunburstNode.select("#sunburst").remove();
 
-      const locateNode = getLocateNode(svg);
+      const locateNode = getNodeById(svg, "LocateContainer")
       locateNode.select("#locateSun").remove()
 
       const lg = locateNode
@@ -274,7 +259,19 @@ export function SunburstChart({ bridgeConditionData, field, submitted }) {
         .attr("fill-opacity", (d) => +labelVisible(d.current))
         .attr("transform", (d) => labelTransform(d.current))
         .text((d) => d.data.name)
-        .call(wrap, radius - 10);
+        .attr("id", "labelText")
+        .call(wrap, radius - 10)
+
+
+      const number = g.selectAll("#labelText")
+            .data(root.descendants().slice(1))
+            .join("text")
+            .append("tspan")
+            .attr("dy", "1.15em")
+            .attr("x", 0)
+            .text(d => d.value)
+            .attr("font-size", "1.0em")
+            .attr("font-weight","bold")
 
       const parent = g
         .append("circle")
@@ -338,7 +335,7 @@ export function SunburstChart({ bridgeConditionData, field, submitted }) {
       }
 
       //add attribution
-      const attrNode = getAttribution(svg);
+      const attrNode = getNodeById(svg, "AttributionContainer")
       attrNode.select("#attribution").remove();
 
       attrNode
@@ -359,11 +356,9 @@ export function SunburstChart({ bridgeConditionData, field, submitted }) {
 
   return html`
     ${!isEmpty(bridgeConditionData) && rootValue !== 0
-      ? html`<${Grid} item xs=${12}>
-    <${Typography} variant="h4" component="h1">Sunburst Plot</${Typography}>
-    </${Grid}>
+      ? html`
     <${Grid} item xs=${12} sx=${{ paddingTop: 0 }}>
-    <svg class="d3-component"
+    <svg id=${chartID}
          viewBox="0 0 ${width} ${height}"
          ref=${d3Container}
   >

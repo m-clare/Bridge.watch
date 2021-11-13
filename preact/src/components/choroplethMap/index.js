@@ -267,14 +267,14 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
             .transition()
             .duration(200)
             .attr("stroke-width", "0.05em")
-            .attr("stroke", "#777");
+            .attr("stroke", "#000");
         });
 
       svgCounties
         .join("path")
         .datum(mesh(us, us.objects.counties, (a, b) => a !== b))
         .attr("fill", "none")
-        .attr("stroke", "#777")
+        .attr("stroke", "#000")
         .attr("stroke-width", "0.05em")
         .attr("stroke-linejoin", "round")
         .attr("d", path);
