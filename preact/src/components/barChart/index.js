@@ -5,10 +5,14 @@ import { useEffect, useState, useRef } from "preact/hooks";
 import { isEmpty } from "lodash-es";
 import Typography from "@mui/material/Typography";
 import { colorDict } from "../colorPalette";
-import { plotOptions } from "../options";
+import { plotOptions, monthNames } from "../options";
 const html = htm.bind(h);
 
-const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+function addDays(date, days) {
+  let result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
 
 function updateBarChart(svg, data, dimensions) {
   const height = dimensions.height;
@@ -18,7 +22,7 @@ function updateBarChart(svg, data, dimensions) {
   if (d3.max(data, (d) => d.count) === 0) {
     max = 1;
   } else {
-    max = d3.max(data, (d) => d.count)
+    max = d3.max(data, (d) => d.count);
   }
 
   const y = d3
@@ -95,11 +99,12 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
         d3
           .axisBottom(x)
           .tickFormat((interval, i) => {
-            let modInterval
+            let modInterval;
             if (field === "future_date_of_inspection") {
-              modInterval = monthNames[interval.getMonth()] + '-' + interval.getFullYear()
+              modInterval =
+                monthNames[interval.getUTCMonth()] + "-" + interval.getUTCFullYear();
             } else {
-              modInterval = interval
+              modInterval = interval;
             }
             return i % 2 !== 0 ? " " : modInterval;
           })
@@ -108,7 +113,7 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
       .attr("font-size", "1.2em");
   }
 
-  const displayName = plotOptions[field]['histogram'];
+  const displayName = plotOptions[field]["histogram"];
 
   const getXAxisLabel = () => {
     if (!document.getElementById("xaxislabelContainer")) {
@@ -126,8 +131,7 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
     .attr("y", margins.bottom - 6)
     .attr("fill", "currentColor")
     .attr("text-anchor", "end")
-    .text(displayName + " →")
-
+    .text(displayName + " →");
 
   // add labels
   svg
@@ -164,8 +168,7 @@ export function BarChart({
     left: 0.005 * width,
     right: 0.005 * width,
     top: 0.08 * height,
-    bottom: Math.min(0.16* height, 48),
-
+    bottom: Math.min(0.16 * height, 48),
   };
 
   const dimensions = { width: width, height: height, margins: margins };
@@ -175,12 +178,16 @@ export function BarChart({
     if (!isEmpty(initialHistData) && d3Container.current) {
       const svg = d3.select(d3Container.current);
 
-      const color = colorDict[field]
+      const color = colorDict[field];
       const data = initialHistData;
 
       let x;
       if (field === "Inspection date") {
-        x = d3.scaleTime()
+        const today = new Date();
+        const min = new Date(Date.UTC(today.getFullYear(), today.getMonth()));
+        const max = addDays(min, 365);
+        x = d3
+          .scaleUtc()
           .domain(initialHistData.map((d) => d[field]))
           .range([margins.left + 8, width - (margins.right + 8)])
           .padding(0.1);
@@ -196,7 +203,7 @@ export function BarChart({
       if (d3.max(data, (d) => d.count) === 0) {
         max = 1;
       } else {
-        max = d3.max(data, (d) => d.count)
+        max = d3.max(data, (d) => d.count);
       }
       const y = d3
         .scaleLinear()

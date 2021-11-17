@@ -18,13 +18,15 @@ export default function TopMenu() {
     setAnchorEl(null);
   };
 
-  return (html`
-      <${Button} sx=${{px: 2}} style=${"color: #fff; text-decoration: none; text-shadow: #000 1px 0 10px; font-size: 18px"}
+  return html`
+      <${Button} sx=${{
+    px: 2,
+  }} style=${"color: #fff; text-decoration: none; text-shadow: #000 1px 0 10px; font-size: 18px"}
         color="inherit"
         id="background-info-button"
         aria-controls="background-info-menu"
         aria-haspopup="true"
-        aria-expanded=${open ? 'true' : undefined}
+        aria-expanded=${open ? "true" : undefined}
         onClick=${handleClick}
       >
         Background
@@ -35,7 +37,7 @@ export default function TopMenu() {
         open=${open}
         onClose=${handleClose}
         MenuListProps=${{
-          'aria-labelledby': 'background-info-button',
+          "aria-labelledby": "background-info-button",
         }}
       >
         <${MenuItem} onClick=${handleClose}>
@@ -51,5 +53,5 @@ export default function TopMenu() {
           </${RouterLink}>
         </${MenuItem}>
       </${Menu}>
-`)
+`;
 }

@@ -12,6 +12,7 @@ export default {
       light: "#5d85c6",
       dark: "#0e306b",
       contrastText: "#ffffff"
+      
     },
     secondary: {
       main: "#c44436",

@@ -7,25 +7,20 @@ import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import * as d3 from "d3";
-import { hexbin } from "d3-hexbin";
-import { mesh } from "topojson-client";
-import { legend } from "../colorLegend";
-import us from "us-atlas/states-albers-10m.json";
-import { isEmpty } from "lodash-es";
-import { colorDict } from "../colorPalette";
 
 import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
 
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
-
 import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
 
-export function VerticalPropertyPanel({ objSelected, objData, initialHistData, initialKeyData, field }) {
-
+export function VerticalPropertyPanel({
+  objSelected,
+  objData,
+  initialHistData,
+  initialKeyData,
+  field,
+}) {
   let locality;
   if (objSelected) {
     locality = "Selected Hex";
@@ -42,10 +37,9 @@ export function VerticalPropertyPanel({ objSelected, objData, initialHistData, i
     barHeight = 300;
   }
 
-
   return html`
 <${Grid} item xs=${12} md=${4} >
-  <${Paper} sx=${{padding: 3, minHeight: {xs: 0, md: 600}}}> 
+  <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 600 } }}> 
     <${Grid} item>
       <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
       <${BarChart}
@@ -66,5 +60,5 @@ export function VerticalPropertyPanel({ objSelected, objData, initialHistData, i
         />
     </${Grid}>
   </${Paper}>
-</${Grid}>`
+</${Grid}>`;
 }

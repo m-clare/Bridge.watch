@@ -19,7 +19,7 @@ import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
 import { HorizontalPropertyPanel } from "../../components/horizontalPropertyPanel";
 
-import { stateOptions } from "../../components/options";
+import { stateOptions, monthNames } from "../options";
 
 const html = htm.bind(h);
 
@@ -41,7 +41,6 @@ const tickExtremes = {
   repair_cost_per_foot: ["$1,000", "$100,000"],
 };
 
-const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const getInterestValue = (plotType, countyValues) => {
   if (plotType === "percent_poor") {
     const histogram = countyValues.objHistogram;
@@ -55,16 +54,22 @@ const getInterestValue = (plotType, countyValues) => {
     const stringDescription = "Rated below 4: " + value + "%";
     return { stringDescription: stringDescription, value: value };
   } else if (plotType === "future_date_of_inspection") {
-    const value = countyValues.objKeyValues.mode
-    const stringDescription = "Most common value: " + monthNames[value.getMonth()] + '-' + value.getFullYear()
+    const value = countyValues.objKeyValues.mode;
+    const stringDescription =
+      "Most common value: " +
+      monthNames[value.getUTCMonth()] +
+      "-" +
+      value.getUTCFullYear();
     return { stringDescription: stringDescription, value: value };
-  } else if (plotType === "average_daily_traffic" || "truck_traffic") {
+  } else if (plotType === "average_daily_traffic" || plotType === "truck_traffic") {
     const value = Math.round(countyValues.objKeyValues.avg);
     const stringDescription = "Average value: " + value;
     return { stringDescription: stringDescription, value: value };
   } else {
     return {
-      stringDescription: `Median value: ${Math.round(countyValues.objKeyValues.median)}`,
+      stringDescription: `Median value: ${Math.round(
+        countyValues.objKeyValues.median
+      )}`,
       value: countyValues.objKeyValues.median,
     };
   }
@@ -88,14 +93,19 @@ const getNodeById = (svg, id) => {
   if (svg.select("#" + id).empty()) {
     svg.append("g").attr("id", id);
   }
-  return svg.select("#" + id)
-}
+  return svg.select("#" + id);
+};
 
-export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submitted }) {
+export function ChoroplethMap({
+  bridgeCountyData,
+  displayStates,
+  plotType,
+  submitted,
+}) {
   const [activeCounty, setActiveCounty] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [countySelected, setCountySelected] = useState(false);
-  const [titleSelected, setTitleSelected] = useState('');
+  const [titleSelected, setTitleSelected] = useState("");
   const d3Container = useRef(null);
 
   const svg = d3.select(d3Container.current);
@@ -128,7 +138,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
       );
       const path = d3.geoPath(projection);
 
-      const svgCounties = getNodeById(svg, "AllCounties")
+      const svgCounties = getNodeById(svg, "AllCounties");
 
       svgCounties
         .selectAll("path")
@@ -138,10 +148,9 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
         .attr("stroke", "#777")
         .attr("stroke-linejoin", "round")
         .attr("d", path);
-
     } else {
       const svg = d3.select(d3Container.current);
-      const svgCounties = getNodeById(svg, "AllCounties")
+      const svgCounties = getNodeById(svg, "AllCounties");
       svg.remove(svgCounties);
     }
   }, [bridgeCountyData]);
@@ -150,12 +159,11 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
     if (!isEmpty(bridgeCountyData) && d3Container.current && !submitted) {
       setTitleSelected(displayStates.sort());
     }
-  }, [bridgeCountyData])
+  }, [bridgeCountyData]);
 
   useEffect(() => {
     if (!isEmpty(bridgeCountyData) && d3Container.current && !submitted) {
-
-      console.log(plotType)
+      console.log(plotType);
       const svg = d3.select(d3Container.current);
       const color = colorDict[plotType];
 
@@ -170,7 +178,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
         .attr("class", "tooltip")
         .style("visibility", "hidden")
         .style("font-family", "Fira Sans")
-        .style("font-size", "0.8rem")
+        .style("font-size", "0.8rem");
 
       const selectedCounties = feature(
         selectedStates,
@@ -198,20 +206,21 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
 
       // add legend
       // const legendNode = getLegend(svg);
-      const legendNode = getNodeById(svg, "LegendContainer")
+      const legendNode = getNodeById(svg, "LegendContainer");
       legendNode.select("#legend").remove();
 
       // every other tick value
       const tickFormatting = (interval, i) => {
-        let modInterval
+        let modInterval;
         if (plotType === "future_date_of_inspection") {
-          let modDate = new Date(interval)
-          modInterval = monthNames[modDate.getMonth()] + '-' + modDate.getFullYear()
+          let modDate = new Date(interval);
+          modInterval =
+            monthNames[modDate.getMonth()] + "-" + modDate.getFullYear();
         } else {
-          modInterval = interval
+          modInterval = interval;
         }
         return i % 2 !== 0 ? " " : modInterval;
-      }
+      };
 
       legendNode
         .attr(
@@ -231,7 +240,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
 
       // add counties with data
       // const svgCounties = getCountyNode(svg);
-      const svgCounties = getNodeById(svg, "Counties")
+      const svgCounties = getNodeById(svg, "Counties");
 
       svgCounties
         .selectAll("path")
@@ -275,15 +284,15 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
             .attr("stroke", "#000");
         });
 
-
       //add attribution
-      const attrNode = getNodeById(svg, "AttributionContainer")
+      const attrNode = getNodeById(svg, "AttributionContainer");
       attrNode.select("#attribution").remove();
 
       attrNode
         .attr(
           "transform",
-          `translate(${0.7 * width}, ${height - stdMargin - 20})`)
+          `translate(${0.7 * width}, ${height - stdMargin - 20})`
+        )
         .raise()
         .append("g")
         .attr("id", "attribution")
@@ -292,25 +301,26 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
         .append("svg:a")
         .attr("xlink:href", "https://twitter.com/eng_mclare")
         .text("www.bridge.watch @eng_mclare");
-
     } else if (displayStates.length === 0) {
       const svg = d3.select(d3Container.current);
-      const svgCounties = getNodeById(svg, "Counties")
+      const svgCounties = getNodeById(svg, "Counties");
       svg.remove(svgCounties);
     }
   }, [bridgeCountyData, plotType]);
 
-  let title
+  let title;
   if (titleSelected.length > 1) {
-    title = [titleSelected.slice(0, -1).join(', '), titleSelected.slice(-1)[0]].join(titleSelected.length < 2 ? '' : ' and ');
-} else if (titleSelected.length === 1) {
-  title = titleSelected
-}
-
+    title = [
+      titleSelected.slice(0, -1).join(", "),
+      titleSelected.slice(-1)[0],
+    ].join(titleSelected.length < 2 ? "" : " and ");
+  } else if (titleSelected.length === 1) {
+    title = titleSelected;
+  }
 
   return html`
-    ${displayStates.length !== 0 && !isEmpty(bridgeCountyData)
-      ? html`<${Grid} item xs=${12}>
+   ${displayStates.length !== 0 && !isEmpty(bridgeCountyData) ? html`
+  <${Grid} item xs=${12}>
     <${Typography} variant="h4" component="h1">${title}</${Typography}>
   </${Grid}>
   <${Grid} item xs=${12} sx=${{ paddingTop: 0 }}>
@@ -320,13 +330,15 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
          >
     </svg>
   </${Grid}>
-    <${Grid} item sx=${{textAlign: "center"}} style=${{paddingTop: "0px"}} xs=${12}>
+  <${Grid} item sx=${{ textAlign: "center" }} style=${{
+           paddingTop: "0px",
+           }} xs=${12}>
     <${Typography}
-  variant="overline"
-  color=${grey[500]}>
-    Hover or click to update the histogram.
+      variant="overline"
+      color=${grey[500]}>
+      Hover or click to update the histogram.
     </${Typography}>
-    </${Grid}>
+  </${Grid}>
   <${Grid} item xs=${12}>
     <${HorizontalPropertyPanel} objSelected=${countySelected}
                                 objData=${activeCounty}
@@ -336,7 +348,6 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
                                 plotHeight=${plotHeight}
                                 />
   </${Grid}>`
-  : null}
+      : null}
   `;
 }
-  

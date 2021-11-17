@@ -6,16 +6,21 @@ from .serializers import *
 from django.db.models import F, Count
 from .writers import get_streaming_response
 from django_pandas.io import read_frame
-from django.http import HttpResponse
 from django.http import JsonResponse
 from datetime import timedelta
 from datetime import date
 import copy
+
 # Create your views here.
+
+
+def first_day_of_next_month(dt):
+    return (dt.replace(day=1) + timedelta(days=32)).replace(day=1)
+
 
 @api_view(["GET"])
 def state_bridges_csv(request):
-    if request.method =="GET":
+    if request.method == "GET":
         fields = []
 
         plot_type = request.query_params.get("plot_type")
@@ -41,60 +46,72 @@ def state_bridges_csv(request):
             bridges = bridges.exclude(average_daily_traffic__in=[None, 0])
             fields.append(plot_type)
         elif plot_type == "future_date_of_inspection":
-            one_year_from_now = date.today() + timedelta(days=365)
+            # day1 = first_day_of_next_month(date.today())
+            day1 = date.today().replace(day=1)
+            one_year_from_now = day1 + timedelta(days=370)
             bridges = bridges.exclude(future_date_of_inspection=None)
-            bridges = bridges.filter(future_date_of_inspection__lte=one_year_from_now)
-            bridges = bridges.filter(future_date_of_inspection__gte=date.today())
+            bridges = bridges.filter(future_date_of_inspection__lt=one_year_from_now)
+            bridges = bridges.filter(future_date_of_inspection__gte=day1)
             fields.append(plot_type)
         else:
             raise ValueError("invalid plot type provided")
 
         state = request.query_params.get("state")
         if state is not None:
-            state_list = state.split(',')
+            state_list = state.split(",")
             bridges = bridges.filter(state__fips_code__in=state_list)
-            bridges = bridges.annotate(state_name=F('state__name'))
-        bridges = bridges.annotate(fips_code=F('fips__code'))
-        bridges = bridges.annotate(county_name=F('fips__county'))
-        fields.append('county_name')
-        fields.append('state_name')
-        fields.append('fips_code')
+            bridges = bridges.annotate(state_name=F("state__name"))
+        bridges = bridges.annotate(fips_code=F("fips__code"))
+        bridges = bridges.annotate(county_name=F("fips__county"))
+        fields.append("county_name")
+        fields.append("state_name")
+        fields.append("fips_code")
 
         # material type
         material = request.query_params.get("material")
         if material is not None:
-            material_list = material.split(',')
+            material_list = material.split(",")
             bridges = bridges.filter(structure_kind__code__in=material_list)
         # bridge type
         type = request.query_params.get("type")
         if type is not None:
-            type_list = type.split(',')
+            type_list = type.split(",")
             bridges = bridges.filter(structure_type__code__in=type_list)
         # bridge service
         service = request.query_params.get("service")
         if service is not None:
-            service_list = service.split(',')
+            service_list = service.split(",")
             bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
 
         fields.extend(["latitude", "longitude"])
-        if ('rating' in fields):
-            bridges = bridges.annotate(rating=F('lowest_rating__code'))
-        if ('repair_cost_per_foot' in fields):
-            bridges = bridges.annotate(repair_cost_per_foot=(F('total_project_improvement_cost') / (F('length_of_structure_improvement') * 3.28)))
-        if ('truck_traffic' in fields):
-            bridges = bridges.annotate(truck_traffic=(F('average_daily_traffic') * F('average_daily_truck_traffic') * 0.01))
+        if "rating" in fields:
+            bridges = bridges.annotate(rating=F("lowest_rating__code"))
+        if "repair_cost_per_foot" in fields:
+            bridges = bridges.annotate(
+                repair_cost_per_foot=(
+                    F("total_project_improvement_cost")
+                    / (F("length_of_structure_improvement") * 3.28)
+                )
+            )
+        if "truck_traffic" in fields:
+            bridges = bridges.annotate(
+                truck_traffic=(
+                    F("average_daily_traffic") * F("average_daily_truck_traffic") * 0.01
+                )
+            )
 
         # Get other interesting fields
-        bridges = bridges.annotate(material=F('structure_kind__code'))
-        bridges = bridges.annotate(type=F('structure_type__code'))
-        bridges = bridges.annotate(service=F('type_of_service_on_bridge__code'))
-        fields.extend(['material', 'type', 'service'])
+        bridges = bridges.annotate(material=F("structure_kind__code"))
+        bridges = bridges.annotate(type=F("structure_type__code"))
+        bridges = bridges.annotate(service=F("type_of_service_on_bridge__code"))
+        fields.extend(["material", "type", "service"])
 
         bridges = bridges.values_list(*fields)
 
+        print(len(bridges))
         # limit query results for troubleshooting
         limit = request.query_params.get("limit")
-        if (limit != None):
+        if limit != None:
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
@@ -106,7 +123,6 @@ def state_bridges_csv(request):
         return get_streaming_response(bridges, fields)
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(["GET"])
@@ -122,7 +138,6 @@ def national_bridges_csv(request):
         # boolean params (columns to include)
         # filter params (lists or single values?)
 
-       
         # base type of plot
         # rating base
         bridges = Bridge.objects.all()
@@ -147,10 +162,12 @@ def national_bridges_csv(request):
             bridges = bridges.exclude(average_daily_traffic__in=[None, 0])
             fields.append(plot_type)
         elif plot_type == "future_date_of_inspection":
-            one_year_from_now = date.today() + timedelta(days=365)
+            day1 = date.today().replace(day=1)
+            one_year_from_now = day1 + timedelta(days=370)
             bridges = bridges.exclude(future_date_of_inspection=None)
-            bridges = bridges.filter(future_date_of_inspection__lte=one_year_from_now)
-            bridges = bridges.filter(future_date_of_inspection__gte=date.today())
+            # bridges = bridges.filter(future_date_of_inspection__lt=day1)
+            bridges = bridges.filter(future_date_of_inspection__lt=one_year_from_now)
+            bridges = bridges.filter(future_date_of_inspection__gte=day1)
             fields.append(plot_type)
         else:
             raise ValueError("invalid plot type provided")
@@ -158,31 +175,40 @@ def national_bridges_csv(request):
         # material type
         material = request.query_params.get("material")
         if material is not None:
-            material_list = material.split(',')
+            material_list = material.split(",")
             bridges = bridges.filter(structure_kind__code__in=material_list)
         # bridge type
         type = request.query_params.get("type")
         if type is not None:
-            type_list = type.split(',')
+            type_list = type.split(",")
             bridges = bridges.filter(structure_type__code__in=type_list)
         # bridge service
         service = request.query_params.get("service")
         if service is not None:
-            service_list = service.split(',')
+            service_list = service.split(",")
             bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
 
         fields.extend(["latitude", "longitude"])
-        if ('rating' in fields):
-            bridges = bridges.annotate(rating=F('lowest_rating__code'))
-        if ('repair_cost_per_foot' in fields):
-            bridges = bridges.annotate(repair_cost_per_foot=(F('total_project_improvement_cost') / (F('length_of_structure_improvement') * 3.28)))
-        if ('truck_traffic' in fields):
-            bridges = bridges.annotate(truck_traffic=(F('average_daily_traffic') * F('average_daily_truck_traffic')* 0.01))
+        if "rating" in fields:
+            bridges = bridges.annotate(rating=F("lowest_rating__code"))
+        if "repair_cost_per_foot" in fields:
+            bridges = bridges.annotate(
+                repair_cost_per_foot=(
+                    F("total_project_improvement_cost")
+                    / (F("length_of_structure_improvement") * 3.28)
+                )
+            )
+        if "truck_traffic" in fields:
+            bridges = bridges.annotate(
+                truck_traffic=(
+                    F("average_daily_traffic") * F("average_daily_truck_traffic") * 0.01
+                )
+            )
         bridges = bridges.values_list(*fields)
 
         # limit query results for troubleshooting
         limit = request.query_params.get("limit")
-        if (limit != None):
+        if limit != None:
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
@@ -195,6 +221,7 @@ def national_bridges_csv(request):
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
 
+
 def check_conditions(query_dict, value, bool_tuple):
     deck_bool = query_dict["deck_cond"] == value
     superstructure_bool = query_dict["superstructure_cond"] == value
@@ -202,26 +229,28 @@ def check_conditions(query_dict, value, bool_tuple):
     # check with tuple
     return (deck_bool, superstructure_bool, substructure_bool) == bool_tuple
 
+
 def check_new_conditions(query_dict, value, permutation_mapping):
     deck_bool = query_dict["deck_cond"] == value
     superstructure_bool = query_dict["superstructure_cond"] == value
     substructure_bool = query_dict["substructure_cond"] == value
     return permutation_mapping[(deck_bool, superstructure_bool, substructure_bool)]
 
+
 @api_view(["GET"])
 def bridge_conditions(request):
     fields = []
 
     field_options = {
-        'material': {
+        "material": {
             "forward_map": {
-                "Reinforced Concrete": [1,2],
-                "Prestressed or Post-tensioned Concrete": [5,6],
+                "Reinforced Concrete": [1, 2],
+                "Prestressed or Post-tensioned Concrete": [5, 6],
                 "Masonry": [8],
-                "Steel": [3,4],
+                "Steel": [3, 4],
                 "Aluminum, Wrought Iron, or Cast Iron": [9],
                 "Wood or Timber": [7],
-                "Other": [0]
+                "Other": [0],
             },
             "reverse_map": {
                 1: "Reinforced Concrete",
@@ -233,31 +262,31 @@ def bridge_conditions(request):
                 7: "Wood or Timber",
                 8: "Masonry",
                 9: "Aluminum, Wrought Iron, or Cast Iron",
-                0: "Other"
-            }
+                0: "Other",
+            },
         },
-        'type' : {
-            'forward_map': {
+        "type": {
+            "forward_map": {
                 "Slab": [1],
                 "Tee Beam": [4],
-                "Box Beam or Girders": [2,3,5,6],
+                "Box Beam or Girders": [2, 3, 5, 6],
                 "Frame": [7],
                 "Orthotropic": [8],
-                "Truss": [9,10],
-                "Arch": [11,12],
+                "Truss": [9, 10],
+                "Arch": [11, 12],
                 "Suspension": [13],
                 "Stayed Girder": [14],
-                "Movable (Lift, Bascule, or Swing)": [15,16,17],
+                "Movable (Lift, Bascule, or Swing)": [15, 16, 17],
                 "Segmental Box Girder": [21],
                 "Channel Beam": [22],
             },
-            'reverse_map': {
+            "reverse_map": {
                 1: "Slab",
                 4: "Tee Beam",
-                2 :"Box Beam or Girders",
-                3 :"Box Beam or Girders",
-                5 :"Box Beam or Girders",
-                6 :"Box Beam or Girders",
+                2: "Box Beam or Girders",
+                3: "Box Beam or Girders",
+                5: "Box Beam or Girders",
+                6: "Box Beam or Girders",
                 7: "Frame",
                 8: "Orthotropic",
                 9: "Truss",
@@ -271,10 +300,10 @@ def bridge_conditions(request):
                 17: "Movable (Lift, Bascule, or Swing)",
                 21: "Segmental Box Girder",
                 22: "Channel Beam",
-            }
+            },
         },
-        'service': {
-            'forward_map': {
+        "service": {
+            "forward_map": {
                 "Highway": 1,
                 "Railroad": 2,
                 "Pedestrian / bicycle": 3,
@@ -284,9 +313,9 @@ def bridge_conditions(request):
                 "Third level (interchange)": 7,
                 "Fourth level (interchange)": 8,
                 "Building or plaza": 9,
-                "Other": 0
+                "Other": 0,
             },
-            'reverse_map': {
+            "reverse_map": {
                 1: "Highway",
                 2: "Railroad",
                 3: "Pedestrian / bicycle",
@@ -296,9 +325,9 @@ def bridge_conditions(request):
                 7: "Third level (interchange)",
                 8: "Fourth level (interchange)",
                 9: "Building or plaza",
-                0: "Other"
-            }
-        }
+                0: "Other",
+            },
+        },
     }
 
     condition_ratings = {
@@ -313,7 +342,6 @@ def bridge_conditions(request):
         "1": "Imminent Failure",
         "0": "Failed",
     }
-    
 
     condition_mapping = {
         "G": "In Good Condition (7, 8, 9)",
@@ -321,14 +349,16 @@ def bridge_conditions(request):
         "P": "In Poor Condition (0, 1, 2, 3, 4)",
     }
 
-    component_counts = {"all components": 0,
-                        "superstructure and substructure": 0,
-                        "deck and substructure": 0,
-                        "deck and superstructure": 0,
-                        "substructure": 0,
-                        "superstructure": 0,
-                        "deck": 0,
-                        "mismatched or missing component ratings": 0}
+    component_counts = {
+        "all components": 0,
+        "superstructure and substructure": 0,
+        "deck and substructure": 0,
+        "deck and superstructure": 0,
+        "substructure": 0,
+        "superstructure": 0,
+        "deck": 0,
+        "mismatched or missing component ratings": 0,
+    }
 
     permutation_mapping = {
         (True, True, True): "all components",
@@ -338,101 +368,123 @@ def bridge_conditions(request):
         (True, False, False): "deck",
         (False, True, False): "superstructure",
         (False, False, True): "substructure",
-        (False, False, False): "mismatched or missing component ratings"
+        (False, False, False): "mismatched or missing component ratings",
     }
     if request.method == "GET":
 
         bridges = Bridge.objects.all()
         bridges = bridges.exclude(lowest_rating__code=None)
-        bridges = bridges.annotate(rating=F('lowest_rating__code'))
+        bridges = bridges.annotate(rating=F("lowest_rating__code"))
         fields.append("rating")
 
         # Get outermost categories
         field = request.query_params.get("field")
-        if field == 'material':
+        if field == "material":
             fields.append("material")
             bridges = bridges.exclude(structure_kind__code=None)
-            bridges = bridges.annotate(material=F('structure_kind__code'))
-        if field == 'type':
+            bridges = bridges.annotate(material=F("structure_kind__code"))
+        if field == "type":
             fields.append("type")
             bridges = bridges.exclude(structure_type__code=None)
-            bridges = bridges.annotate(type=F('structure_type__code'))
-        if field == 'service':
+            bridges = bridges.annotate(type=F("structure_type__code"))
+        if field == "service":
             fields.append("service")
             bridges = bridges.exclude(structure_type__code=None)
-            bridges = bridges.annotate(service=F('type_of_service_on_bridge__code'))
+            bridges = bridges.annotate(service=F("type_of_service_on_bridge__code"))
 
         # Apply filters
         state = request.query_params.get("state")
         if state is not None:
-            state_list = state.split(',')
+            state_list = state.split(",")
             bridges = bridges.filter(state__fips_code__in=state_list)
         material = request.query_params.get("material")
         if material is not None:
-            material_list = material.split(',')
+            material_list = material.split(",")
             bridges = bridges.filter(structure_kind__code__in=material_list)
         # bridge type
         type = request.query_params.get("type")
         if type is not None:
-            type_list = type.split(',')
+            type_list = type.split(",")
             bridges = bridges.filter(structure_type__code__in=type_list)
         # bridge service
         service = request.query_params.get("service")
         if service is not None:
-            service_list = service.split(',')
+            service_list = service.split(",")
             bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
 
-        bridges = bridges.annotate(bridge_cond=F('bridge_condition__code'))
-        bridges = bridges.annotate(deck_cond=F('deck_condition__code'))
-        bridges = bridges.annotate(superstructure_cond=F('superstructure_condition__code'))
-        bridges = bridges.annotate(substructure_cond=F('substructure_condition__code'))
-        fields.extend(["bridge_cond",
-                       "deck_cond",
-                       "superstructure_cond",
-                       "substructure_cond"])
+        bridges = bridges.annotate(bridge_cond=F("bridge_condition__code"))
+        bridges = bridges.annotate(deck_cond=F("deck_condition__code"))
+        bridges = bridges.annotate(
+            superstructure_cond=F("superstructure_condition__code")
+        )
+        bridges = bridges.annotate(substructure_cond=F("substructure_condition__code"))
+        fields.extend(
+            ["bridge_cond", "deck_cond", "superstructure_cond", "substructure_cond"]
+        )
 
         # limit query results for troubleshooting
         limit = request.query_params.get("limit")
-        if (limit != None):
+        if limit != None:
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
         bridge_cond_by_field = list(bridges.values(*fields).annotate(count=Count("pk")))
 
         field_cond_dict = {}
-        new_cond_dict = {"In Good Condition (7, 8, 9)": {7: component_counts.copy(),
-                                               8: component_counts.copy(),
-                                               9: component_counts.copy()},
-                         "In Fair Condition (5, 6)": {5: component_counts.copy(),
-                                               6: component_counts.copy()},
-                         "In Poor Condition (0, 1, 2, 3, 4)": {0: component_counts.copy(),
-                                               1: component_counts.copy(),
-                                               2: component_counts.copy(),
-                                               3: component_counts.copy(),
-                                               4: component_counts.copy()}}
+        new_cond_dict = {
+            "In Good Condition (7, 8, 9)": {
+                7: component_counts.copy(),
+                8: component_counts.copy(),
+                9: component_counts.copy(),
+            },
+            "In Fair Condition (5, 6)": {
+                5: component_counts.copy(),
+                6: component_counts.copy(),
+            },
+            "In Poor Condition (0, 1, 2, 3, 4)": {
+                0: component_counts.copy(),
+                1: component_counts.copy(),
+                2: component_counts.copy(),
+                3: component_counts.copy(),
+                4: component_counts.copy(),
+            },
+        }
 
-        for name in field_options[field]['forward_map'].keys():
+        for name in field_options[field]["forward_map"].keys():
             field_cond_dict[name] = copy.deepcopy(new_cond_dict)
         for unique_condition in bridge_cond_by_field:
-            if field == "state": # due to django field clash on state vs state_name
-                name = field_options[field]['reverse_map'][unique_condition["state_fips"]]
+            if field == "state":  # due to django field clash on state vs state_name
+                name = field_options[field]["reverse_map"][
+                    unique_condition["state_fips"]
+                ]
             else:
-                name = field_options[field]['reverse_map'][unique_condition[field]]
+                name = field_options[field]["reverse_map"][unique_condition[field]]
             condition = condition_mapping[unique_condition["bridge_cond"]]
             rating = unique_condition["rating"]
-            component_state = check_new_conditions(unique_condition, rating, permutation_mapping)
-            field_cond_dict[name][condition][rating][component_state] += unique_condition["count"]
+            component_state = check_new_conditions(
+                unique_condition, rating, permutation_mapping
+            )
+            field_cond_dict[name][condition][rating][
+                component_state
+            ] += unique_condition["count"]
 
-        output_dict = {"name": "2021 Bridge Condition Data", "field": field, "children": []}
+        output_dict = {
+            "name": "2021 Bridge Condition Data",
+            "field": field,
+            "children": [],
+        }
 
         # create d3 output
         for field, bridge_cond_dict in field_cond_dict.items():
-            field_dict = {'name': field, "children": []}
+            field_dict = {"name": field, "children": []}
             # G, F, P
             for condition_description, rating_dictionary in bridge_cond_dict.items():
                 name_dict = {"name": condition_description, "children": []}
                 # [7, 8, 9], [5, 6], [0, 1, 2, 3, 4]
-                for numerical_rating, rating_component_counts in rating_dictionary.items():
+                for (
+                    numerical_rating,
+                    rating_component_counts,
+                ) in rating_dictionary.items():
                     values_dict = {
                         "name": f"{condition_ratings[str(numerical_rating)]} Condition ({str(numerical_rating)})",
                         "children": [],
@@ -453,3 +505,5 @@ def bridge_conditions(request):
         return JsonResponse(output_dict)
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
+
+

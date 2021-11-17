@@ -71,72 +71,86 @@ export default function BridgeMaterials() {
     <${Grid} container spacing=${3}>
       <${Grid} item xs=${12}><${Typography} variant="h2">Bridge Materials</${Typography}></${Grid}>
       ${bridgeMaterials.map(
-      (bridgeMaterial, index) =>
-      html`
+        (bridgeMaterial, index) =>
+          html`
       <${Grid} item xs=${12} sm=${12} key=${index}>
         <${Card} className=${classes.card}>
-          <${CardHeader} title=${
-                         bridgeMaterial.material
-                         } color="primary" />
+          <${CardHeader} title=${bridgeMaterial.material} color="primary" />
           ${
-          "img" in bridgeMaterial
-          ? html` <${CardMedia}
-                    className=${classes.media}
-                    image=${bridgeMaterial.img}
-                    />`
-          : null
+            "img" in bridgeMaterial
+              ? html` <${CardMedia}
+                  className=${classes.media}
+                  image=${bridgeMaterial.img}
+                />`
+              : null
           }
-          ${ "attrLink" in bridgeMaterial ? html`<p style=${"padding-left: 5px; margin-top: -20px; margin-bottom: 0px; font-size: 0.8rem; color: #bdbdbd"}
-             >
-            <a href=${bridgeMaterial.attrLink} style=${"color: #bdbdbd"}
-               >Photo</a> by ${bridgeMaterial.attrAuthor} /
-            <a
-              href=${bridgeMaterial.attrLicenseLink}
-              style=${"color: #bdbdbd"}
-              >${bridgeMaterial.attrLicense}</a>
-             </p>` : null}
+          ${
+            "attrLink" in bridgeMaterial
+              ? html`<p
+                  style=${"padding-left: 5px; margin-top: -20px; margin-bottom: 0px; font-size: 0.8rem; color: #bdbdbd"}>
+                  <a href=${bridgeMaterial.attrLink} style=${"color: #bdbdbd"}
+                    >Photo</a> by ${bridgeMaterial.attrAuthor} /
+                  <a
+                    href=${bridgeMaterial.attrLicenseLink}
+                    style=${"color: #bdbdbd"}
+                    >${bridgeMaterial.attrLicense}</a>
+                </p>`
+              : null
+          }
           <${CardContent}>
             <${Typography} variant="body1" paragraph>${
             bridgeMaterial.shortDescription
           }</${Typography}>
           </${CardContent}>
-          ${ 'paragraph1' in bridgeMaterial || 'bImg' in bridgeMaterial ? html`
+          ${
+            "paragraph1" in bridgeMaterial || "bImg" in bridgeMaterial
+              ? html`
           <${CardActions} disableSpacing>
             <${ExpandMore} expand=${typesExpanded[bridgeMaterial.material]}
                            onClick=${(e) =>
                              handleExpandClick(e, bridgeMaterial.material)}
               aria-expanded=${typesExpanded[bridgeMaterial.material]}
-              aria-label="show more"
-              >
+              aria-label="show more">
               <${ExpandMoreIcon} />
             </${ExpandMore}>
           </${CardActions}>
           <${Collapse} in=${
-            typesExpanded[bridgeMaterial.material]
-          } timeout="auto" unmountOnExit>
+                  typesExpanded[bridgeMaterial.material]
+                } timeout="auto" unmountOnExit>
             <${CardContent}>
-              <${Typography} variant="body1" paragraph>${bridgeMaterial.paragraph1}</${Typography}>
-              <${Typography} variant="body1" paragraph>${bridgeMaterial.paragraph2}</${Typography}>
+              <${Typography} variant="body1" paragraph>${
+                  bridgeMaterial.paragraph1
+                }</${Typography}>
+              <${Typography} variant="body1" paragraph>${
+                  bridgeMaterial.paragraph2
+                }</${Typography}>
             </${CardContent}>
-            ${('bImg' in bridgeMaterial) ?
-            (html`<${CardMedia} className=${classes.scaledMedia} image=${bridgeMaterial.bImg}/>`) : null}
             ${
-            "bLink" in bridgeMaterial
-              ? html`
-          <p style=${"padding-left: 5px; margin-top: -20px; margin-bottom: 0px; font-size: 0.8rem; color: #bdbdbd"}
-             >
-            <a href=${bridgeMaterial.bLink} style=${"color: #bdbdbd"}
-               >Photo</a> by ${bridgeMaterial.bAuthor} /
-            <a
-              href=${bridgeMaterial.bLicenseLink}
-              style=${"color: #bdbdbd"}
-              >${bridgeMaterial.bLicense}</a>
-          </p>`
-          : null
+              "bImg" in bridgeMaterial
+                ? html`<${CardMedia}
+                    className=${classes.scaledMedia}
+                    image=${bridgeMaterial.bImg}
+                  />`
+                : null
+            }
+            ${
+              "bLink" in bridgeMaterial
+                ? html` <p style=${"padding-left: 5px; margin-top: -20px; margin-bottom: 0px; font-size: 0.8rem; color: #bdbdbd"}>
+              <a href=${bridgeMaterial.bLink} style=${"color: #bdbdbd"}
+                 >Photo</a> by ${bridgeMaterial.bAuthor} /
+              <a
+                href=${bridgeMaterial.bLicenseLink}
+                style=${"color: #bdbdbd"}
+                >${bridgeMaterial.bLicense}</a>
+            </p>`
+            : null
+            }
+          </${Collapse}>`
+              : null
           }
-          </${Collapse}>` : null}
         </${Card}>
-      </${Grid}>` )}
+      </${Grid}>`
+      )}
     </${Grid}>
   </${Container}>
 </${Box}> 

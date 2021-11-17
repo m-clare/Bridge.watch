@@ -41,7 +41,7 @@ function addDays(date, days) {
 function getKeyProps(dataArray, field) {
   let fieldOnly;
   if (field === "future_date_of_inspection") {
-    fieldOnly = dataArray.map((d) => d[field])
+    fieldOnly = dataArray.map((d) => d[field]);
     const min = d3.min(fieldOnly);
     const max = d3.max(fieldOnly);
     const mode = d3.mode(fieldOnly);
@@ -53,21 +53,21 @@ function getKeyProps(dataArray, field) {
       count: count,
     };
   } else {
-    fieldOnly = dataArray.map((d) => +d[field])  
+    fieldOnly = dataArray.map((d) => +d[field]);
     const min = d3.min(fieldOnly);
     const max = d3.max(fieldOnly);
     const avg = d3.mean(fieldOnly);
     const median = d3.median(fieldOnly);
     const mode = d3.mode(fieldOnly);
     const count = dataArray.length;
-  return {
-    min: min,
-    max: max,
-    avg: avg,
-    median: median,
-    mode: mode,
-    count: count,
-  };
+    return {
+      min: min,
+      max: max,
+      avg: avg,
+      median: median,
+      mode: mode,
+      count: count,
+    };
   }
 }
 
@@ -89,12 +89,14 @@ function getHexbinData(data) {
         if (p === null) {
           return null;
         }
-        if (field === "future_date_of_inspection")
-        {
+        if (field === "future_date_of_inspection") {
           const dateArray = d[field].split("-");
-          p[field] = new Date(dateArray[0], dateArray[1], dateArray[2])
-        } else
-        {
+          // NOTE: Javascript months are ZERO INDEXED -->
+          // Python 1 -> Javascript 0
+          p[field] = new Date(
+            Date.UTC(dateArray[0], dateArray[1] - 1, dateArray[2])
+          );
+        } else {
           p[field] = +d[field];
         }
         return p;
@@ -108,53 +110,54 @@ function getHexbinData(data) {
     let min;
     let max;
     let domain;
-    let histogram;
     let rawHistogram;
 
     if (field === "rating") {
-      min = 0
-      max = 9
-      domain = d3.range(min, max+1, 1);
+      min = 0;
+      max = 9;
+      domain = d3.range(min, max + 1, 1);
     } else if (field === "year_built") {
       min = 1900;
       max = 2021;
-      domain = d3.range(min, max+1, 5)
+      domain = d3.range(min, max + 1, 5);
     } else if (field === "repair_cost_per_foot") {
-      min = 0
-      max = 150
-      domain = d3.range(min, max+1, 5);
+      min = 0;
+      max = 150;
+      domain = d3.range(min, max + 1, 5);
     } else if (field === "average_daily_traffic") {
-      min = 0
-      max = 100000
-      domain = d3.range(min, max+1, 5000)
+      min = 0;
+      max = 100000;
+      domain = d3.range(min, max + 1, 5000);
     } else if (field === "truck_traffic") {
-      min = 0
-      max = 8000
-      domain = d3.range(min, max+1, 500)
+      min = 0;
+      max = 8000;
+      domain = d3.range(min, max + 1, 500);
     } else if (field === "future_date_of_inspection") {
-      // min = allKeyData.min
-      // max = allKeyData.max
-      min = new Date();
-      max = addDays(min, 365)
-      domain = d3.scaleTime().domain([min, max]).nice()
+      const today = new Date();
+      min = new Date(Date.UTC(today.getFullYear(), today.getMonth()));
+      max = addDays(min, 365);
+      domain = d3.scaleUtc().domain([min, max]).nice();
     } else {
       throw new Error("invalid field");
     }
 
-    // const testHist = d3.histogram().domain([min, max]).thresholds(domain.ticks(12))
-    // rawHistogram = testHist(bridgeInfo.map((d) => d[field]))
-    // const emptyHist = object(domain, new Array(domain.length).fill(0));
     let d3Histogram;
     if (field === "future_date_of_inspection") {
-      d3Histogram = d3.histogram().domain([min, max]).thresholds(domain.ticks(12)) 
+      d3Histogram = d3
+        .histogram()
+        .domain([min, max])
+        .thresholds(domain.ticks());
     } else {
-      d3Histogram = d3.histogram().domain([min, max+1]).thresholds(domain);
+      d3Histogram = d3
+        .histogram()
+        .domain([min, max + 1])
+        .thresholds(domain);
     }
     rawHistogram = d3Histogram(bridgeInfo.map((d) => d[field]));
     const allHistogram = rawHistogram.map((d) => ({
       count: d.length,
-      [field]: d.x0
-    }))
+      [field]: d.x0,
+    }));
     const rawHex = customHexbin(bridgeInfo);
 
     // simplified information from calculated hexbins
@@ -168,16 +171,11 @@ function getHexbinData(data) {
       const objKeyValues = getKeyProps(d, field);
       objKeyValues.hexLocation = hexLocation;
       const count = objKeyValues.count;
-
-      // do histogram binning on specific range
-      // (reduces number of bins for year ranges)
-      let histogram;
-
       const hexbinHistogram = d3Histogram(d.map((d) => d[field]));
       const objHistogram = hexbinHistogram.map((d) => ({
         count: d.length,
-        [field]: d.x0
-      }))
+        [field]: d.x0,
+      }));
       return { x, y, objKeyValues, objHistogram, count };
     });
 

@@ -50,6 +50,10 @@ const textSummary = function (summaryType, count, locality) {
     return html`
 <${Typography} variant="body1"> This map aggregates the locations of ${count} bridges in ${locality} with the estimated daily traffic (including trucks) or truck-only traffic from the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2021 National Bridge Inventory</b></${Link}>. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the average number per bridge. Additional filtering can be performed using the options above. These values show some inconsistency in data collection, as a number of railroad and pedestrian/bike-only coded bridges indicate truck traffic.</${Typography}>
 `;
+  } else if ((summaryType === "future_date_of_inspection") && locality === "the U.S.") {
+    return html`
+<${Typography} variant="body1"> This map aggregates the locations of ${count} bridges in ${locality} with the anticipated date of next inspection based on the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2021 National Bridge Inventory</b></${Link}>. This value is calculated from the last date of inspection with the interval in months (typically 48); only inspections due in the next year are shown. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the most common value (also known as the mode) with earlier dates having a darker hue. Additional filtering can be performed using the options above.</${Typography}>
+`;
   } else if (summaryType === "rating") {
     return html`
 <${Typography} variant="body1">This map aggregates the locations of ${count} bridges in ${locality} with their overall "rating" based on the lowest value of superstructure, substructure, and deck condition as encoded in the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2021 National Bridge Inventory</b></${Link}> on a scale of 0 to 9. Bridges that are missing ratings are omitted from the plot. The color represents the median rating in the corresponding histogram, which can also be viewed by hovering over a county. Additional filtering can be performed using the options dropdown menu.</${Typography}>`;}
@@ -66,6 +70,11 @@ else if (summaryType === "repair_cost_per_foot") {
   return html`
 <${Typography} variant="body1"> This map aggregates the locations of ${count} bridges in ${locality} with the estimated daily traffic (including trucks) or truck-only traffic from the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2021 National Bridge Inventory</b></${Link}>. The color represents the average value per bridge. Additional filtering can be performed using the options above. These values show some inconsistency in data collection, as a number of railroad and pedestrian/bike-only coded bridges indicate truck traffic.</${Typography}>
 `;
+} else if ((summaryType === "future_date_of_inspection")) {
+  return html`
+<${Typography} variant="body1"> This map aggregates the locations of ${count} bridges in ${locality} with the anticipated date of next inspection based on the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2021 National Bridge Inventory</b></${Link}>. This value is calculated from the last date of inspection with the interval in months (typically 48); only inspections due in the next year are shown. The color represents the most common value (also known as the mode) with earlier dates having a darker hue. Additional filtering can be performed using the options above.</${Typography}>
+`;
+
 }
   else return html`<div></div>`;
 };

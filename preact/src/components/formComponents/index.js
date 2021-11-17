@@ -13,11 +13,15 @@ import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Button from "@mui/material/Button";
 
-const html = htm.bind(h)
+const html = htm.bind(h);
 
-export function singleSelect(plotChoices, queryState, submitted, handleSingleChange) {
-
-return html`
+export function singleSelect(
+  plotChoices,
+  queryState,
+  submitted,
+  handleSingleChange
+) {
+  return html`
   <${FormControl} fullWidth>
     <${InputLabel}>${plotChoices.label}</${InputLabel}>
     <${Select} value=${queryState[plotChoices.name]}
@@ -26,18 +30,22 @@ return html`
                onChange=${(e) => handleSingleChange(e, plotChoices.name)}
       >
       ${Object.keys(plotChoices.options).map((shortName, index) => {
-      return html`<${MenuItem} key=${shortName}
+        return html`<${MenuItem} key=${shortName}
                                value=${shortName}
                                >
-        ${plotChoices.options[shortName].display}</${MenuItem}>`
+        ${plotChoices.options[shortName].display}</${MenuItem}>`;
       })};
     </${Select}>
-  </${FormControl}>`
+  </${FormControl}>`;
 }
 
-export function stateSingleSelect(stateChoices, queryState, submitted, handleSingleChange) {
-
-return html`
+export function stateSingleSelect(
+  stateChoices,
+  queryState,
+  submitted,
+  handleSingleChange
+) {
+  return html`
   <${FormControl} fullWidth>
     <${InputLabel}>${stateChoices.label}</${InputLabel}>
     <${Select} value=${queryState[stateChoices.name]}
@@ -46,13 +54,13 @@ return html`
                onChange=${(e) => handleSingleChange(e, stateChoices.name)}
       >
       ${Object.keys(stateChoices.options).map((name, index) => {
-      return html`<${MenuItem} key=${name}
+        return html`<${MenuItem} key=${name}
                                value=${name}
                                >
-        ${name}</${MenuItem}>`
+        ${name}</${MenuItem}>`;
       })};
     </${Select}>
-  </${FormControl}>`
+  </${FormControl}>`;
 }
 
 export function multiFilter(filter, queryState, formHandlers, required) {
@@ -71,8 +79,8 @@ export function multiFilter(filter, queryState, formHandlers, required) {
       multiple
       disabled=${renderSubmitted}
       input=${html`<${OutlinedInput}
-                     id="select-multiple-chip"
-                     label=${filter.label}
+        id="select-multiple-chip"
+        label=${filter.label}
       />`}
       renderValue=${(selected) =>
         html`<${Box} sx=${{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>

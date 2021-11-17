@@ -30,60 +30,70 @@ export function QueryForm({
   plotChoices,
   filters,
   handleClick,
-  colWidth
+  colWidth,
 }) {
   const formHandlers = {};
   formHandlers.handleChange = handleChange;
   formHandlers.handleClose = handleClose;
   formHandlers.submitted = submitted;
 
-  const multiFilters = Object.values((({ material, type, service  }) => ({ material, type, service  }))(filters));
+  const multiFilters = Object.values(
+    (({ material, type, service }) => ({ material, type, service }))(filters)
+  );
 
   let stateValue = false;
   let stateFilter;
-  if ('state' in filters) {
+  if ("state" in filters) {
     stateValue = true;
-    stateFilter = Object.values((({ state  }) => ({ state  }))(filters));
+    stateFilter = Object.values((({ state }) => ({ state }))(filters));
   }
-  filters = Object.values(multiFilters)
+  filters = Object.values(multiFilters);
   return html`
- ${(stateValue) ?
-    (html`<${Grid} item xs=${12}>
-                  <${Typography}
-                    variant="h6"
-                    component="h2"
-                    color="${grey[500]}">
-                    <i>States</i>
-                  </${Typography}>
-                </${Grid}>
-    ${stateFilter.map((value) => (html`
-      <${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
-        ${multiFilter(value, queryState, formHandlers, true)}
-      </${Grid}>`))}`) : null}
- <${Grid} item xs=${12}>
-                  <${Typography}
-                    variant="h6"
-                    component="h2"
-                    color="${grey[500]}">
-                    <i>Display Options</i>
-                  </${Typography}>
-                </${Grid}>
- <${Grid} item xs=${12} md=${colWidth.single} style=${"padding-top: 8px"}>
- ${singleSelect(plotChoices, queryState, submitted, handleSingleChange)}
- </${Grid}>
-  <${Grid} item xs=${12}>
-    <${Typography} variant="h6"
-                   component="h2"
-                   color="${grey[500]}">
-      <i>Filters</i>
-    </${Typography}>
-  </${Grid}>
-  ${filters.map((value) => (html`
-    <${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
-    ${multiFilter(value, queryState, formHandlers, false)}
-  </${Grid}>`))}
-  <${Grid} item xs=${12} md=${colWidth.single}>
+ ${
+   stateValue
+     ? html`
+<${Grid} item xs=${12}>
+  <${Typography}
+    variant="h6"
+    component="h2"
+    color="${grey[500]}">
+    <i>States</i>
+  </${Typography}>
+</${Grid}>
+${stateFilter.map(
+(value) => html`
+<${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
+  ${multiFilter(value, queryState, formHandlers, true)}
+</${Grid}>`
+)}`
+: null
+}
+<${Grid} item xs=${12}>
+  <${Typography}
+    variant="h6"
+    component="h2"
+    color="${grey[500]}">
+    <i>Display Options</i>
+  </${Typography}>
+</${Grid}>
+<${Grid} item xs=${12} md=${colWidth.single} style=${"padding-top: 8px"}>
+  ${singleSelect(plotChoices, queryState, submitted, handleSingleChange)}
+</${Grid}>
+<${Grid} item xs=${12}>
+  <${Typography} variant="h6"
+                 component="h2"
+                 color="${grey[500]}">
+    <i>Filters</i>
+  </${Typography}>
+</${Grid}>
+${filters.map(
+(value) => html`
+<${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
+  ${multiFilter(value, queryState, formHandlers, false)}
+</${Grid}>`
+)}
+<${Grid} item xs=${12} md=${colWidth.single}>
   <${Button} fullWidth disabled=${submitted} variant="contained" color="primary" onClick=${handleClick}>Clear filters</${Button}>
-  </${Grid}>
-  `;
+</${Grid}>
+`;
 }

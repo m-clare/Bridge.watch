@@ -66,45 +66,45 @@ export default function SideMenu() {
               >
         <${List}>
           ${routes.map(
-            (route) =>
-              html`<${RouterLink} className=${classes.link}
-                               activeClassName="active"
-                               href=${route.value}>
-             <${ListItem} button key=${route.key}
-                          onClick=${toggleDrawer(false)}>
-               <${ListItemText} primary=${route.key} />
-             </${ListItem}>
-           </${RouterLink}>`
+          (route) =>
+          html`<${RouterLink} className=${classes.link}
+                              activeClassName="active"
+                              href=${route.value}>
+            <${ListItem} button key=${route.key}
+                         onClick=${toggleDrawer(false)}>
+              <${ListItemText} primary=${route.key} />
+            </${ListItem}>
+          </${RouterLink}>`
           )}
           <${ListItem}>
             <${ListItemText} sx=${{
-    fontVariant: "small-caps",
-  }} primary="Background Information"/>
+                             fontVariant: "small-caps",
+                             }} primary="Background Information"/>
           </${ListItem}>
           ${backgroundRoutes.map(
-            (route) =>
-              html`<${RouterLink} className=${classes.link}
-                               activeClassName="active"
-                               href=${route.value}>
-             <${ListItem} button key=${route.key}
-                          onClick=${toggleDrawer(false)}
-                          sx=${{ pl: 4 }}>
-               <${ListItemText} primary=${route.key} />
-             </${ListItem}>
-           </${RouterLink}>`
+          (route) =>
+          html`<${RouterLink} className=${classes.link}
+                              activeClassName="active"
+                              href=${route.value}>
+            <${ListItem} button key=${route.key}
+                         onClick=${toggleDrawer(false)}
+                         sx=${{ pl: 4 }}>
+              <${ListItemText} primary=${route.key} />
+            </${ListItem}>
+          </${RouterLink}>`
           )}
-         <${RouterLink} className=${
-    classes.link
-  } activeClassName="active" href="/about">
-         <${ListItem} button key=${"About"}
+          <${RouterLink} className=${
+                         classes.link
+                         } activeClassName="active" href="/about">
+            <${ListItem} button key=${"About"}
                       onClick=${toggleDrawer(false)}>
-           <${ListItemText} primary="About"/></${ListItem}>
-         </${RouterLink}>
+              <${ListItemText} primary="About"/></${ListItem}>
+          </${RouterLink}>
         </${List}>
       </${Box}>
     </${Drawer}>
     <${MenuIcon} />
   </${IconButton}>
 </${Box}>
-  `;
+`;
 }
