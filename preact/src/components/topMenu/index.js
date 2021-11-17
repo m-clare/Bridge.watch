@@ -19,7 +19,7 @@ export default function TopMenu() {
   };
 
   return (html`
-      <${Button} sx=${{px: 2}}
+      <${Button} sx=${{px: 2}} style=${"color: #fff; text-decoration: none; text-shadow: #000 1px 0 10px; font-size: 18px"}
         color="inherit"
         id="background-info-button"
         aria-controls="background-info-menu"
@@ -42,6 +42,12 @@ export default function TopMenu() {
           <${RouterLink} href='/bridge_types'
                          style=${"color: #1c5d99; text-decoration: none; font-variant: small-caps"}>
             Bridge Types
+          </${RouterLink}>
+        </${MenuItem}>
+         <${MenuItem} onClick=${handleClose}>
+          <${RouterLink} href='/bridge_materials'
+                         style=${"color: #1c5d99; text-decoration: none; font-variant: small-caps"}>
+            Bridge Materials
           </${RouterLink}>
         </${MenuItem}>
       </${Menu}>

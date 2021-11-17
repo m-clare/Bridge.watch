@@ -17,65 +17,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
 
+import { singleSelect, multiFilter } from "../formComponents";
+
 const html = htm.bind(h);
-
-function singleSelect(plotChoices, queryState, submitted, handleSingleChange, colWidth) {
-
-return html`
-
-<${Grid} item xs=${12} md=${colWidth} style=${"padding-top: 8px"}>
-  <${FormControl} fullWidth>
-    <${InputLabel}>${plotChoices.label}</${InputLabel}>
-    <${Select} value=${queryState[plotChoices.name]}
-               label="Plot Type"
-               disabled=${submitted}
-               onChange=${(e) => handleSingleChange(e, plotChoices.name)}
-      >
-      ${Object.keys(plotChoices.options).map((shortName, index) => {
-      return html`<${MenuItem} key=${shortName}
-                               value=${shortName}
-                               >
-        ${plotChoices.options[shortName].display}</${MenuItem}>`
-      })};
-    </${Select}>
-  </${FormControl}>
-</${Grid}>`
-}
-
-function multiFilter(filter, queryState, formHandlers, colWidth, required) {
-  const handleChange = formHandlers.handleChange;
-  const renderSubmitted = formHandlers.submitted;
-  const handleClose = formHandlers.handleClose;
-
-  return html`
-<${Grid} item xs=${12} md=${colWidth} style=${"padding-top: 8px"}>
-  <${FormControl} required=${required} fullWidth>
-    <${InputLabel}>${filter.label}</${InputLabel}>
-    <${Select}
-      value=${queryState[filter.name]}
-      label=${filter.name}
-      onChange=${(e) => handleChange(e, filter.name)}
-      onClose=${handleClose}
-      multiple
-      disabled=${renderSubmitted}
-      input=${html`<${OutlinedInput}
-                     id="select-multiple-chip"
-                     label=${filter.label}
-      />`}
-      renderValue=${(selected) =>
-        html`<${Box} sx=${{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-        ${selected.map(
-          (value) => html`<${Chip} key=${value} label=${value} />`
-        )}
-      </${Box}>`}
-      >
-      ${Object.keys(filter.options).map((name, index) => {
-        return html`<${MenuItem} dense value=${name}>${name}</${MenuItem}>`;
-      })};
-    </${Select}>
-  </${FormControl}>
-</${Grid}>`;
-}
 
 export function QueryForm({
   queryState,
@@ -104,7 +48,7 @@ export function QueryForm({
   filters = Object.values(multiFilters)
   return html`
  ${(stateValue) ?
-(html`<${Grid} item xs=${12}>
+    (html`<${Grid} item xs=${12}>
                   <${Typography}
                     variant="h6"
                     component="h2"
@@ -112,9 +56,10 @@ export function QueryForm({
                     <i>States</i>
                   </${Typography}>
                 </${Grid}>
-    ${stateFilter.map((value) => multiFilter(value, queryState, formHandlers, colWidth.single, true))}
-    `)
-: null}
+    ${stateFilter.map((value) => (html`
+      <${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
+        ${multiFilter(value, queryState, formHandlers, true)}
+      </${Grid}>`))}`) : null}
  <${Grid} item xs=${12}>
                   <${Typography}
                     variant="h6"
@@ -123,7 +68,9 @@ export function QueryForm({
                     <i>Display Options</i>
                   </${Typography}>
                 </${Grid}>
- ${singleSelect(plotChoices, queryState, submitted, handleSingleChange, colWidth.single)}
+ <${Grid} item xs=${12} md=${colWidth.single} style=${"padding-top: 8px"}>
+ ${singleSelect(plotChoices, queryState, submitted, handleSingleChange)}
+ </${Grid}>
   <${Grid} item xs=${12}>
     <${Typography} variant="h6"
                    component="h2"
@@ -131,7 +78,10 @@ export function QueryForm({
       <i>Filters</i>
     </${Typography}>
   </${Grid}>
-  ${filters.map((value) => multiFilter(value, queryState, formHandlers, colWidth.multi, false))}
+  ${filters.map((value) => (html`
+    <${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
+    ${multiFilter(value, queryState, formHandlers, false)}
+  </${Grid}>`))}
   <${Grid} item xs=${12} md=${colWidth.single}>
   <${Button} fullWidth disabled=${submitted} variant="contained" color="primary" onClick=${handleClick}>Clear filters</${Button}>
   </${Grid}>

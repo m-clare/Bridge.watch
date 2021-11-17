@@ -5,7 +5,6 @@ dotenv.config();
 
 function getNationalBridges(uriString) {
   const url = `${process.env.PREACT_APP_API_URL}/national?${uriString}`;
-  console.log(url);
   return axios
     .get(url)
     .then((response) => response.data)
@@ -14,7 +13,6 @@ function getNationalBridges(uriString) {
 
 function getStateBridges(uriString) {
   const url = `${process.env.PREACT_APP_API_URL}/state?${uriString}`;
-  console.log(url);
   return axios
     .get(url)
     .then((response) => response.data)
@@ -23,7 +21,6 @@ function getStateBridges(uriString) {
 
 function getConditionBridges(uriString) {
   const url=`${process.env.PREACT_APP_API_URL}/conditions?${uriString}`;
-  console.log(url);
   return axios
     .get(url)
     .then((response) => response.data)

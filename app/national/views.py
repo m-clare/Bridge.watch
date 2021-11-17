@@ -8,6 +8,8 @@ from .writers import get_streaming_response
 from django_pandas.io import read_frame
 from django.http import HttpResponse
 from django.http import JsonResponse
+from datetime import timedelta
+from datetime import date
 import copy
 # Create your views here.
 
@@ -17,20 +19,32 @@ def state_bridges_csv(request):
         fields = []
 
         plot_type = request.query_params.get("plot_type")
+
+        bridges = Bridge.objects.all()
         if plot_type == "rating":
-            bridges = Bridge.objects.all()
             bridges = bridges.exclude(lowest_rating__code=None)
             fields.append(plot_type)
         # year built base
         elif plot_type == "year_built":
-            bridges = Bridge.objects.all()
             bridges = bridges.exclude(year_built=None)
             fields.append(plot_type)
         elif plot_type == "repair_cost_per_foot":
-            bridges = Bridge.objects.all()
             bridges = bridges.filter(year_of_improvement_cost_estimate__gte=2013)
             bridges = bridges.exclude(total_project_improvement_cost__in=[None, 0])
             bridges = bridges.exclude(length_of_structure_improvement__in=[None, 0])
+            fields.append(plot_type)
+        elif plot_type == "average_daily_traffic":
+            bridges = bridges.exclude(average_daily_traffic__in=[None, 0])
+            fields.append(plot_type)
+        elif plot_type == "truck_traffic":
+            bridges = bridges.exclude(average_daily_truck_traffic__in=[None, 0])
+            bridges = bridges.exclude(average_daily_traffic__in=[None, 0])
+            fields.append(plot_type)
+        elif plot_type == "future_date_of_inspection":
+            one_year_from_now = date.today() + timedelta(days=365)
+            bridges = bridges.exclude(future_date_of_inspection=None)
+            bridges = bridges.filter(future_date_of_inspection__lte=one_year_from_now)
+            bridges = bridges.filter(future_date_of_inspection__gte=date.today())
             fields.append(plot_type)
         else:
             raise ValueError("invalid plot type provided")
@@ -67,6 +81,9 @@ def state_bridges_csv(request):
             bridges = bridges.annotate(rating=F('lowest_rating__code'))
         if ('repair_cost_per_foot' in fields):
             bridges = bridges.annotate(repair_cost_per_foot=(F('total_project_improvement_cost') / (F('length_of_structure_improvement') * 3.28)))
+        if ('truck_traffic' in fields):
+            bridges = bridges.annotate(truck_traffic=(F('average_daily_traffic') * F('average_daily_truck_traffic') * 0.01))
+
         # Get other interesting fields
         bridges = bridges.annotate(material=F('structure_kind__code'))
         bridges = bridges.annotate(type=F('structure_type__code'))
@@ -105,21 +122,35 @@ def national_bridges_csv(request):
         # boolean params (columns to include)
         # filter params (lists or single values?)
 
+       
         # base type of plot
         # rating base
+        bridges = Bridge.objects.all()
         plot_type = request.query_params.get("plot_type")
         if plot_type == "rating":
-            bridges = AbbrevRating.objects.all()
+            bridges = bridges.exclude(lowest_rating__code=None)
             fields.append(plot_type)
         # year built base
         elif plot_type == "year_built":
-            bridges = AbbrevYearBuilt.objects.all()
+            bridges = bridges.exclude(year_built=None)
             fields.append(plot_type)
         elif plot_type == "repair_cost_per_foot":
-            bridges = Bridge.objects.all()
             bridges = bridges.filter(year_of_improvement_cost_estimate__gte=2013)
             bridges = bridges.exclude(total_project_improvement_cost__in=[None, 0])
             bridges = bridges.exclude(length_of_structure_improvement__in=[None, 0])
+            fields.append(plot_type)
+        elif plot_type == "average_daily_traffic":
+            bridges = bridges.exclude(average_daily_traffic__in=[None, 0])
+            fields.append(plot_type)
+        elif plot_type == "truck_traffic":
+            bridges = bridges.exclude(average_daily_truck_traffic__in=[None, 0])
+            bridges = bridges.exclude(average_daily_traffic__in=[None, 0])
+            fields.append(plot_type)
+        elif plot_type == "future_date_of_inspection":
+            one_year_from_now = date.today() + timedelta(days=365)
+            bridges = bridges.exclude(future_date_of_inspection=None)
+            bridges = bridges.filter(future_date_of_inspection__lte=one_year_from_now)
+            bridges = bridges.filter(future_date_of_inspection__gte=date.today())
             fields.append(plot_type)
         else:
             raise ValueError("invalid plot type provided")
@@ -145,6 +176,8 @@ def national_bridges_csv(request):
             bridges = bridges.annotate(rating=F('lowest_rating__code'))
         if ('repair_cost_per_foot' in fields):
             bridges = bridges.annotate(repair_cost_per_foot=(F('total_project_improvement_cost') / (F('length_of_structure_improvement') * 3.28)))
+        if ('truck_traffic' in fields):
+            bridges = bridges.annotate(truck_traffic=(F('average_daily_traffic') * F('average_daily_truck_traffic')* 0.01))
         bridges = bridges.values_list(*fields)
 
         # limit query results for troubleshooting
@@ -349,11 +382,11 @@ def bridge_conditions(request):
             service_list = service.split(',')
             bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
 
-        bridges = bridges.annotate(bridge_cond=F('bridge_condition'))
+        bridges = bridges.annotate(bridge_cond=F('bridge_condition__code'))
         bridges = bridges.annotate(deck_cond=F('deck_condition__code'))
         bridges = bridges.annotate(superstructure_cond=F('superstructure_condition__code'))
         bridges = bridges.annotate(substructure_cond=F('substructure_condition__code'))
-        fields.extend(["bridge_condition",
+        fields.extend(["bridge_cond",
                        "deck_cond",
                        "superstructure_cond",
                        "substructure_cond"])
@@ -385,7 +418,7 @@ def bridge_conditions(request):
                 name = field_options[field]['reverse_map'][unique_condition["state_fips"]]
             else:
                 name = field_options[field]['reverse_map'][unique_condition[field]]
-            condition = condition_mapping[unique_condition["bridge_condition"]]
+            condition = condition_mapping[unique_condition["bridge_cond"]]
             rating = unique_condition["rating"]
             component_state = check_new_conditions(unique_condition, rating, permutation_mapping)
             field_cond_dict[name][condition][rating][component_state] += unique_condition["count"]

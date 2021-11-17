@@ -8,27 +8,66 @@ import ListItem from "@mui/material/ListItem";
 import { plotOptions } from "../options";
 const html = htm.bind(h);
 
-export function HistTextSummary({ selected, objData, initialKeyData, field }) {
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+const display_info = {
+  min: "minimum",
+  max: "maximum",
+  avg: "average",
+  median: "median",
+  mode: "mode",
+  count: "count"
+};
+
+function getListItem(key, data, field) {
+  if (field === "Inspection date") {
+    return html`<${ListItem}>
+    ${field} ${display_info[key]}: ${monthNames[data[key].getMonth()]}-${data[key].getFullYear()}
+    </${ListItem}>`
+  } else {
+    return html`<${ListItem}>
+  ${field} ${display_info[key]}: ${Math.round(data[key])}
+  </${ListItem}>`
+  }
+}
+export function HistTextSummary({ selected, objData, initialKeyData, field }) {
   let data;
   if (selected) {
-    data = objData
+    data = objData;
   } else {
-    data = initialKeyData
+    data = initialKeyData;
   }
-  const fieldDisplay = plotOptions[field]['histogram'];
+
+  const display_info = {
+    min: "minimum",
+    max: "maximum",
+    avg: "average",
+    median: "median",
+    mode: "mode",
+    count: "count"
+  };
+
+  let {count, hexLocation, ...rest} = data
+
+  let displayField
+  // TODO: fix naming shenanigans...
+  if (field === "future_date_of_inspection") {
+    displayField = "inspection_due"
+  } else {
+    displayField = field
+  }
+
+    
+
+  const fieldDisplay = plotOptions[field]["histogram"];
   return html`
-        <${List} dense=${true}>
-        <${ListItem}>Number of Bridges: ${data.count}</${ListItem}>
-        <${ListItem}>${fieldDisplay} minimum: ${Math.round(data.min)}</${ListItem}>
-        <${ListItem}>${fieldDisplay} maximum: ${Math.round(data.max)}</${ListItem}>
-        <${ListItem}>${fieldDisplay} average: ${Math.round(data.avg)}</${ListItem}>
-        <${ListItem}>${fieldDisplay} median: ${Math.round(data.median)}</${ListItem}>
-        <${ListItem}>${fieldDisplay} mode: ${Math.round(data.mode)}</${ListItem}>
-        <${ListItem}>
-         ${(selected && data.hexLocation) ? 
-          html`Center Coordinate: ${data.hexLocation[1]}°N, ${-data.hexLocation[0]}°W` : null}
-        </${ListItem}>
-        </${List}>
-    `;
-  } 
+<${List} dense=${true}>
+<${ListItem}>Number of Bridges: ${data.count}</${ListItem}>
+    ${Object.keys(rest).map(d => (getListItem(d, data, fieldDisplay)))}
+  ${(selected && data.hexLocation) ? 
+    html`
+    <${ListItem}>
+    Center Coordinate: ${data.hexLocation[1]}°N, ${-data.hexLocation[0]}°W</${ListItem}>` : null}
+</${List}>
+  `;
+}

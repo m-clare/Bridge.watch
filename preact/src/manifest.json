@@ -1,6 +1,6 @@
 {
-  "name": "bdi-preact",
-  "short_name": "bdi-preact",
+  "name": "Bridge.watch",
+  "short_name": "Bridge.watch",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

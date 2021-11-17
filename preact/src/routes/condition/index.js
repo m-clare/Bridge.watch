@@ -83,7 +83,6 @@ export default function ConditionBridges() {
   const [queryURI, setQueryURI] = useState("");
   const [submitted, setSubmitted] = useState(true);
   const [waiting, setWaiting] = useState(false);
-  const [showPlot, setShowPlot] = useState(true);
 
   const handleChange = (event, type) => {
     const value = event.target.value;
@@ -130,7 +129,6 @@ export default function ConditionBridges() {
     setConditionBridges(bridgeData);
     setSubmitted(false);
     setWaiting(false);
-    setShowPlot(true);
   }, [submitted]);
 
   const renderField = searchField;
@@ -180,8 +178,7 @@ export default function ConditionBridges() {
           <${Grid} container spacing=${3}>
             ${
             !isEmpty(conditionBridges) &&
-            !conditionBridges.hasOwnProperty("message") &&
-            showPlot
+            !conditionBridges.hasOwnProperty("message")
             ? html`
            <${SunburstChart}
               bridgeConditionData=${conditionBridges}

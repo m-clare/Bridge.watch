@@ -32,13 +32,34 @@ function difference(setA, setB) {
   }
 }
 
+function addDays(date, days) {
+  let result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
 function getKeyProps(dataArray, field) {
-  const min = d3.min(dataArray.map((d) => +d[field]));
-  const max = d3.max(dataArray.map((d) => +d[field]));
-  const avg = d3.mean(dataArray.map((d) => +d[field]));
-  const median = d3.median(dataArray.map((d) => +d[field]));
-  const mode = d3.mode(dataArray.map((d) => +d[field]));
-  const count = dataArray.length;
+  let fieldOnly;
+  if (field === "future_date_of_inspection") {
+    fieldOnly = dataArray.map((d) => d[field])
+    const min = d3.min(fieldOnly);
+    const max = d3.max(fieldOnly);
+    const mode = d3.mode(fieldOnly);
+    const count = dataArray.length;
+    return {
+      min: min,
+      max: max,
+      mode: mode,
+      count: count,
+    };
+  } else {
+    fieldOnly = dataArray.map((d) => +d[field])  
+    const min = d3.min(fieldOnly);
+    const max = d3.max(fieldOnly);
+    const avg = d3.mean(fieldOnly);
+    const median = d3.median(fieldOnly);
+    const mode = d3.mode(fieldOnly);
+    const count = dataArray.length;
   return {
     min: min,
     max: max,
@@ -47,6 +68,7 @@ function getKeyProps(dataArray, field) {
     mode: mode,
     count: count,
   };
+  }
 }
 
 function getHexbinData(data) {
@@ -67,7 +89,14 @@ function getHexbinData(data) {
         if (p === null) {
           return null;
         }
-        p[field] = +d[field];
+        if (field === "future_date_of_inspection")
+        {
+          const dateArray = d[field].split("-");
+          p[field] = new Date(dateArray[0], dateArray[1], dateArray[2])
+        } else
+        {
+          p[field] = +d[field];
+        }
         return p;
       })
       .filter((el) => el != null);
@@ -94,25 +123,38 @@ function getHexbinData(data) {
       min = 0
       max = 150
       domain = d3.range(min, max+1, 5);
+    } else if (field === "average_daily_traffic") {
+      min = 0
+      max = 100000
+      domain = d3.range(min, max+1, 5000)
+    } else if (field === "truck_traffic") {
+      min = 0
+      max = 8000
+      domain = d3.range(min, max+1, 500)
+    } else if (field === "future_date_of_inspection") {
+      // min = allKeyData.min
+      // max = allKeyData.max
+      min = new Date();
+      max = addDays(min, 365)
+      domain = d3.scaleTime().domain([min, max]).nice()
     } else {
       throw new Error("invalid field");
     }
-    const emptyHist = object(domain, new Array(domain.length).fill(0));
-    const d3Histogram = d3.histogram().domain([min, max+1]).thresholds(domain.length);
-    rawHistogram = d3Histogram(bridgeInfo.map((d) => d[field]));
-    rawHistogram = rawHistogram.map((d) => ({
-      count: d.length,
-      [field]: +d.x0
-    }))
-    histogram = object(
-      rawHistogram.map((d) => +d[field]),
-      rawHistogram.map((d) => d.count)
-    );
-    const allCount = { ...emptyHist, ...histogram };
-    const allHistogram = Object.keys(allCount)
-          .sort(function(a, b) { return a - b})
-          .map((d) => ({ [field]: +d, count: allCount[d] }));
 
+    // const testHist = d3.histogram().domain([min, max]).thresholds(domain.ticks(12))
+    // rawHistogram = testHist(bridgeInfo.map((d) => d[field]))
+    // const emptyHist = object(domain, new Array(domain.length).fill(0));
+    let d3Histogram;
+    if (field === "future_date_of_inspection") {
+      d3Histogram = d3.histogram().domain([min, max]).thresholds(domain.ticks(12)) 
+    } else {
+      d3Histogram = d3.histogram().domain([min, max+1]).thresholds(domain);
+    }
+    rawHistogram = d3Histogram(bridgeInfo.map((d) => d[field]));
+    const allHistogram = rawHistogram.map((d) => ({
+      count: d.length,
+      [field]: d.x0
+    }))
     const rawHex = customHexbin(bridgeInfo);
 
     // simplified information from calculated hexbins
@@ -132,19 +174,10 @@ function getHexbinData(data) {
       let histogram;
 
       const hexbinHistogram = d3Histogram(d.map((d) => d[field]));
-      const hexRawHistogram = hexbinHistogram.map((d) => ({
+      const objHistogram = hexbinHistogram.map((d) => ({
         count: d.length,
-        [field]: +d.x0
+        [field]: d.x0
       }))
-      histogram = object(
-        hexRawHistogram.map((d) => +d[field]),
-        hexRawHistogram.map((d) => d.count)
-      );
-      histogram = { ...emptyHist, ...histogram };
-
-      const objHistogram = Object.keys(histogram)
-            .sort(function(a, b) { return a - b})
-            .map((d) => ({ [field]: +d, count: histogram[d] }));
       return { x, y, objKeyValues, objHistogram, count };
     });
 

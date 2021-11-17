@@ -125,6 +125,21 @@ export const plotOptions = {
     display: "Estimated repair cost per foot of bridge (in $1000s)",
     histogram: "Repair $1000s / ft bridge",
   },
+  average_daily_traffic: {
+    query: "average_daily_traffic",
+    display: "Average daily traffic (number of cars and trucks)",
+    histogram: "# cars & trucks / bridge",
+  },
+  truck_traffic: {
+    query: "truck_traffic",
+    display: "Average daily traffic (number of trucks only)",
+    histogram: "# trucks / bridge",
+  },
+  future_date_of_inspection: {
+    query: "future_date_of_inspection",
+    display: "Due for inspection in the next 12 months",
+    histogram: "Inspection date",
+  },
 };
 
 export const fieldOptions = {
@@ -140,10 +155,6 @@ export const fieldOptions = {
     query: "service",
     display: "Group by type of service on bridge",
   },
-  state: {
-    query: "state",
-    display: "State"
-  }
 }
 
 export const detailedOptions = {
@@ -169,12 +180,21 @@ export const singleFilters = {
     'label': 'Field',
     'options': fieldOptions
   },
-  state: {
-    'name': 'state',
-    'label': 'State',
+}
+
+export const stateSingleFilters = {
+  stateOne: {
+    'name': 'stateOne',
+    'label': 'State One',
     'options': stateOptions,
     'query': 'state'
-  }
+  },
+  stateTwo: {
+    'name': 'stateTwo',
+    'label': 'State Two',
+    'options': stateOptions,
+    'query': 'state'
+  }  
 }
 
 export const multiFilters = {

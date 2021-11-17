@@ -19,6 +19,11 @@ import { stateOptions } from "../../components/options";
 
 const html = htm.bind(h);
 
+// Based on Zoomable Sunburst from Observable, attribution below
+// Copyright 2021 Observable, Inc.
+// Released under the ISC license.
+// https://observablehq.com/@d3/zoomable-sunburst
+
 // Constant values for scaling, aspectRatio, etc.
 const width = 975;
 const height = width;
@@ -154,7 +159,7 @@ export function SunburstChart({ bridgeConditionData, field, submitted, chartID }
       const categoryColor = d3
         .scaleLinear()
         .domain([0, bridgeConditionData.children.length / 2, bridgeConditionData.children.length])
-        .range(["#1c5d99", "#c44436", "#1c5d99"])
+            .range(["#2C5C9A", "#c44436", "#2C5C9A"])
         .interpolate(d3.interpolateRgb.gamma(1));
 
       // Color translation - explicit mapping

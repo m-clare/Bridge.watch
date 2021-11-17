@@ -313,13 +313,30 @@ UPDATE nbi SET superstructure_condition_id = (SELECT superstructure_condition.id
 ALTER TABLE nbi DROP COLUMN superstructure_condition;
 CREATE INDEX nbi_superstructure_condition_idx ON nbi (superstructure_condition_id);
 
+DROP TABLE IF EXISTS bridge_condition;
+CREATE TABLE bridge_condition (
+  id SERIAL,
+  code CHAR(1) UNIQUE,
+  description TEXT,
+  PRIMARY KEY (id)
+);
+
+\copy bridge_condition(code,description) FROM './db/fk_csvs/bridge_condition.csv' WITH DELIMITER ',' CSV HEADER;
+
+UPDATE nbi SET bridge_condition = NULL WHERE bridge_condition = 'N';
+
+ALTER TABLE nbi ADD COLUMN bridge_condition_id INTEGER REFERENCES bridge_condition(id) ON DELETE CASCADE;
+UPDATE nbi SET bridge_condition_id = (SELECT bridge_condition.id FROM bridge_condition where bridge_condition.code = nbi.bridge_condition);
+ALTER TABLE nbi DROP COLUMN bridge_condition;
+CREATE INDEX nbi_bridge_condition_idx ON nbi (bridge_condition_id);
+
 DROP TABLE IF EXISTS bridge_median;
 CREATE TABLE bridge_median (
-id SERIAL,
- code CHAR(1) UNIQUE,
- description TEXT,
- PRIMARY KEY (id)
- );
+  id SERIAL,
+  code CHAR(1) UNIQUE,
+  description TEXT,
+  PRIMARY KEY (id)
+);
 
 \copy bridge_median(code,description) FROM './db/fk_csvs/bridge_median.csv' WITH DELIMITER ',' CSV HEADER;
 
@@ -450,7 +467,9 @@ ALTER TABLE nbi ALTER COLUMN total_project_improvement_cost TYPE DOUBLE PRECISIO
 ALTER TABLE nbi ALTER COLUMN bridge_improvement_cost TYPE DOUBLE PRECISION USING bridge_improvement_cost::double precision;
 ALTER TABLE nbi ALTER COLUMN roadway_improvement_cost TYPE DOUBLE PRECISION USING roadway_improvement_cost::double precision;
 ALTER TABLE nbi ALTER COLUMN length_of_structure_improvement TYPE DOUBLE PRECISION USING length_of_structure_improvement::double precision;
-
+ALTER TABLE nbi ALTER COLUMN average_daily_traffic SET DATA TYPE INTEGER USING average_daily_traffic::integer;
+ALTER TABLE nbi ALTER COLUMN average_daily_truck_traffic SET DATA TYPE INTEGER USING average_daily_truck_traffic::integer;
+ALTER TABLE nbi ALTER COLUMN future_average_daily_traffic SET DATA TYPE INTEGER USING future_average_daily_traffic::integer;
 -- Create fips code and mapping
 ALTER TABLE nbi ALTER COLUMN county_code SET DATA TYPE CHAR(3);
 ALTER TABLE nbi ADD COLUMN fips_code CHAR(5);
@@ -472,33 +491,12 @@ UPDATE nbi SET fips_id = (SELECT fips.id FROM fips where fips.code = nbi.fips_co
 ALTER TABLE nbi DROP COLUMN fips_code;
 CREATE INDEX nbi_fips_idx ON nbi (fips_id);
 
-CREATE TABLE abbrev_rating AS SELECT structure_number, state_id, latitude, longitude, structure_type_id, structure_kind_id, lowest_rating_id, year_built, superstructure_condition_id, substructure_condition_id, deck_condition_id, type_of_service_on_bridge_id from nbi;
-ALTER TABLE abbrev_rating ADD CONSTRAINT lowest_rating_id FOREIGN KEY (lowest_rating_id) REFERENCES lowest_rating(id);
-DELETE FROM abbrev_rating WHERE (abbrev_rating.lowest_rating_id IS NULL);
-ALTER TABLE abbrev_rating ADD COLUMN id SERIAL PRIMARY KEY;
-ALTER TABLE abbrev_rating ADD CONSTRAINT structure_type_id FOREIGN KEY (structure_type_id) REFERENCES structure_type(id);
-ALTER TABLE abbrev_rating ADD CONSTRAINT structure_kind_id FOREIGN KEY (structure_kind_id) REFERENCES structure_kind(id);
-ALTER TABLE abbrev_rating ADD CONSTRAINT superstructure_condition_id FOREIGN KEY (superstructure_condition_id) REFERENCES superstructure_condition(id);
-ALTER TABLE abbrev_rating ADD CONSTRAINT substructure_condition_id FOREIGN KEY (substructure_condition_id) REFERENCES substructure_condition(id);
-ALTER TABLE abbrev_rating ADD CONSTRAINT deck_condition_id FOREIGN KEY (deck_condition_id) REFERENCES deck_condition(id);
-ALTER TABLE abbrev_rating ADD CONSTRAINT type_of_service_on_bridge_id FOREIGN KEY (type_of_service_on_bridge_id) REFERENCES type_of_service_on_bridge(id);
-ALTER TABLE abbrev_rating ADD CONSTRAINT state_id FOREIGN KEY (state_id) REFERENCES state(id);
-
-CREATE TABLE abbrev_year_built AS SELECT structure_number, state_id, latitude, longitude, structure_type_id, structure_kind_id, lowest_rating_id, year_built, superstructure_condition_id, substructure_condition_id, deck_condition_id, type_of_service_on_bridge_id from nbi;
-DELETE FROM abbrev_year_built WHERE (abbrev_year_built.year_built IS NULL);
-ALTER TABLE abbrev_year_built ADD COLUMN id SERIAL PRIMARY KEY;
-ALTER TABLE abbrev_year_built ADD CONSTRAINT lowest_rating_id FOREIGN KEY (lowest_rating_id) REFERENCES lowest_rating(id);
-ALTER TABLE abbrev_year_built ADD CONSTRAINT structure_type_id FOREIGN KEY (structure_type_id) REFERENCES structure_type(id);
-ALTER TABLE abbrev_year_built ADD CONSTRAINT structure_kind_id FOREIGN KEY (structure_kind_id) REFERENCES structure_kind(id);
-ALTER TABLE abbrev_year_built ADD CONSTRAINT superstructure_condition_id FOREIGN KEY (superstructure_condition_id) REFERENCES superstructure_condition(id);
-ALTER TABLE abbrev_year_built ADD CONSTRAINT substructure_condition_id FOREIGN KEY (substructure_condition_id) REFERENCES substructure_condition(id);
-ALTER TABLE abbrev_year_built ADD CONSTRAINT deck_condition_id FOREIGN KEY (deck_condition_id) REFERENCES deck_condition(id);
-ALTER TABLE abbrev_year_built ADD CONSTRAINT type_of_service_on_bridge_id FOREIGN KEY (type_of_service_on_bridge_id) REFERENCES type_of_service_on_bridge(id);
-ALTER TABLE abbrev_year_built ADD CONSTRAINT state_id FOREIGN KEY (state_id) REFERENCES state(id);
-
 -- get Dates of Inspections
 UPDATE nbi SET date_of_inspection=TO_DATE(LPAD(date_of_inspection::text, 4, '0'), 'MMYY');
 ALTER TABLE nbi ALTER COLUMN date_of_inspection TYPE date USING date_of_inspection::date;
 ALTER TABLE nbi ALTER COLUMN designated_inspection_frequency TYPE INTEGER USING designated_inspection_frequency::integer;
+
+ALTER TABLE nbi ADD COLUMN future_date_of_inspection DATE;
+UPDATE nbi SET future_date_of_inspection = (date_of_inspection + make_interval(months => designated_inspection_frequency));
 
 

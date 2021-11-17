@@ -1,0 +1,32 @@
+
+version: '3.8'
+
+services:
+  web:
+    image: web-dev:latest
+    command: python manage.py runserver 0.0.0.0:8000
+    container_name: web
+    env_file:
+      - ./.env.dev
+    ports:
+      - 8000:8000
+    restart: always
+    depends_on:
+      - db
+
+  db:
+    image: db-dev:latest
+    command: postgres -c log_statement=all -c max_wal_size=2GB
+    container_name: db
+    env_file:
+      - ./.env.dev
+    volumes:
+      - nbi-data:/var/lib/postgresql/data/
+    restart: always
+
+volumes:
+  nbi-data:
+
+networks:
+  default:
+    name: nbi

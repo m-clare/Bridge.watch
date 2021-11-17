@@ -7,45 +7,6 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-
-class AbbrevRating(models.Model):
-    structure_number = models.TextField(blank=True, null=True)
-    state = models.ForeignKey('State', models.DO_NOTHING, blank=True, null=True)
-    latitude = models.FloatField(blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
-    structure_type = models.ForeignKey('StructureType', models.DO_NOTHING, blank=True, null=True)
-    structure_kind = models.ForeignKey('StructureKind', models.DO_NOTHING, blank=True, null=True)
-    lowest_rating = models.ForeignKey('LowestRating', models.DO_NOTHING, blank=True, null=True)
-    year_built = models.IntegerField(blank=True, null=True)
-    superstructure_condition = models.ForeignKey('SuperstructureCondition', models.DO_NOTHING, blank=True, null=True)
-    substructure_condition = models.ForeignKey('SubstructureCondition', models.DO_NOTHING, blank=True, null=True)
-    deck_condition = models.ForeignKey('DeckCondition', models.DO_NOTHING, blank=True, null=True)
-    type_of_service_on_bridge = models.ForeignKey('TypeOfServiceOnBridge', models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'abbrev_rating'
-
-
-class AbbrevYearBuilt(models.Model):
-    structure_number = models.TextField(blank=True, null=True)
-    state = models.ForeignKey('State', models.DO_NOTHING, blank=True, null=True)
-    latitude = models.FloatField(blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
-    structure_type = models.ForeignKey('StructureType', models.DO_NOTHING, blank=True, null=True)
-    structure_kind = models.ForeignKey('StructureKind', models.DO_NOTHING, blank=True, null=True)
-    lowest_rating = models.ForeignKey('LowestRating', models.DO_NOTHING, blank=True, null=True)
-    year_built = models.IntegerField(blank=True, null=True)
-    superstructure_condition = models.ForeignKey('SuperstructureCondition', models.DO_NOTHING, blank=True, null=True)
-    substructure_condition = models.ForeignKey('SubstructureCondition', models.DO_NOTHING, blank=True, null=True)
-    deck_condition = models.ForeignKey('DeckCondition', models.DO_NOTHING, blank=True, null=True)
-    type_of_service_on_bridge = models.ForeignKey('TypeOfServiceOnBridge', models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'abbrev_year_built'
-
-
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -188,6 +149,14 @@ class DjangoSession(models.Model):
         managed = False
         db_table = 'django_session'
 
+class BridgeCondition(models.Model):
+    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'bridge_condition'
+
 
 class Fips(models.Model):
     code = models.IntegerField(unique=True, blank=True, null=True)
@@ -262,7 +231,7 @@ class Bridge(models.Model):
     year_built = models.IntegerField(blank=True, null=True)
     traffic_lanes_on_structure = models.TextField(blank=True, null=True)
     traffic_lanes_under_structure = models.TextField(blank=True, null=True)
-    average_daily_traffic = models.TextField(blank=True, null=True)
+    average_daily_traffic = models.IntegerField(blank=True, null=True)
     year_of_average_daily_traffic = models.IntegerField(blank=True, null=True)
     approach_roadway_width = models.TextField(blank=True, null=True)
     skew_angle = models.TextField(blank=True, null=True)
@@ -304,6 +273,7 @@ class Bridge(models.Model):
     type_of_work_done_by = models.TextField(blank=True, null=True)
     length_of_structure_improvement = models.FloatField(blank=True, null=True)
     date_of_inspection = models.DateField(blank=True, null=True)
+    future_date_of_inspection = models.DateField(blank=True, null=True)
     designated_inspection_frequency = models.IntegerField(blank=True, null=True)
     critical_feature_inspection_fracture = models.TextField(blank=True, null=True)
     critical_feature_inspection_underwater = models.TextField(blank=True, null=True)
@@ -329,17 +299,17 @@ class Bridge(models.Model):
     deck_wearing_surface_type = models.TextField(blank=True, null=True)
     deck_wearing_surface_membrane_type = models.TextField(blank=True, null=True)
     wearing_surface_deck_protection = models.TextField(blank=True, null=True)
-    average_daily_truck_traffic = models.TextField(blank=True, null=True)
+    average_daily_truck_traffic = models.IntegerField(blank=True, null=True)
     national_network = models.TextField(blank=True, null=True)
     pier_or_abutment_protection = models.TextField(blank=True, null=True)
     nbis_bridge_length = models.TextField(blank=True, null=True)
     scour_critical = models.TextField(blank=True, null=True)
-    future_average_daily_traffic = models.TextField(blank=True, null=True)
+    future_average_daily_traffic = models.IntegerField(blank=True, null=True)
     year_of_future_average_daily_traffic = models.IntegerField(blank=True, null=True)
     minimum_navigation_vertical_clearance_vertical_lift_bridge = models.TextField(blank=True, null=True)
     federal_agency = models.TextField(blank=True, null=True)
     submitted_by = models.TextField(blank=True, null=True)
-    bridge_condition = models.TextField(blank=True, null=True)
+    
     deck_area = models.TextField(blank=True, null=True)
     state = models.ForeignKey('State', models.DO_NOTHING, blank=True, null=True)
     toll = models.ForeignKey('Toll', models.DO_NOTHING, blank=True, null=True)
@@ -362,6 +332,7 @@ class Bridge(models.Model):
     type_of_service_on_bridge = models.ForeignKey('TypeOfServiceOnBridge', models.DO_NOTHING, blank=True, null=True)
     test_column = models.CharField(max_length=5, blank=True, null=True)
     fips = models.ForeignKey(Fips, models.DO_NOTHING, blank=True, null=True)
+    bridge_condition = models.ForeignKey('BridgeCondition', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -542,6 +513,7 @@ class SubstructureCondition(models.Model):
     class Meta:
         managed = False
         db_table = 'substructure_condition'
+
 
 
 class SuperstructureCondition(models.Model):

@@ -8,12 +8,12 @@ import Typography from "@mui/material/Typography";
 
 import * as d3 from "d3";
 import { hexbin } from "d3-hexbin";
-import { mesh } from "topojson-client";
 import { feature } from "topojson-client";
 import { legend } from "../colorLegend";
 import us from "us-atlas/counties-albers-10m.json";
 import { isEmpty } from "lodash-es";
 import { colorDict } from "../colorPalette";
+import { grey } from "@mui/material/colors";
 
 import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
@@ -21,8 +21,12 @@ import { HorizontalPropertyPanel } from "../../components/horizontalPropertyPane
 
 import { stateOptions } from "../../components/options";
 
-import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
+
+// Based on Choropleth Chart from Observable, attribution below
+// Copyright 2021 Observable, Inc.
+// Released under the ISC license.
+// https://observablehq.com/@d3/choropleth
 
 // Constant values for scaling, aspectRatio, etc.
 const width = 975;
@@ -37,6 +41,7 @@ const tickExtremes = {
   repair_cost_per_foot: ["$1,000", "$100,000"],
 };
 
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const getInterestValue = (plotType, countyValues) => {
   if (plotType === "percent_poor") {
     const histogram = countyValues.objHistogram;
@@ -48,6 +53,14 @@ const getInterestValue = (plotType, countyValues) => {
       histogram[4].count;
     const value = Math.round((numPoor / countyValues.count) * 100);
     const stringDescription = "Rated below 4: " + value + "%";
+    return { stringDescription: stringDescription, value: value };
+  } else if (plotType === "future_date_of_inspection") {
+    const value = countyValues.objKeyValues.mode
+    const stringDescription = "Most common value: " + monthNames[value.getMonth()] + '-' + value.getFullYear()
+    return { stringDescription: stringDescription, value: value };
+  } else if (plotType === "average_daily_traffic" || "truck_traffic") {
+    const value = Math.round(countyValues.objKeyValues.avg);
+    const stringDescription = "Average value: " + value;
     return { stringDescription: stringDescription, value: value };
   } else {
     return {
@@ -71,33 +84,12 @@ function getSelectedStates(states, us) {
   return newStates;
 }
 
-const getCountyNode = (svg) => {
-  if (!document.getElementById("Counties")) {
-    svg.append("g").attr("id", "Counties");
+const getNodeById = (svg, id) => {
+  if (svg.select("#" + id).empty()) {
+    svg.append("g").attr("id", id);
   }
-  return svg.select("#Counties");
-};
-
-const getAllCountyNode = (svg) => {
-  if (!document.getElementById("AllCounties")) {
-    svg.append("g").attr("id", "AllCounties");
-  }
-  return svg.select("#AllCounties");
-};
-
-const getLegend = (svg) => {
-  if (!document.getElementById("legendContainer")) {
-    svg.append("g").attr("id", "legendContainer");
-  }
-  return svg.select("#legendContainer");
-};
-
-const getAttribution = (svg) => {
-  if (!document.getElementById("attributionContainer")) {
-    svg.append("g").attr("id", "attributionContainer");
-  }
-  return svg.select("#attributionContainer");
-};
+  return svg.select("#" + id)
+}
 
 export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submitted }) {
   const [activeCounty, setActiveCounty] = useState({});
@@ -136,25 +128,20 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
       );
       const path = d3.geoPath(projection);
 
-      const svgCounties = getAllCountyNode(svg);
+      const svgCounties = getNodeById(svg, "AllCounties")
 
       svgCounties
         .selectAll("path")
         .data(selectedCounties.features)
         .join("path")
         .attr("fill", "none")
-        .attr("d", path);
-
-      svgCounties
-        .join("path")
-        .datum(mesh(us, us.objects.counties, (a, b) => a !== b))
-        .attr("fill", "none")
         .attr("stroke", "#777")
         .attr("stroke-linejoin", "round")
         .attr("d", path);
+
     } else {
       const svg = d3.select(d3Container.current);
-      const svgCounties = getAllCountyNode(svg);
+      const svgCounties = getNodeById(svg, "AllCounties")
       svg.remove(svgCounties);
     }
   }, [bridgeCountyData]);
@@ -167,6 +154,8 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
 
   useEffect(() => {
     if (!isEmpty(bridgeCountyData) && d3Container.current && !submitted) {
+
+      console.log(plotType)
       const svg = d3.select(d3Container.current);
       const color = colorDict[plotType];
 
@@ -178,7 +167,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
         .append("div")
         .style("position", "absolute")
         .style("z-index", "10")
-        .attr("class", "tooltooltip")
+        .attr("class", "tooltip")
         .style("visibility", "hidden")
         .style("font-family", "Fira Sans")
         .style("font-size", "0.8rem")
@@ -207,11 +196,22 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
         });
       }
 
-      
-
       // add legend
-      const legendNode = getLegend(svg);
+      // const legendNode = getLegend(svg);
+      const legendNode = getNodeById(svg, "LegendContainer")
       legendNode.select("#legend").remove();
+
+      // every other tick value
+      const tickFormatting = (interval, i) => {
+        let modInterval
+        if (plotType === "future_date_of_inspection") {
+          let modDate = new Date(interval)
+          modInterval = monthNames[modDate.getMonth()] + '-' + modDate.getFullYear()
+        } else {
+          modInterval = interval
+        }
+        return i % 2 !== 0 ? " " : modInterval;
+      }
 
       legendNode
         .attr(
@@ -222,7 +222,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
           legend({
             color: color,
             width: width * 0.3,
-            tickFormat: ".0f",
+            tickFormat: tickFormatting,
             tickSize: 0,
             ticks: 8,
             tickExtremes: tickExtremes[plotType],
@@ -230,12 +230,17 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
         );
 
       // add counties with data
-      const svgCounties = getCountyNode(svg);
+      // const svgCounties = getCountyNode(svg);
+      const svgCounties = getNodeById(svg, "Counties")
+
       svgCounties
         .selectAll("path")
         .data(countyMerged)
         .join("path")
         .attr("fill", (d) => color(getInterestValue(plotType, d).value))
+        .attr("stroke", "#000")
+        .attr("stroke-width", "0.05em")
+        .attr("stroke-linejoin", "round")
         .attr("d", path)
         .on("mouseover", function (e, d) {
           tooltip
@@ -270,17 +275,9 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
             .attr("stroke", "#000");
         });
 
-      svgCounties
-        .join("path")
-        .datum(mesh(us, us.objects.counties, (a, b) => a !== b))
-        .attr("fill", "none")
-        .attr("stroke", "#000")
-        .attr("stroke-width", "0.05em")
-        .attr("stroke-linejoin", "round")
-        .attr("d", path);
 
       //add attribution
-      const attrNode = getAttribution(svg);
+      const attrNode = getNodeById(svg, "AttributionContainer")
       attrNode.select("#attribution").remove();
 
       attrNode
@@ -298,7 +295,7 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
 
     } else if (displayStates.length === 0) {
       const svg = d3.select(d3Container.current);
-      const svgCounties = getCountyNode(svg);
+      const svgCounties = getNodeById(svg, "Counties")
       svg.remove(svgCounties);
     }
   }, [bridgeCountyData, plotType]);
@@ -315,23 +312,31 @@ export function ChoroplethMap({ bridgeCountyData, displayStates, plotType, submi
     ${displayStates.length !== 0 && !isEmpty(bridgeCountyData)
       ? html`<${Grid} item xs=${12}>
     <${Typography} variant="h4" component="h1">${title}</${Typography}>
-    </${Grid}>
-    <${Grid} item xs=${12} sx=${{ paddingTop: 0 }}>
+  </${Grid}>
+  <${Grid} item xs=${12} sx=${{ paddingTop: 0 }}>
     <svg class="d3-component"
-  viewBox="0 0 ${width} ${height}"
-  ref=${d3Container}
-    >
+         viewBox="0 0 ${width} ${height}"
+         ref=${d3Container}
+         >
     </svg>
+  </${Grid}>
+    <${Grid} item sx=${{textAlign: "center"}} style=${{paddingTop: "0px"}} xs=${12}>
+    <${Typography}
+  variant="overline"
+  color=${grey[500]}>
+    Hover or click to update the histogram.
+    </${Typography}>
     </${Grid}>
-    <${Grid} item xs=${12}>
+  <${Grid} item xs=${12}>
     <${HorizontalPropertyPanel} objSelected=${countySelected}
-  objData=${activeCounty}
-  initialHistData=${totalValues}
-  initialKeyData=${bridgeCountyData.keyData}
-  field=${bridgeCountyData.field}
-  plotHeight=${plotHeight}
-  />
-    </${Grid}>`
-      : null}
+                                objData=${activeCounty}
+                                initialHistData=${totalValues}
+                                initialKeyData=${bridgeCountyData.keyData}
+                                field=${bridgeCountyData.field}
+                                plotHeight=${plotHeight}
+                                />
+  </${Grid}>`
+  : null}
   `;
 }
+  

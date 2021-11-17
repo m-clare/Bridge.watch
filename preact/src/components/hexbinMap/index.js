@@ -12,6 +12,7 @@ import { legend } from "../colorLegend";
 import us from "us-atlas/states-albers-10m.json";
 import { isEmpty } from "lodash-es";
 import { colorDict } from "../colorPalette";
+import { grey } from "@mui/material/colors";
 
 import { BarChart } from "../../components/barChart";
 import { HistTextSummary } from "../../components/histTextSummary";
@@ -19,15 +20,22 @@ import { VerticalPropertyPanel } from "../../components/verticalPropertyPanel";
 
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-
+import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 const html = htm.bind(h);
+
+// Based on Hexbin Chart from Observable, attribution below
+// Copyright 2021 Observable, Inc.
+// Released under the ISC license.
+// https://observablehq.com/@d3/hexbin-map
 
 // Constant values for scaling, aspectRatio, etc.
 const width = 975;
 const height = 610;
 const scaleValue = 1300;
 const stdMargin = 30;
+
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 // d3 helper functions for mapping
 const projection = d3
@@ -46,8 +54,7 @@ const tickExtremes = {
   rating: ["Failed", "Excellent"],
   percent_poor: ["None in poor condition (%)", "All in poor condition (%)"],
   year_built: [1900, 2021],
-  repair_cost_per_foot: ["$1,000", "$100,000"]
-
+  repair_cost_per_foot: ["$1,000", "$100,000"],
 };
 
 const getInterestValue = (plotType, hexValues) => {
@@ -60,7 +67,11 @@ const getInterestValue = (plotType, hexValues) => {
       histogram[3].count +
       histogram[4].count;
     return Math.round((numPoor / hexValues.count) * 100);
-  } else {
+  } else if (plotType === "future_date_of_inspection") {
+    return  hexValues.objKeyValues.mode
+  } else if (plotType ==="average_daily_traffic || truck_traffic"){
+    return hexValues.objKeyValues.avg;
+    } else {
     return hexValues.objKeyValues.median;
   }
 };
@@ -104,7 +115,7 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
 
   let plotHeight;
   if (widthCheck) {
-    plotHeight = "600px";
+    plotHeight = "640px";
   } else {
     plotHeight = "0px";
   }
@@ -145,13 +156,26 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
       const legendNode = getLegend();
       legendNode.select("#legend").remove();
 
+      // every other tick value
+      const tickFormatting = (interval, i) => {
+        let modInterval
+        if (plotType === "future_date_of_inspection") {
+          let modDate = new Date(interval)
+          modInterval = monthNames[modDate.getMonth()] + '-' + modDate.getFullYear()
+        } else {
+          modInterval = interval
+        }
+        return i % 2 !== 0 ? " " : modInterval;
+      }
+
+
       legendNode
         .attr("transform", `translate(${0.6 * width}, ${stdMargin - 10})`)
         .append(() =>
           legend({
             color: color,
             width: width * 0.3,
-            tickFormat: ".0f",
+            tickFormat: tickFormatting,
             tickSize: 0,
             ticks: 8,
             tickExtremes: tickExtremes[plotType],
@@ -229,7 +253,7 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
   return html`
 <${Grid} item container spacing=${3}>
   <${Grid} item xs=${12} md=${8}>
-    <${Paper} sx=${{padding: 3, minHeight: {sx: 0, md: 570}}}>
+    <${Paper} sx=${{padding: 3, minHeight: {sx: 0, md: 600}}}>
     <${FormControlLabel}
       control=${html`<${Switch}
         defaultChecked
@@ -252,6 +276,11 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
         d=${d3.geoPath()(mesh(us, us.objects.states))}
         />
     </svg>
+    <${Typography} style=${"text-align: center"}
+                     variant="overline"
+                     color=${grey[500]}>
+        Hover or click to update the histogram.
+      </${Typography}>
 </${Paper}>
   </${Grid}>
   <${VerticalPropertyPanel} objSelected=${hexSelected}

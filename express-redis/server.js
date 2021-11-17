@@ -1,18 +1,12 @@
 import express from "express";
 import cors from "cors";
 import dotenv from 'dotenv';
-import ExpressRedisCache from "express-redis-cache";
 import { getCountryData, getStateData, getConditionData } from "./api.js";
 
 dotenv.config();
 
 const app = express();
 const port = +process.env.EXPRESS_PORT;
-
-const cache = ExpressRedisCache({
-  host: process.env.CACHE_HOST,
-  port: +process.env.CACHE_PORT,
-});
 
 async function returnCountryData(req, res) {
   const qs = req.originalUrl.substring(1);
@@ -43,11 +37,11 @@ async function returnConditionData(req, res) {
 
 app.use(cors())
 
-app.get("/national/", cache.route(), returnCountryData);
+app.get("/national/", returnCountryData);
 
-app.get("/state/", cache.route(), returnStateData);
+app.get("/state/", returnStateData);
 
-app.get("/conditions/", cache.route(), returnConditionData)
+app.get("/conditions/", returnConditionData)
 
 
 app.listen(port, () => {

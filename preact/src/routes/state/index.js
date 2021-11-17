@@ -46,10 +46,31 @@ function constructURI(query) {
   return uriString;
 }
 
+const dateKeys = ['min', 'max', 'mode']
+
+function fixDateData(data) {
+  if (!data.totalValues) {
+    return data
+  }
+  data.totalValues = data.totalValues.map(d => ({...d, 'future_date_of_inspection': new Date(d.future_date_of_inspection)}))
+  let keyValues = data.keyData
+  data.keyData.min = new Date(keyValues.min)
+  data.keyData.max = new Date(keyValues.max)
+  data.keyData.mode = new Date(keyValues.mode)
+  data.countyBin.forEach(d => {
+    d.objKeyValues.min = new Date(d.objKeyValues.min)
+    d.objKeyValues.max = new Date(d.objKeyValues.max)
+    d.objKeyValues.mode = new Date(d.objKeyValues.mode)
+    d.objHistogram = d.objHistogram.map(f => ({...f, "future_date_of_inspection": new Date(f.future_date_of_inspection)}))
+  }
+  )
+  return data
+}
+
 export default function StateBridges() {
   const [stateBridges, setStateBridges] = useState({});
   const [queryState, setQueryState] = useState({
-    plot_type: "rating",
+    plot_type: "percent_poor",
     material: [],
     type: [],
     service: [],
@@ -104,8 +125,11 @@ export default function StateBridges() {
   // run every time submitted is updated
   useEffect(async () => {
     const newURI = constructURI(queryState);
-    const bridgeData = await getStateBridges(newURI);
+    let bridgeData = await getStateBridges(newURI);
     setQueryURI(newURI);
+    if (queryState.plot_type === "future_date_of_inspection") {
+      bridgeData = fixDateData(bridgeData)
+    }
     setStateBridges(bridgeData);
     setSubmitted(false);
     setWaiting(false);
@@ -132,7 +156,7 @@ export default function StateBridges() {
   <${Container} maxWidth="lg">
     <${Grid} container spacing=${3}>
       <${Grid} item xs=${12} md=${4}>
-        <${Paper} sx=${{ padding: 3, minHeight: {xs: 0, md: 850}}}>
+        <${Paper} sx=${{ padding: 3, minHeight: {xs: 0, md: 880}}}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
               <${Typography} variant="h4" component="h1">Bridges By State Selection</${Typography}>
@@ -163,7 +187,7 @@ export default function StateBridges() {
         </${Paper}>
       </${Grid}>
       <${Grid} item xs=${12} md=${8}>
-        <${Paper} sx=${{ padding: 3, minHeight: {xs: 0, md: 850} }}>
+        <${Paper} sx=${{ padding: 3, minHeight: {xs: 0, md: 880} }}>
           <${Grid} container spacing=${3}>
             ${
             !isEmpty(stateBridges) &&

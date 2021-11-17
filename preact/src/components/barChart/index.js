@@ -8,6 +8,7 @@ import { colorDict } from "../colorPalette";
 import { plotOptions } from "../options";
 const html = htm.bind(h);
 
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 function updateBarChart(svg, data, dimensions) {
   const height = dimensions.height;
@@ -84,7 +85,7 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
   xAxisNode.attr("transform", `translate(0, ${height - margins.bottom})`);
 
   // limit number of labels based on bins
-  if (data.map((d) => d.field).length <= 16) {
+  if (data.map((d) => d.field).length <= 10) {
     xAxisNode
       .call(d3.axisBottom(x).tickSizeOuter(0))
       .attr("font-size", "1.2em");
@@ -94,7 +95,13 @@ function initializeBarChart(svg, data, domain, color, field, dimensions) {
         d3
           .axisBottom(x)
           .tickFormat((interval, i) => {
-            return i % 2 !== 0 ? " " : interval;
+            let modInterval
+            if (field === "future_date_of_inspection") {
+              modInterval = monthNames[interval.getMonth()] + '-' + interval.getFullYear()
+            } else {
+              modInterval = interval
+            }
+            return i % 2 !== 0 ? " " : modInterval;
           })
           .ticks(x.domain().length + 1)
       )
@@ -171,12 +178,19 @@ export function BarChart({
       const color = colorDict[field]
       const data = initialHistData;
 
-      const x = d3
-        .scaleBand()
-        .domain(initialHistData.map((d) => d[field]))
-            .range([margins.left + 8, width - (margins.right + 8)])
-        .padding(0.1);
-
+      let x;
+      if (field === "Inspection date") {
+        x = d3.scaleTime()
+          .domain(initialHistData.map((d) => d[field]))
+          .range([margins.left + 8, width - (margins.right + 8)])
+          .padding(0.1);
+      } else {
+        x = d3
+          .scaleBand()
+          .domain(initialHistData.map((d) => d[field]))
+          .range([margins.left + 8, width - (margins.right + 8)])
+          .padding(0.1);
+      }
       // handle empty histogram
       let max;
       if (d3.max(data, (d) => d.count) === 0) {
