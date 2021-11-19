@@ -1,4 +1,4 @@
-# bdi-preact
+# Bridge.watch
 
 ## CLI Commands
 

@@ -32,25 +32,25 @@ export default function Header() {
         <${Container} maxWidth="lg"  sx=${{backgroundImage:`url(${masthead})`, backgroundSize: "auto 100px", backgroundRepeat: "no-repeat", height: "100px"}} />
       </${Box}>
       <${Box} sx=${{display: {xs: "none", lg: "inline"}}}>
-          <${Button} sx=${{px: 2}}  color="inherit"><${RouterLink} href='/country'
-                                                                   style=${"color: #fff; text-decoration: none; text-shadow: #000 1px 0 10px; font-size: 18px"}>
+          <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}}  variant="contained"><${RouterLink} href='/country'
+                                                                   style=${"color: #fff; text-decoration: none; font-size: 18px"}>
               U.S. Overview</${RouterLink}>
           </${Button}>
-          <${Button} sx=${{px: 2}} color="inherit"><${RouterLink} href='/state'
-                                                                  style=${"color: #fff; text-decoration: none; text-shadow: #000 1px 0 10px; font-size: 18px"}>
+          <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}} variant="contained"><${RouterLink} href='/state'
+                                                                  style=${"color: #fff; text-decoration: none; font-size: 18px"}>
               State Info</${RouterLink}>
           </${Button}>
-          <${Button} sx=${{px: 2}} color="inherit"><${RouterLink} href='/condition'
-                                                                  style=${"color: #fff; text-decoration: none; text-shadow: #000 1px 0 10px; font-size: 18px"}>
+          <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}} variant="contained"><${RouterLink} href='/condition'
+                                                                  style=${"color: #fff; text-decoration: none; font-size: 18px"}>
               Condition Info</${RouterLink}>
           </${Button}>
-          <${Button} sx=${{px: 2}} color="inherit"><${RouterLink} href='/state_comparison'
-                                                                  style=${"color: #fff; text-decoration: none; text-shadow: #000 1px 0 10px; font-size: 18px"}>
+          <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}} variant="contained"><${RouterLink} href='/state_comparison'
+                                                                  style=${"color: #fff; text-decoration: none; font-size: 18px"}>
               State Comparison</${RouterLink}>
           </${Button}>
           <${TopMenu}/>
-          <${Button} sx=${{px: 2}} color="inherit"><${RouterLink} href='/about'
-                                                                  style=${"color: #fff; text-decoration: none; text-shadow: #000 1px 0 10px; font-size: 18px"}>
+          <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}} variant="contained"><${RouterLink} href='/about'
+                                                                  style=${"color: #fff; text-decoration: none; font-size: 18px"}>
               About</${RouterLink}>
           </${Button}>
       </${Box}>

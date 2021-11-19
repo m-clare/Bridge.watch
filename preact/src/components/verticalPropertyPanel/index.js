@@ -8,7 +8,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import * as d3 from "d3";
 
-import { BarChart } from "../../components/barChart";
+import { PanelBarChart } from "../../components/panelBarChart";
 import { HistTextSummary } from "../../components/histTextSummary";
 
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -37,12 +37,12 @@ export function VerticalPropertyPanel({
     barHeight = 300;
   }
 
+  console.log(field) 
   return html`
-<${Grid} item xs=${12} md=${4} >
   <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 600 } }}> 
     <${Grid} item>
       <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
-      <${BarChart}
+      <${PanelBarChart}
         selected=${objSelected}
         objData=${objData.objHistogram}
         initialHistData=${initialHistData}
@@ -59,6 +59,5 @@ export function VerticalPropertyPanel({
         field=${field}
         />
     </${Grid}>
-  </${Paper}>
-</${Grid}>`;
+  </${Paper}>`;
 }

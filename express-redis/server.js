@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from 'dotenv';
 import { getCountryData, getStateData, getConditionData } from "./api.js";
+import ExpressRedisCache from "express-redis-cache";
 
 dotenv.config();
 
@@ -37,11 +38,24 @@ async function returnConditionData(req, res) {
 
 app.use(cors())
 
-app.get("/national/", returnCountryData);
+// app.get("/national/", returnCountryData);
 
-app.get("/state/", returnStateData);
+// app.get("/state/", returnStateData);
 
-app.get("/conditions/", returnConditionData)
+// app.get("/conditions/", returnConditionData)
+
+// local testing block with redis cache
+const cache = ExpressRedisCache({
+  host: process.env.CACHE_HOST,
+  port: +process.env.CACHE_PORT,
+});
+
+app.get("/national/", cache.route(), returnCountryData);
+
+app.get("/state/", cache.route(), returnStateData);
+
+app.get("/conditions/", cache.route(), returnConditionData)
+
 
 
 app.listen(port, () => {

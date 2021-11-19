@@ -10,6 +10,3 @@ ADD ./db/01-load_db.sql /docker-entrypoint-initdb.d
 
 RUN chown postgres:postgres /db/*
 RUN chown postgres:postgres /db/fk_csvs/*
-
-# to load from command line
-# docker exec -i ${CONTAINER_NAME} psql -U admin -d nbi_test < small_nbi.sql

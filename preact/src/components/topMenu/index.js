@@ -20,9 +20,9 @@ export default function TopMenu() {
 
   return html`
       <${Button} sx=${{
-    px: 2,
-  }} style=${"color: #fff; text-decoration: none; text-shadow: #000 1px 0 10px; font-size: 18px"}
-        color="inherit"
+    px: 1, mx: 1, border: 1, borderColor: "white"
+  }} style=${"color: #fff; text-decoration: none; font-size: 18px"}
+        variant="contained"
         id="background-info-button"
         aria-controls="background-info-menu"
         aria-haspopup="true"

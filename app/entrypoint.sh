@@ -8,11 +8,10 @@ then
         sleep 0.1
     done
 
+
     echo "PostgreSQL started"
 fi
 
-# migrate django changes
-python manage.py makemigrations
-python manage.py migrate
+python manage.py makemigrations && python manage.py migrate
 
 exec "$@"

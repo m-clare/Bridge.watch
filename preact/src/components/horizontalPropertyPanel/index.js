@@ -14,7 +14,7 @@ import us from "us-atlas/states-albers-10m.json";
 import { isEmpty } from "lodash-es";
 import { colorDict } from "../colorPalette";
 
-import { BarChart } from "../../components/barChart";
+import { PanelBarChart } from "../../components/panelBarChart";
 import { HistTextSummary } from "../../components/histTextSummary";
 
 import FormGroup from "@mui/material/FormGroup";
@@ -55,7 +55,7 @@ export function HorizontalPropertyPanel({
   </${Grid}>
   <${Grid} item style=${"padding-top: 0px"} xs=${12} md=${6}>
     <${Typography} variant="h6" component="h3">Histogram</${Typography}>
-    <${BarChart}
+    <${PanelBarChart}
       selected=${objSelected}
       objData=${objData.objHistogram}
       initialHistData=${initialHistData}

@@ -2,51 +2,53 @@ version: '3.8'
 
 services:
   web:
-    build: ./app
-    command: python manage.py runserver 0.0.0.0:8000
+    image: registry.digitalocean.com/nbi/web-prod:latest
+    command: gunicorn nbi.wsgi:application --timeout 200 --bind 0.0.0.0:8000 --log-level debug
     container_name: web
-    volumes:
-      - ./app/:/usr/src/app/
     ports:
       - 8000:8000
     env_file:
-      - ./.env.dev
+      - ./.env
+    restart: always
+    depends_on:
+      - db
 
   db:
-    build:
-      context: .
-      dockerfile: ./db/Dockerfile.db
+    image: registry.digitalocean.com/nbi/db-prod:latest
     command: postgres -c log_statement=all -c max_wal_size=2GB
     container_name: db
     volumes:
-      - db-data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_USER=${SQL_USER}
-      - POSTGRES_PASSWORD=${SQL_PASSWORD}
-      - POSTGRES_DB=${SQL_DATABASE}
+      - nbi-data-prod:/var/lib/postgresql/data/
+    restart: always
     env_file:
-      - ./.env.dev
+      - ./.env
 
   redis:
     image: redis:bullseye
     command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru 
     container_name: cache
-    ports:
-      - 6379:6379
+    expose:
+      - 6379
+    restart: always
     volumes:
-      - redis-data:/data
+      - redis-data-prod:/data
 
   express:
-    build: ./express-redis
-    command: npm start
     container_name: express
-    volumes:
-      - ./express-redis/:/usr/src/app
+    image: registry.digitalocean.com/nbi/express-prod:latest
     ports:
       - 3000:3000
     env_file:
-      - ./.env.dev
+      - ./.env
+    restart: always
+    depends_on:
+      - redis
+
 
 volumes:
-  db-data:
-  redis-data:
+  nbi-data-prod:
+  redis-data-prod:
+
+networks:
+  default:
+    name: nbi

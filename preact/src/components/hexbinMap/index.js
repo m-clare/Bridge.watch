@@ -6,6 +6,7 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 
 import * as d3 from "d3";
+import { tip as d3tip } from "d3-v6-tip";
 import { hexbin } from "d3-hexbin";
 import { mesh } from "topojson-client";
 import { legend } from "../colorLegend";
@@ -14,15 +15,63 @@ import { isEmpty } from "lodash-es";
 import { colorDict } from "../colorPalette";
 import { grey } from "@mui/material/colors";
 
-import { BarChart } from "../../components/barChart";
+import PanelBarChart from "../../components/panelBarChart";
 import { HistTextSummary } from "../../components/histTextSummary";
 import { VerticalPropertyPanel } from "../../components/verticalPropertyPanel";
+import useWindowDimensions from "../../components/windowDimensions";
 
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { styled } from '@mui/material/styles';
 const html = htm.bind(h);
+import { monthNames } from "../../components/options";
+import { barChart } from "../../components/barChart";
+
+const AntSwitch = styled(Switch)(({ theme }) => ({
+  width: 28,
+  height: 16,
+  padding: 0,
+  display: 'flex',
+  '&:active': {
+    '& .MuiSwitch-thumb': {
+      width: 15,
+    },
+    '& .MuiSwitch-switchBase.Mui-checked': {
+      transform: 'translateX(9px)',
+    },
+  },
+  '& .MuiSwitch-switchBase': {
+    padding: 2,
+    '&.Mui-checked': {
+      transform: 'translateX(12px)',
+      color: '#fff',
+      '& + .MuiSwitch-track': {
+        opacity: 1,
+        backgroundColor: "primary",
+      },
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    boxShadow: '0 2px 4px 0 rgb(0 35 11 / 20%)',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    transition: theme.transitions.create(['width'], {
+      duration: 200,
+    }),
+  },
+  '& .MuiSwitch-track': {
+    borderRadius: 16 / 2,
+    opacity: 1,
+    backgroundColor:
+    theme.palette.mode === 'dark' ? 'rgba(255,255,255,.35)' : 'rgba(0,0,0,.25)',
+    boxSizing: 'border-box',
+  },
+}));
+
 
 // Based on Hexbin Chart from Observable, attribution below
 // Copyright 2021 Observable, Inc.
@@ -34,8 +83,6 @@ const width = 975;
 const height = 610;
 const scaleValue = 1300;
 const stdMargin = 30;
-
-const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 // d3 helper functions for mapping
 const projection = d3
@@ -104,6 +151,7 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
   const [hexSize, setHexSize] = useState(true);
+  const [heightCheck, setHeightCheck] = useState(true);
 
   const d3Container = useRef(null);
 
@@ -168,7 +216,6 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
         return i % 2 !== 0 ? " " : modInterval;
       }
 
-
       legendNode
         .attr("transform", `translate(${0.6 * width}, ${stdMargin - 10})`)
         .append(() =>
@@ -206,9 +253,13 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
           d3.lab(color(getInterestValue(plotType, d))).darker()
         )
         .attr("stroke-width", "0.1em")
-        .on("mouseover", function (d) {
-          // Set state to pass to barChart
+        .on("mouseover", function (event, d) {
           let data = d3.select(this).data()[0];
+
+          if (!heightCheck) {
+          svg.append(() => barChart(width, height, [data.x, data.y], data.objHistogram, bridgeData.field, color))
+          }
+
           setActiveHex(data);
           setHexSelected(true);
           d3.select(this)
@@ -220,7 +271,8 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
             )
             .attr("stroke-width", "0.2em");
         })
-        .on("mouseout", function (d) {
+        .on("mouseout", function (event, d) {
+          d3.select("#toolBarChart").remove()
           setHexSelected(false);
           d3.select(this)
             .transition()
@@ -247,47 +299,57 @@ export function HexbinChart({ bridgeData, plotType, submitted }) {
         .append("svg:a")
         .attr("xlink:href", "https://twitter.com/eng_mclare")
         .text("www.bridge.watch @eng_mclare");
+
     }
-  }, [bridgeData, hexSize, plotType]);
+  }, [bridgeData, hexSize, plotType, heightCheck]);
 
   return html`
-<${Grid} item container spacing=${3}>
   <${Grid} item xs=${12} md=${8}>
-    <${Paper} sx=${{padding: 3, minHeight: {sx: 0, md: 600}}}>
-    <${FormControlLabel}
-      control=${html`<${Switch}
-        defaultChecked
-        checked=${hexSize}
-        onChange=${handleSwitchChange}
-        inputProps=${{ "aria-label": "controlled" }}
-      />`}
-      label="Scaled hex area"/>
-    <svg
-      class="d3-component"
-      viewBox="0 0 ${width} ${height}"
-      ref=${d3Container}
-      >
-      <path
-        fill="none"
-        transform="translate(0, 0)"
-        stroke="#777"
-        stroke-width="0.5"
-        stroke-linejoin="round"
-        d=${d3.geoPath()(mesh(us, us.objects.states))}
-        />
-    </svg>
-    <${Typography} style=${"text-align: center"}
-                     variant="overline"
-                     color=${grey[500]}>
-        Hover or click to update the histogram.
-      </${Typography}>
-</${Paper}>
+    <${Paper} sx=${{padding: [2,2,3], minHeight: {sx: 0, md: 600} }}>
+      <${Grid} container >
+      <${Grid} item xs=${12}>
+        <${Stack} direction="row" spacing=${1}>
+          <${AntSwitch} defaultChecked
+                        checked=${hexSize}
+                        onChange=${handleSwitchChange}
+                        inputProps=${{ 'aria-label': 'ant design' }} />
+          <${Typography} variant="caption text">Scaled hex area</${Typography}>
+        </${Stack}>
+      </${Grid}>
+      <${Grid} item xs=${12}}>
+        <svg
+          class="d3-component"
+          viewBox="0 0 ${width} ${height}"
+          width="100%"
+          ref=${d3Container}
+          >
+          <path
+            fill="none"
+            transform="translate(0, 0)"
+            stroke="#777"
+            stroke-width="0.5"
+            stroke-linejoin="round"
+            d=${d3.geoPath()(mesh(us, us.objects.states))}
+            />
+        </svg>
+      </${Grid}>
+      <${Grid} item xs=${12}>
+        <${Typography} style=${"text-align: center"}
+                       variant="h6"
+                       >
+          Hover or click each hex to update the histogram.
+        </${Typography}>
+      </${Grid}>
+      </${Grid}>  
+    </${Paper}>
   </${Grid}>
+  ${heightCheck ? (html`
+  <${Grid} container item xs=${12} md=${4}>
   <${VerticalPropertyPanel} objSelected=${hexSelected}
                     objData=${activeHex}
                     initialHistData=${totalValues}
                     initialKeyData=${bridgeData.keyData}
                     field=${bridgeData.field}
-                    />
-</${Grid}>`;
+    /></${Grid}>`) : null}
+`;
 }

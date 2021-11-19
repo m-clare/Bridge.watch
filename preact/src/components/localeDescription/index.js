@@ -147,6 +147,9 @@ const summaryTitle = {
   rating: "Overall Rating",
   year_built: "Year Built",
   repair_cost_per_foot: "Repair Cost Per Foot of Bridge",
+  average_daily_traffic: "Average Daily Traffic (Cars & Trucks)",
+  truck_traffic: "Average Daily Truck Traffic",
+  future_date_of_inspection: "Upcoming Inspection Required"
 };
 
 function getFiltersAsString(filters) {

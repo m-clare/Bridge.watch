@@ -216,6 +216,11 @@ export default function HeadToHead() {
             ${
               !isEmpty(conditionBridgesOne) && !isEmpty(conditionBridgesTwo)
                 ? html`
+    <${Grid} item xs=${12}>
+    <${Typography} variant="h6" style=${"text-align: center"}>
+  Click each wedge to zoom in. Click the center to zoom out.
+    </${Typography}>
+    </${Grid}>
             <${Grid} item xs=${12} md=${6}>
                 <${Typography} variant="h5">${
                     queryState.stateOne
@@ -235,10 +240,9 @@ export default function HeadToHead() {
                   bridgeConditionData=${conditionBridgesTwo}
                   field=${renderField}
                   submitted=${renderSubmitted}
-  chartID="State2"
-  />
-  </${Grid}>
-  `
+                  chartID="State2"
+                 />
+            </${Grid}>`
                 : null
             }
           </${Grid}>

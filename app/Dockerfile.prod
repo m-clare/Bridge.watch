@@ -29,6 +29,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 
 # pull official base image
 FROM python:3.9.6-buster
+# RUN apt-get install sudo
 
 # create directory for the app user
 RUN mkdir -p /home/app
@@ -61,7 +62,7 @@ COPY . $APP_HOME
 RUN chown -R app:app $APP_HOME
 
 # change to the app user
-USER app
+# USER app
 
 # run entrypoint.prod.sh
 ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]

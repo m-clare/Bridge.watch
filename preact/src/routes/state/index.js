@@ -152,9 +152,9 @@ export default function StateBridges() {
   const colWidth = { single: 12, multi: 12 };
 
   return html`
-<${Box} sx=${{ padding: 3 }}>
+<${Box} sx=${{ padding: [0, 3], pt: [2,3] }}>
   <${Container} maxWidth="lg">
-    <${Grid} container spacing=${3}>
+    <${Grid} container spacing=${[2,3]}>
       <${Grid} item xs=${12} md=${4}>
         <${Paper} sx=${{ padding: 3, minHeight: {xs: 0, md: 880}}}>
           <${Grid} container spacing=${3}>

@@ -15,7 +15,8 @@ import { isEmpty } from "lodash-es";
 import { colorDict } from "../colorPalette";
 import { grey } from "@mui/material/colors";
 
-import { BarChart } from "../../components/barChart";
+import PanelBarChart from "../../components/panelBarChart";
+
 import { HistTextSummary } from "../../components/histTextSummary";
 import { HorizontalPropertyPanel } from "../../components/horizontalPropertyPanel";
 
@@ -163,22 +164,32 @@ export function ChoroplethMap({
 
   useEffect(() => {
     if (!isEmpty(bridgeCountyData) && d3Container.current && !submitted) {
-      console.log(plotType);
       const svg = d3.select(d3Container.current);
       const color = colorDict[plotType];
 
       const fipsStates = displayStates.map((d) => stateOptions[d]);
       const selectedStates = getSelectedStates(fipsStates, us);
 
-      const tooltip = d3
-        .select("body")
-        .append("div")
-        .style("position", "absolute")
-        .style("z-index", "10")
-        .attr("class", "tooltip")
-        .style("visibility", "hidden")
-        .style("font-family", "Fira Sans")
-        .style("font-size", "0.8rem");
+      let current_position;
+      // const tooltip = d3.tip().attr("class", "d3-tip").offset(function(){
+      //   if (current_position[0] > width){
+      //     return [-20, -120];
+      //   } else {
+      //     return [20, 120]
+      //   }
+      // })
+
+      // const tipSVG = d3.
+
+      // const tooltip = d3
+      //   .select("body")
+      //   .append("div")
+      //   .style("position", "absolute")
+      //   .style("z-index", "10")
+      //   .attr("class", "tooltip")
+      //   .style("visibility", "hidden")
+      //   .style("font-family", "Fira Sans")
+      //   .style("font-size", "0.8rem");
 
       const selectedCounties = feature(
         selectedStates,
@@ -252,13 +263,7 @@ export function ChoroplethMap({
         .attr("stroke-linejoin", "round")
         .attr("d", path)
         .on("mouseover", function (e, d) {
-          tooltip
-            .style("visibility", "visible")
-            .html(
-              `${d.properties.name}<br>${
-                getInterestValue(plotType, d).stringDescription
-              }`
-            );
+          // current_position = d3.mouse(this);
           let data = d3.select(this).data()[0];
           setActiveCounty(data);
           setCountySelected(true);
@@ -269,13 +274,7 @@ export function ChoroplethMap({
             .attr("stroke-width", "0.25em")
             .attr("stroke", "#fff");
         })
-        .on("mousemove", function (e, d) {
-          return tooltip
-            .style("top", e.pageY - 20 + "px")
-            .style("left", e.pageX + 20 + "px");
-        })
         .on("mouseout", function (e, d) {
-          tooltip.style("visibility", "hidden");
           setCountySelected(false);
           d3.select(this)
             .transition()
@@ -323,22 +322,21 @@ export function ChoroplethMap({
   <${Grid} item xs=${12}>
     <${Typography} variant="h4" component="h1">${title}</${Typography}>
   </${Grid}>
-  <${Grid} item xs=${12} sx=${{ paddingTop: 0 }}>
+    <${Grid} item sx=${{ textAlign: "center" }} style=${{
+      paddingTop: "0px",
+    }} xs=${12}>
+    <${Typography} variant="h6" >
+    Hover or click each county to update the histogram.
+    </${Typography}>
+    </${Grid}>
+    <${Grid} item xs=${12} style=${"padding-top: 0px"}>
     <svg class="d3-component"
          viewBox="0 0 ${width} ${height}"
          ref=${d3Container}
          >
     </svg>
   </${Grid}>
-  <${Grid} item sx=${{ textAlign: "center" }} style=${{
-           paddingTop: "0px",
-           }} xs=${12}>
-    <${Typography}
-      variant="overline"
-      color=${grey[500]}>
-      Hover or click to update the histogram.
-    </${Typography}>
-  </${Grid}>
+  
   <${Grid} item xs=${12}>
     <${HorizontalPropertyPanel} objSelected=${countySelected}
                                 objData=${activeCounty}
