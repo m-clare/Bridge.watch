@@ -52,7 +52,7 @@ const textSummary = function (summaryType, count, locality) {
 `;
   } else if ((summaryType === "future_date_of_inspection") && locality === "the U.S.") {
     return html`
-<${Typography} variant="body1"> This map aggregates the locations of ${count} bridges in ${locality} with the anticipated date of next inspection based on the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2021 National Bridge Inventory</b></${Link}>. This value is calculated from the last date of inspection with the interval in months (typically 48); only inspections due in the next year are shown. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the most common value (also known as the mode) with earlier dates having a darker hue. Additional filtering can be performed using the options above.</${Typography}>
+<${Typography} variant="body1"> This map aggregates the locations of ${count} bridges in ${locality} with the anticipated date of next inspection based on the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2021 National Bridge Inventory</b></${Link}>. This value is calculated from the last date of inspection with the interval in months (typically 24); only inspections due in the next year are shown. If "scaled hex area" is toggled, the hexagon size represents the number of bridges in the vicinity, while the color represents the most common value (also known as the mode) with earlier dates having a darker hue. Additional filtering can be performed using the options above.</${Typography}>
 `;
   } else if (summaryType === "rating") {
     return html`
@@ -72,7 +72,7 @@ else if (summaryType === "repair_cost_per_foot") {
 `;
 } else if ((summaryType === "future_date_of_inspection")) {
   return html`
-<${Typography} variant="body1"> This map aggregates the locations of ${count} bridges in ${locality} with the anticipated date of next inspection based on the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2021 National Bridge Inventory</b></${Link}>. This value is calculated from the last date of inspection with the interval in months (typically 48); only inspections due in the next year are shown. The color represents the most common value (also known as the mode) with earlier dates having a darker hue. Additional filtering can be performed using the options above.</${Typography}>
+<${Typography} variant="body1"> This map aggregates the locations of ${count} bridges in ${locality} with the anticipated date of next inspection based on the <${Link} underline=${"hover"} href="https://www.fhwa.dot.gov/bridge/nbi.cfm"><b> 2021 National Bridge Inventory</b></${Link}>. This value is calculated from the last date of inspection with the interval in months (typically 24); only inspections due in the next year are shown. The color represents the most common value (also known as the mode) with earlier dates having a darker hue. Additional filtering can be performed using the options above.</${Typography}>
 `;
 
 }
