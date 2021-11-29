@@ -128,12 +128,12 @@ export const plotOptions = {
   average_daily_traffic: {
     query: "average_daily_traffic",
     display: "Average daily traffic (number of cars and trucks)",
-    histogram: "# cars & trucks / bridge",
+    histogram: "# daily cars / bridge",
   },
   truck_traffic: {
     query: "truck_traffic",
     display: "Average daily traffic (number of trucks only)",
-    histogram: "# trucks / bridge",
+    histogram: "# daily trucks / bridge",
   },
   future_date_of_inspection: {
     query: "future_date_of_inspection",

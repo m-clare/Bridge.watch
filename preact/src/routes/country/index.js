@@ -2,7 +2,7 @@ import { h } from "preact";
 import htm from "htm";
 import { getNationalBridges } from "../../utils/nbi-api";
 import { useEffect, useState, useRef } from "preact/hooks";
-import { HexbinChart } from "../../components/hexbinMap";
+import { StaticHexbinChart } from "../../components/StaticHexbinMap";
 import { isEmpty } from "lodash-es";
 import { isEqual } from "lodash-es";
 import { makeStyles } from "@mui/styles";
@@ -14,8 +14,8 @@ import Paper from "@mui/material/Paper";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import useWindowDimensions from "../../components/windowDimensions";
-
 
 import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
@@ -87,9 +87,13 @@ export default function CountryBridges() {
   const [hexSize, setHexSize] = useState(true);
   const [plotType, setPlotType] = useState(queryState.plot_type);
   const [waiting, setWaiting] = useState(false);
+  const [desktopView, setDesktopView] = useState(true)
 
-  const { deviceHeight, deviceWidth } = useWindowDimensions();
+  const heightCheck = useMediaQuery("(min-height:500px)");
 
+  const { deviceWidth, deviceHeight } = useWindowDimensions();
+
+  console.log(deviceHeight)
   const handleChange = (event, type) => {
     const value = event.target.value;
     const valueArray =
@@ -153,7 +157,7 @@ export default function CountryBridges() {
   const colWidth = { single: 4, multi: 4 };
 
   return html`
-<${Box} sx=${{ padding: [0, 3], pt: [2,3] }}>
+<${Box} sx=${{ padding: [0,3], pt: [2,3], pb: [2,3] }}>
   <${Container} maxWidth="lg">
     <${Grid} container spacing=${[2,3]}>
       <${Grid} item xs=${12}>
@@ -206,15 +210,14 @@ export default function CountryBridges() {
                 waiting=${renderWaiting}
                 submitted=${renderSubmitted}
               />
-             <${Grid} item container spacing=${3}>
-              <${HexbinChart}
+              <${StaticHexbinChart}
                 bridgeData=${bridges}
                 plotType=${renderPlotType}
                 hexSize=${scaledHexBool}
                 submitted=${submitted}
+                heightCheck=${heightCheck}
               />
-             </${Grid}>
-            `
+             `
           : null
       }
       ${

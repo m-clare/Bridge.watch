@@ -28,7 +28,7 @@ export function VerticalPropertyPanel({
     locality = "National";
   }
 
-  const widthCheck = useMediaQuery("(min-width:900px)");
+  const widthCheck = useMediaQuery("(min-width:1200px)");
 
   let barHeight;
   if (widthCheck) {
@@ -37,10 +37,9 @@ export function VerticalPropertyPanel({
     barHeight = 300;
   }
 
-  console.log(field) 
   return html`
-  <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 600 } }}> 
-    <${Grid} item>
+  <${Paper} sx=${{ padding: [2,3], minHeight: { xs: 0, md: 600 }, width: "100%"}}> 
+    <${Grid} item xs=${12}>
       <${Typography} variant="h5" component="h2">${locality} Histogram</${Typography}>
       <${PanelBarChart}
         selected=${objSelected}
@@ -50,7 +49,7 @@ export function VerticalPropertyPanel({
         field=${field}
         />
     </${Grid}>
-    <${Grid} item>
+    <${Grid} item xs=${12}>
       <${Typography} variant="h5" component="h2">${locality} Properties</${Typography}>
       <${HistTextSummary}
         selected=${objSelected}

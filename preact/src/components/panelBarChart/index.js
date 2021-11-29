@@ -162,6 +162,8 @@ export function PanelBarChart({
   // const [xDomain, setXDomain] = useState({});
   const d3Container = useRef(null);
 
+  const svg = d3.select(d3Container.current);
+
   const width = 800;
   const height = barHeight;
   const margins = {
@@ -176,8 +178,6 @@ export function PanelBarChart({
   // Initial setup
   useEffect(() => {
     if (!isEmpty(initialHistData) && d3Container.current) {
-      const svg = d3.select(d3Container.current);
-
       const color = colorDict[field];
       const data = initialHistData;
 
@@ -242,6 +242,7 @@ export function PanelBarChart({
         viewBox="0 0 ${width} ${height}"
         id="barPlot"
         style="visibility: visible"
+        width="100%"
       />
     </div>
   `;
