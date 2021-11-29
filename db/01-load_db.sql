@@ -456,6 +456,58 @@ UPDATE nbi SET type_of_service_on_bridge_id = (SELECT type_of_service_on_bridge.
 ALTER TABLE nbi DROP COLUMN type_of_service_on_bridge;
 CREATE INDEX nbi_type_of_service_on_bridge_idx ON nbi (type_of_service_on_bridge_id);
 
+DROP TABLE IF EXISTS type_of_service_under_bridge;
+CREATE TABLE type_of_service_under_bridge (
+  id SERIAL,
+  code INTEGER UNIQUE,
+  description TEXT,
+  PRIMARY KEY (id)
+);
+
+\copy type_of_service_under_bridge(code,description) FROM './db/fk_csvs/type_of_service_under_bridge.csv' WITH DELIMITER ',' CSV HEADER;
+
+UPDATE nbi SET type_of_service_under_bridge = NULL WHERE type_of_service_under_bridge = 'N';
+
+ALTER TABLE nbi ADD COLUMN type_of_service_under_bridge_id INTEGER REFERENCES type_of_service_under_bridge(id) ON DELETE CASCADE;
+UPDATE nbi SET type_of_service_under_bridge_id = (SELECT type_of_service_under_bridge.id FROM type_of_service_under_bridge where type_of_service_under_bridge.code = nbi.type_of_service_under_bridge::INTEGER);
+ALTER TABLE nbi DROP COLUMN type_of_service_under_bridge;
+CREATE INDEX nbi_type_of_service_under_bridge_idx ON nbi (type_of_service_under_bridge_id);
+
+DROP TABLE IF EXISTS deck_structure_type;
+CREATE TABLE deck_structure_type (
+  id SERIAL,
+  code INTEGER UNIQUE,
+  description TEXT,
+  PRIMARY KEY (id)
+);
+
+\copy deck_structure_type(code,description) FROM './db/fk_csvs/deck_structure_type.csv' WITH DELIMITER ',' CSV HEADER;
+
+UPDATE nbi SET deck_structure_type = NULL WHERE deck_structure_type = 'N';
+
+ALTER TABLE nbi ADD COLUMN deck_structure_type_id INTEGER REFERENCES deck_structure_type(id) ON DELETE CASCADE;
+UPDATE nbi SET deck_structure_type_id = (SELECT deck_structure_type.id FROM deck_structure_type where deck_structure_type.code = nbi.deck_structure_type::INTEGER);
+ALTER TABLE nbi DROP COLUMN deck_structure_type;
+CREATE INDEX nbi_deck_structure_type_idx ON nbi (deck_structure_type_id);
+
+DROP TABLE IF EXISTS deck_wearing_surface_type;
+CREATE TABLE deck_wearing_surface_type (
+  id SERIAL,
+  code INTEGER UNIQUE,
+  description TEXT,
+  PRIMARY KEY (id)
+);
+
+\copy deck_wearing_surface_type(code,description) FROM './db/fk_csvs/deck_wearing_surface_type.csv' WITH DELIMITER ',' CSV HEADER;
+
+UPDATE nbi SET deck_wearing_surface_type = NULL WHERE deck_wearing_surface_type = 'N';
+UPDATE nbi SET deck_wearing_surface_type = NULL WHERE deck_wearing_surface_type = '0';
+
+ALTER TABLE nbi ADD COLUMN deck_wearing_surface_type_id INTEGER REFERENCES deck_wearing_surface_type(id) ON DELETE CASCADE;
+UPDATE nbi SET deck_wearing_surface_type_id = (SELECT deck_wearing_surface_type.id FROM deck_wearing_surface_type where deck_wearing_surface_type.code = nbi.deck_wearing_surface_type::INTEGER);
+ALTER TABLE nbi DROP COLUMN deck_wearing_surface_type;
+CREATE INDEX nbi_deck_wearing_surface_type_idx ON nbi (deck_wearing_surface_type_id);
+
 -- Fix data types
 ALTER TABLE nbi ALTER COLUMN features_intersected SET DATA TYPE VARCHAR(28);
 ALTER TABLE nbi ALTER COLUMN year_built SET DATA TYPE INTEGER USING year_built::integer;
@@ -470,6 +522,19 @@ ALTER TABLE nbi ALTER COLUMN length_of_structure_improvement TYPE DOUBLE PRECISI
 ALTER TABLE nbi ALTER COLUMN average_daily_traffic SET DATA TYPE INTEGER USING average_daily_traffic::integer;
 ALTER TABLE nbi ALTER COLUMN average_daily_truck_traffic SET DATA TYPE INTEGER USING average_daily_truck_traffic::integer;
 ALTER TABLE nbi ALTER COLUMN future_average_daily_traffic SET DATA TYPE INTEGER USING future_average_daily_traffic::integer;
+ALTER TABLE nbi ALTER COLUMN maximum_span_length SET DATA TYPE DOUBLE PRECISION USING maximum_span_length::double precision;
+ALTER TABLE nbi ALTER COLUMN structure_length SET DATA TYPE DOUBLE PRECISION USING structure_length::double precision;
+ALTER TABLE nbi ALTER COLUMN number_of_approach_spans SET DATA TYPE INTEGER USING maximum_span_length::integer;
+ALTER TABLE nbi ALTER COLUMN navigation_vertical_clearance SET DATA TYPE DOUBLE PRECISION USING navigation_vertical_clearance::double precision;
+ALTER TABLE nbi ALTER COLUMN navigation_horizontal_clearance SET DATA TYPE DOUBLE PRECISION USING navigation_horizontal_clearance::double precision;
+ALTER TABLE nbi ALTER COLUMN bridge_roadway_width SET DATA TYPE DOUBLE PRECISION USING bridge_roadway_width::double precision;
+ALTER TABLE nbi ALTER COLUMN deck_width SET DATA TYPE DOUBLE PRECISION USING deck_width::double precision;
+
+
+
+
+
+
 -- Create fips code and mapping
 ALTER TABLE nbi ALTER COLUMN county_code SET DATA TYPE CHAR(3);
 ALTER TABLE nbi ADD COLUMN fips_code CHAR(5);

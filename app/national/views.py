@@ -12,8 +12,6 @@ from datetime import date
 import copy
 
 # Create your views here.
-
-
 def first_day_of_next_month(dt):
     return (dt.replace(day=1) + timedelta(days=32)).replace(day=1)
 
@@ -82,6 +80,64 @@ def state_bridges_csv(request):
         if service is not None:
             service_list = service.split(",")
             bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
+        # bridge service under
+        service_under = request.query_params.get("service_under")
+        if service_under is not None:
+            service_under_list = service_under.split(",")
+            bridges = bridges.filter(type_of_service_under_bridge__code__in=service_under_list)
+        # bridge deck structure type
+        deck_type = request.query_params.get("deck_type")
+        if deck_type is not None:
+            deck_type_list = deck_type.split(",")
+            deck_type_list = [int(item) for item in deck_type_list]
+            bridges = bridges.filter(deck_structure_type__code__in=deck_type_list)
+        # bridge deck surface type
+        deck_surface = request.query_params.get("deck_surface")
+        if deck_surface is not None:
+            deck_surface_list = deck_surface.split(",")
+            bridges = bridges.filter(deck_wearing_surface_type__code__in=deck_surface_list)
+
+        # DETAILED FILTERS
+        # year range
+        min_year = request.query_params.get("min_year")
+        if min_year is not None:
+            bridges = bridges.filter(year_built__gte=min_year)
+        max_year = request.query_params.get("max_year")
+        if max_year is not None:
+            bridges = bridges.filter(year_built__lte=max_year)
+        min_traffic = request.query_params.get("min_traffic")
+        if min_traffic is not None:
+            bridges = bridges.filter(average_daily_traffic__gte=min_traffic)
+        max_traffic = request.query_params.get("max_traffic")
+        if max_traffic is not None:
+            bridges = bridges.filter(average_daily_traffic__lte=max_traffic)
+        ratings = request.query_params.get("ratings")
+        # ratings
+        if ratings is not None:
+            ratings_list = ratings.split(",")
+            bridges = bridges.filter(lowest_rating__code__in=ratings_list)
+        # length range
+        min_bridge_length = request.query_params.get("min_bridge_length")
+        if min_bridge_length is not None:
+            # convert feet to meters
+            min_bridge_length_m = float(min_bridge_length) * 0.3048
+            bridges = bridges.filter(structure_length__gte=min_bridge_length_m)
+        max_bridge_length = request.query_params.get("max_bridge_length")
+        if max_bridge_length is not None:
+            # convert feet to meters
+            max_bridge_length_m = float(max_bridge_length) * 0.3048
+            bridges = bridges.filter(structure_length__lte=max_bridge_length_m)
+        min_span_length = request.query_params.get("min_span_length")
+        if min_span_length is not None:
+            # convert feet to meters
+            min_span_length_m = float(min_span_length) * 0.3048
+            bridges = bridges.filter(maximum_span_length__gte=min_span_length_m)
+        max_span_length = request.query_params.get("max_span_length")
+        if max_span_length is not None:
+            # convert feet to meters
+            max_span_length_m = float(max_span_length) * 0.3048
+            bridges = bridges.filter(maximum_span_length__lte=max_span_length_m)
+
 
         fields.extend(["latitude", "longitude"])
         if "rating" in fields:
@@ -104,7 +160,8 @@ def state_bridges_csv(request):
         bridges = bridges.annotate(material=F("structure_kind__code"))
         bridges = bridges.annotate(type=F("structure_type__code"))
         bridges = bridges.annotate(service=F("type_of_service_on_bridge__code"))
-        fields.extend(["material", "type", "service"])
+        bridges = bridges.annotate(service_under=F("type_of_service_under_bridge__code"))
+        fields.extend(["material", "type", "service", "service_under"])
 
         bridges = bridges.values_list(*fields)
 
@@ -187,6 +244,62 @@ def national_bridges_csv(request):
         if service is not None:
             service_list = service.split(",")
             bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
+        # bridge service under
+        service_under = request.query_params.get("service_under")
+        if service_under is not None:
+            service_under_list = service_under.split(",")
+            bridges = bridges.filter(type_of_service_under_bridge__code__in=service_under_list)
+        # bridge deck structure type
+        deck_type = request.query_params.get("deck_type")
+        if deck_type is not None:
+            deck_type_list = deck_type.split(",")
+            bridges = bridges.filter(deck_structure_type__code__in=deck_type_list)
+        # bridge deck surface type
+        deck_surface = request.query_params.get("deck_surface")
+        if deck_surface is not None:
+            deck_surface_list = deck_surface.split(",")
+            bridges = bridges.filter(deck_wearing_surface_type__code__in=deck_surface_list)
+
+        # DETAILED FILTERS
+        # year range
+        min_year = request.query_params.get("min_year")
+        if min_year is not None:
+            bridges = bridges.filter(year_built__gte=min_year)
+        max_year = request.query_params.get("max_year")
+        if max_year is not None:
+            bridges = bridges.filter(year_built__lte=max_year)
+        min_traffic = request.query_params.get("min_traffic")
+        if min_traffic is not None:
+            bridges = bridges.filter(average_daily_traffic__gte=min_traffic)
+        max_traffic = request.query_params.get("max_traffic")
+        if max_traffic is not None:
+            bridges = bridges.filter(average_daily_traffic__lte=max_traffic)
+        ratings = request.query_params.get("ratings")
+        # ratings
+        if ratings is not None:
+            ratings_list = ratings.split(",")
+            bridges = bridges.filter(lowest_rating__code__in=ratings_list)
+        # length range
+        min_bridge_length = request.query_params.get("min_bridge_length")
+        if min_bridge_length is not None:
+            # convert feet to meters
+            min_bridge_length_m = float(min_bridge_length) * 0.3048
+            bridges = bridges.filter(structure_length__gte=min_bridge_length_m)
+        max_bridge_length = request.query_params.get("max_bridge_length")
+        if max_bridge_length is not None:
+            # convert feet to meters
+            max_bridge_length_m = float(max_bridge_length) * 0.3048
+            bridges = bridges.filter(structure_length__lte=max_bridge_length_m)
+        min_span_length = request.query_params.get("min_span_length")
+        if min_span_length is not None:
+            # convert feet to meters
+            min_span_length_m = float(min_span_length) * 0.3048
+            bridges = bridges.filter(maximum_span_length__gte=min_span_length_m)
+        max_span_length = request.query_params.get("max_span_length")
+        if max_span_length is not None:
+            # convert feet to meters
+            max_span_length_m = float(max_span_length) * 0.3048
+            bridges = bridges.filter(maximum_span_length__lte=max_span_length_m)
 
         fields.extend(["latitude", "longitude"])
         if "rating" in fields:
@@ -221,21 +334,11 @@ def national_bridges_csv(request):
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
 
-
-def check_conditions(query_dict, value, bool_tuple):
-    deck_bool = query_dict["deck_cond"] == value
-    superstructure_bool = query_dict["superstructure_cond"] == value
-    substructure_bool = query_dict["substructure_cond"] == value
-    # check with tuple
-    return (deck_bool, superstructure_bool, substructure_bool) == bool_tuple
-
-
-def check_new_conditions(query_dict, value, permutation_mapping):
+def check_conditions(query_dict, value, permutation_mapping):
     deck_bool = query_dict["deck_cond"] == value
     superstructure_bool = query_dict["superstructure_cond"] == value
     substructure_bool = query_dict["substructure_cond"] == value
     return permutation_mapping[(deck_bool, superstructure_bool, substructure_bool)]
-
 
 @api_view(["GET"])
 def bridge_conditions(request):
@@ -411,6 +514,63 @@ def bridge_conditions(request):
         if service is not None:
             service_list = service.split(",")
             bridges = bridges.filter(type_of_service_on_bridge__code__in=service_list)
+        # bridge service under
+        service_under = request.query_params.get("service_under")
+        if service_under is not None:
+            service_under_list = service_under.split(",")
+            bridges = bridges.filter(type_of_service_under_bridge__code__in=service_under_list)
+        # bridge deck structure type
+        deck_type = request.query_params.get("deck_type")
+        if deck_type is not None:
+            deck_type_list = deck_type.split(",")
+            bridges = bridges.filter(deck_structure_type__code__in=deck_type_list)
+        # bridge deck surface type
+        deck_surface = request.query_params.get("deck_surface")
+        if deck_surface is not None:
+            deck_surface_list = deck_surface.split(",")
+            bridges = bridges.filter(deck_wearing_surface_type__code__in=deck_surface_list)
+
+        # DETAILED FILTERS
+        # year range
+        min_year = request.query_params.get("min_year")
+        if min_year is not None:
+            bridges = bridges.filter(year_built__gte=min_year)
+        max_year = request.query_params.get("max_year")
+        if max_year is not None:
+            bridges = bridges.filter(year_built__lte=max_year)
+        min_traffic = request.query_params.get("min_traffic")
+        if min_traffic is not None:
+            bridges = bridges.filter(average_daily_traffic__gte=min_traffic)
+        max_traffic = request.query_params.get("max_traffic")
+        if max_traffic is not None:
+            bridges = bridges.filter(average_daily_traffic__lte=max_traffic)
+        ratings = request.query_params.get("ratings")
+        # ratings
+        if ratings is not None:
+            ratings_list = ratings.split(",")
+            bridges = bridges.filter(lowest_rating__code__in=ratings_list)
+        # length range
+        min_bridge_length = request.query_params.get("min_bridge_length")
+        if min_bridge_length is not None:
+            # convert feet to meters
+            min_bridge_length_m = float(min_bridge_length) * 0.3048
+            bridges = bridges.filter(structure_length__gte=min_bridge_length_m)
+        max_bridge_length = request.query_params.get("max_bridge_length")
+        if max_bridge_length is not None:
+            # convert feet to meters
+            max_bridge_length_m = float(max_bridge_length) * 0.3048
+            bridges = bridges.filter(structure_length__lte=max_bridge_length_m)
+        min_span_length = request.query_params.get("min_span_length")
+        if min_span_length is not None:
+            # convert feet to meters
+            min_span_length_m = float(min_span_length) * 0.3048
+            bridges = bridges.filter(maximum_span_length__gte=min_span_length_m)
+        max_span_length = request.query_params.get("max_span_length")
+        if max_span_length is not None:
+            # convert feet to meters
+            max_span_length_m = float(max_span_length) * 0.3048
+            bridges = bridges.filter(maximum_span_length__lte=max_span_length_m)
+
 
         bridges = bridges.annotate(bridge_cond=F("bridge_condition__code"))
         bridges = bridges.annotate(deck_cond=F("deck_condition__code"))
@@ -461,7 +621,7 @@ def bridge_conditions(request):
                 name = field_options[field]["reverse_map"][unique_condition[field]]
             condition = condition_mapping[unique_condition["bridge_cond"]]
             rating = unique_condition["rating"]
-            component_state = check_new_conditions(
+            component_state = check_conditions(
                 unique_condition, rating, permutation_mapping
             )
             field_cond_dict[name][condition][rating][

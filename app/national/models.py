@@ -7,73 +7,14 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-class AuthGroup(models.Model):
-    name = models.CharField(unique=True, max_length=150)
+
+class BridgeCondition(models.Model):
+    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'auth_group'
-
-
-class AuthGroupPermissions(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
-
-
-class AuthPermission(models.Model):
-    name = models.CharField(max_length=255)
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
-    codename = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
-
-
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.BooleanField()
-    username = models.CharField(unique=True, max_length=150)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
-    is_staff = models.BooleanField()
-    is_active = models.BooleanField()
-    date_joined = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
-
-
-class AuthUserGroups(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_groups'
-        unique_together = (('user', 'group'),)
-
-
-class AuthUserUserPermissions(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
+        db_table = 'bridge_condition'
 
 
 class BridgeMedian(models.Model):
@@ -95,6 +36,24 @@ class DeckCondition(models.Model):
         db_table = 'deck_condition'
 
 
+class DeckStructureType(models.Model):
+    code = models.IntegerField(unique=True, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'deck_structure_type'
+
+
+class DeckWearingSurfaceType(models.Model):
+    code = models.IntegerField(unique=True, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'deck_wearing_surface_type'
+
+
 class DesignLoad(models.Model):
     code = models.CharField(unique=True, max_length=1, blank=True, null=True)
     metric_description = models.TextField(blank=True, null=True)
@@ -103,59 +62,6 @@ class DesignLoad(models.Model):
     class Meta:
         managed = False
         db_table = 'design_load'
-
-
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    action_flag = models.SmallIntegerField()
-    change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'django_admin_log'
-
-
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_migrations'
-
-
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_session'
-
-class BridgeCondition(models.Model):
-    code = models.CharField(unique=True, max_length=1, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'bridge_condition'
 
 
 class Fips(models.Model):
@@ -237,21 +143,20 @@ class Bridge(models.Model):
     skew_angle = models.TextField(blank=True, null=True)
     structure_flared = models.TextField(blank=True, null=True)
     navigation_control = models.TextField(blank=True, null=True)
-    navigation_vertical_clearance = models.TextField(blank=True, null=True)
-    navigation_horizontal_clearance = models.TextField(blank=True, null=True)
+    navigation_vertical_clearance = models.FloatField(blank=True, null=True)
+    navigation_horizontal_clearance = models.FloatField(blank=True, null=True)
     structure_open_posted_closed_to_traffic = models.TextField(blank=True, null=True)
-    type_of_service_under_bridge = models.TextField(blank=True, null=True)
     structure_type_approach_spans_material = models.TextField(blank=True, null=True)
     structure_type_approach_design = models.TextField(blank=True, null=True)
     main_unit_span_number = models.TextField(blank=True, null=True)
-    number_of_approach_spans = models.TextField(blank=True, null=True)
+    number_of_approach_spans = models.IntegerField(blank=True, null=True)
     inventory_route_total_horizontal_clearance = models.TextField(blank=True, null=True)
-    maximum_span_length = models.TextField(blank=True, null=True)
-    structure_length = models.TextField(blank=True, null=True)
+    maximum_span_length = models.FloatField(blank=True, null=True)
+    structure_length = models.FloatField(blank=True, null=True)
     left_curb_width = models.TextField(blank=True, null=True)
     right_curb_width = models.TextField(blank=True, null=True)
-    bridge_roadway_width = models.TextField(blank=True, null=True)
-    deck_width = models.TextField(blank=True, null=True)
+    bridge_roadway_width = models.FloatField(blank=True, null=True)
+    deck_width = models.FloatField(blank=True, null=True)
     minimum_vertical_clearance_over_bridge_roadway = models.TextField(blank=True, null=True)
     minimum_vertical_underclearance_reference_feature = models.TextField(blank=True, null=True)
     minimum_vertical_underclearance = models.TextField(blank=True, null=True)
@@ -273,7 +178,6 @@ class Bridge(models.Model):
     type_of_work_done_by = models.TextField(blank=True, null=True)
     length_of_structure_improvement = models.FloatField(blank=True, null=True)
     date_of_inspection = models.DateField(blank=True, null=True)
-    future_date_of_inspection = models.DateField(blank=True, null=True)
     designated_inspection_frequency = models.IntegerField(blank=True, null=True)
     critical_feature_inspection_fracture = models.TextField(blank=True, null=True)
     critical_feature_inspection_underwater = models.TextField(blank=True, null=True)
@@ -295,8 +199,6 @@ class Bridge(models.Model):
     highway_system = models.TextField(blank=True, null=True)
     federal_lands_highway = models.TextField(blank=True, null=True)
     year_reconstructed = models.IntegerField(blank=True, null=True)
-    deck_structure_type = models.TextField(blank=True, null=True)
-    deck_wearing_surface_type = models.TextField(blank=True, null=True)
     deck_wearing_surface_membrane_type = models.TextField(blank=True, null=True)
     wearing_surface_deck_protection = models.TextField(blank=True, null=True)
     average_daily_truck_traffic = models.IntegerField(blank=True, null=True)
@@ -309,7 +211,6 @@ class Bridge(models.Model):
     minimum_navigation_vertical_clearance_vertical_lift_bridge = models.TextField(blank=True, null=True)
     federal_agency = models.TextField(blank=True, null=True)
     submitted_by = models.TextField(blank=True, null=True)
-    
     deck_area = models.TextField(blank=True, null=True)
     state = models.ForeignKey('State', models.DO_NOTHING, blank=True, null=True)
     toll = models.ForeignKey('Toll', models.DO_NOTHING, blank=True, null=True)
@@ -322,6 +223,7 @@ class Bridge(models.Model):
     substructure_condition = models.ForeignKey('SubstructureCondition', models.DO_NOTHING, blank=True, null=True)
     traffic_safety_features_bridge_railings = models.ForeignKey('TrafficSafetyFeaturesBridgeRailings', models.DO_NOTHING, blank=True, null=True)
     superstructure_condition = models.ForeignKey('SuperstructureCondition', models.DO_NOTHING, blank=True, null=True)
+    bridge_condition = models.ForeignKey(BridgeCondition, models.DO_NOTHING, blank=True, null=True)
     bridge_median = models.ForeignKey(BridgeMedian, models.DO_NOTHING, blank=True, null=True)
     lowest_rating = models.ForeignKey(LowestRating, models.DO_NOTHING, blank=True, null=True)
     owner = models.ForeignKey('Owner', models.DO_NOTHING, blank=True, null=True)
@@ -330,9 +232,11 @@ class Bridge(models.Model):
     structure_kind = models.ForeignKey('StructureKind', models.DO_NOTHING, blank=True, null=True)
     structure_type = models.ForeignKey('StructureType', models.DO_NOTHING, blank=True, null=True)
     type_of_service_on_bridge = models.ForeignKey('TypeOfServiceOnBridge', models.DO_NOTHING, blank=True, null=True)
-    test_column = models.CharField(max_length=5, blank=True, null=True)
+    type_of_service_under_bridge = models.ForeignKey('TypeOfServiceUnderBridge', models.DO_NOTHING, blank=True, null=True)
+    deck_structure_type = models.ForeignKey(DeckStructureType, models.DO_NOTHING, blank=True, null=True)
+    deck_wearing_surface_type = models.ForeignKey(DeckWearingSurfaceType, models.DO_NOTHING, blank=True, null=True)
     fips = models.ForeignKey(Fips, models.DO_NOTHING, blank=True, null=True)
-    bridge_condition = models.ForeignKey('BridgeCondition', models.DO_NOTHING, blank=True, null=True)
+    future_date_of_inspection = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -515,7 +419,6 @@ class SubstructureCondition(models.Model):
         db_table = 'substructure_condition'
 
 
-
 class SuperstructureCondition(models.Model):
     code = models.IntegerField(unique=True, blank=True, null=True)
     rating = models.TextField(blank=True, null=True)
@@ -578,3 +481,12 @@ class TypeOfServiceOnBridge(models.Model):
     class Meta:
         managed = False
         db_table = 'type_of_service_on_bridge'
+
+
+class TypeOfServiceUnderBridge(models.Model):
+    code = models.IntegerField(unique=True, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'type_of_service_under_bridge'

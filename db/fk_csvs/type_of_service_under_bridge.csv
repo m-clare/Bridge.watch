@@ -1,0 +1,11 @@
+code,description
+1,"Highway, with or without pedestrian"
+2,"Railroad"
+3,"Pedestrian-bicycle"
+4,"Highway-railroad"
+5,"Waterway"
+6,"Highway-waterway"
+7,"Railroad-waterway"
+8,"Highway-waterway-railroad"
+9,"Relief for waterway"
+0,"Other"
