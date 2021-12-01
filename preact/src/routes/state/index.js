@@ -21,11 +21,12 @@ import { singleFilters, multiFilters } from "../../components/options";
 
 const html = htm.bind(h);
 
-const stateFilters = (({ state, material, type, service }) => ({
+const stateFilters = (({ state, material, type, service, service_under }) => ({
   state,
   material,
   type,
   service,
+  service_under 
 }))(multiFilters);
 
 function constructURI(query) {
@@ -74,6 +75,7 @@ export default function StateBridges() {
     material: [],
     type: [],
     service: [],
+    service_under: [],
     state: ["California"],
   });
   const [queryURI, setQueryURI] = useState("rating");
@@ -114,7 +116,7 @@ export default function StateBridges() {
   };
 
   const handleClick = (event) => {
-    const clearedQueryState = {...queryState, 'material': [], 'type': [], 'service': []}
+    const clearedQueryState = {...queryState, 'material': [], 'type': [], 'service': [], 'service_under': []}
     setQueryState(clearedQueryState)
     const newURI = constructURI(clearedQueryState);
     if (newURI !== queryURI && queryState.state.length !== 0) {

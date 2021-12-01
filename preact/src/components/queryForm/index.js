@@ -32,13 +32,14 @@ export function QueryForm({
   handleClick,
   colWidth,
 }) {
+
   const formHandlers = {};
   formHandlers.handleChange = handleChange;
   formHandlers.handleClose = handleClose;
   formHandlers.submitted = submitted;
 
   const multiFilters = Object.values(
-    (({ material, type, service }) => ({ material, type, service }))(filters)
+    (({ material, type, service, service_under }) => ({ material, type, service, service_under }))(filters)
   );
 
   let stateValue = false;
@@ -79,6 +80,7 @@ ${stateFilter.map(
 <${Grid} item xs=${12} md=${colWidth.single} style=${"padding-top: 8px"}>
   ${singleSelect(plotChoices, queryState, submitted, handleSingleChange)}
 </${Grid}>
+<${Grid} item container spacing=${3} xs=${12}>
 <${Grid} item xs=${12}>
   <${Typography} variant="h6"
                  component="h2"
@@ -92,8 +94,11 @@ ${filters.map(
   ${multiFilter(value, queryState, formHandlers, false)}
 </${Grid}>`
 )}
+</${Grid}>
+<${Grid} item container spacing=${3} xs=${12}>
 <${Grid} item xs=${12} md=${colWidth.single}>
   <${Button} fullWidth disabled=${submitted} variant="contained" color="primary" onClick=${handleClick}>Clear filters</${Button}>
+</${Grid}>
 </${Grid}>
 `;
 }

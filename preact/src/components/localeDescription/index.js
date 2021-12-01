@@ -155,9 +155,12 @@ const summaryTitle = {
 function getFiltersAsString(filters) {
   let filterStringArray = [];
   for (const prop in filters) {
-    if (filters[prop].length !== 0) {
+    if (prop === "rangeFilters") {
+      // pass
+    } else if (filters[prop].length !== 0) {
+      console.log(filters[prop])
       const propCapped = prop
-        .split(" ")
+        .split("_")
         .map((word) => {
           return word[0].toUpperCase() + word.substring(1);
         })

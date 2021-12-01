@@ -38,6 +38,19 @@ const serviceTypeOptions = {
   Other: "0",
 };
 
+const serviceUnderTypeOptions = {
+  "Highway with or without pedestrian": "1",
+  Railroad: "2",
+  "Pedestrian-bicycle": "3",
+  "Highway-railroad": "4",
+  "Waterway": "5",
+  "Highway-waterway": "6",
+  "Railroad-waterway": "7",
+  "Highway-waterway-railroad": "8",
+  "Relief for waterway": "9",
+  Other: "0",
+};
+
 const ratingOptions = {
   'Excellent Condition (9)': 9,
   'Very Good Condition (8)': 8,
@@ -157,10 +170,49 @@ export const fieldOptions = {
   },
 }
 
-export const detailedOptions = {
-
+export const detailedQueries = {
+  year_built: {
+    min: "min_year",
+    max: "max_year"
+  },
+  traffic: {
+    min: "min_traffic",
+    max: "max_traffic"
+  },
+  bridge_length: {
+    min: "min_bridge_length",
+    max: "max_bridge_length",
+  },
+  span_length: {
+    min: "min_span_length",
+    max: "max_span_length",
+  }
 }
 
+export const validRanges = {
+  year_built: {
+    min: 1697,
+    max: 2021
+  },
+  traffic: {
+    min: 0,
+    max: 1000000
+  },
+  bridge_length: {
+    min: 0,
+    max: 1000000
+  },
+  span_length: {
+    min: 0,
+    max: 1000000
+  },
+}
+
+export const helperText = {
+  traffic: "# cars + trucks",
+  bridge_length: "total length (ft)",
+  span_length: "span length (ft)"
+}
 const otherOptions = {
   repair_cost_per_foot: {
     query: "repair_cost_per_foot",
@@ -206,14 +258,24 @@ export const multiFilters = {
   type: { name: "type", label: "Bridge Type", options: structureTypeOptions },
   service: {
     name: "service",
-    label: "Service Type",
+    label: "Service On Bridge",
     options: serviceTypeOptions,
+  },
+  service_under: {
+    name: "service_under",
+    label: "Service Under Bridge",
+    options: serviceUnderTypeOptions,
   },
   state: {
     name: "state",
     label: "State(s)",
     options: stateOptions,
   },
+  rating: {
+    name: "rating",
+    label: "Ratings",
+    options: ratingOptions
+  }
 };
 
 export const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']

@@ -20,11 +20,12 @@ import { singleFilters, multiFilters } from "../../components/options";
 
 const html = htm.bind(h);
 
-const stateFilters = (({ state, material, type, service }) => ({
+const stateFilters = (({ state, material, type, service, service_under }) => ({
   state,
   material,
   type,
   service,
+  service_under,
 }))(multiFilters);
 
 function constructURI(query) {
@@ -48,7 +49,7 @@ function getFiltersAsString(filters) {
   for (const prop in filters) {
     if (filters[prop].length !== 0) {
       const propCapped = prop
-        .split(" ")
+        .split("_")
         .map((word) => {
           return word[0].toUpperCase() + word.substring(1);
         })
@@ -75,6 +76,7 @@ export default function ConditionBridges() {
     material: [],
     type: [],
     service: [],
+    service_under: [],
     state: [],
   });
   const [searchField, setSearchField] = useState(queryState.field);
@@ -116,6 +118,7 @@ export default function ConditionBridges() {
       material: [],
       type: [],
       service: [],
+      service_under: [],
     };
     setQueryState(clearedQueryState);
     const newURI = constructURI(clearedQueryState);

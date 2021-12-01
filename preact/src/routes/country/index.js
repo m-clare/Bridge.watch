@@ -19,14 +19,16 @@ import useWindowDimensions from "../../components/windowDimensions";
 
 import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
-import { singleFilters, multiFilters } from "../../components/options";
+import { DetailedForm } from "../../components/detailedForm";
+import { singleFilters, multiFilters, detailedQueries, validRanges } from "../../components/options";
 
 const html = htm.bind(h);
 
-const countryFilters = (({ material, type, service }) => ({
+const countryFilters = (({ material, type, service, service_under }) => ({
   material,
   type,
   service,
+  service_under,
 }))(multiFilters);
 
 function constructURI(query) {
@@ -36,6 +38,16 @@ function constructURI(query) {
     if (item === "plot_type") {
       const value = query["plot_type"];
       searchParams.set(item, singleFilters.plot_type.options[value].query);
+    } else if (item === "rangeFilters") {
+      const rangeKeys = Object.keys(query.rangeFilters)
+      rangeKeys.forEach((item) => {
+        if (query.rangeFilters[item].min !== '') {
+        searchParams.set(detailedQueries[item].min, query.rangeFilters[item].min);
+        }
+        if (query.rangeFilters[item].max !== '') {
+        searchParams.set(detailedQueries[item].max, query.rangeFilters[item].max);
+        }
+      })
     } else {
       if (query[item].length !== 0) {
         const filterMap = countryFilters[item].options;
@@ -44,6 +56,7 @@ function constructURI(query) {
     }
   });
   const uriString = searchParams.toString().toLowerCase();
+  console.log(uriString)
   return uriString;
 }
 
@@ -71,9 +84,10 @@ function fixDateData(data) {
   return data;
 }
 
-function updateQuery(queryState, type, updatedParam) {
-  return { ...queryState, [type]: updatedParam };
+function isPositiveInt(val) {
+  return /^\d+$/.test(val);
 }
+
 export default function CountryBridges() {
   const [bridges, setBridges] = useState({});
   const [queryState, setQueryState] = useState({
@@ -81,19 +95,29 @@ export default function CountryBridges() {
     material: [],
     type: [],
     service: [],
+    service_under: [],
+    rangeFilters: {
+      year_built: {min: '', max: ''},
+      traffic: {min: '', max: ''},
+      bridge_length: {min: '', max: ''},
+      span_length: {min: '', max: ''},
+    }
   });
+  const [detailedFilters, setDetailedFilters] = useState({year_built: {min: '', max: ''},
+                                                            traffic: {min: '', max: ''},
+                                                            bridge_length: {min: '', max: ''},
+                                                            span_length: {min: '', max: ''}})
   const [queryURI, setQueryURI] = useState("plot_type=percent_poor");
   const [submitted, setSubmitted] = useState(true);
   const [hexSize, setHexSize] = useState(true);
   const [plotType, setPlotType] = useState(queryState.plot_type);
   const [waiting, setWaiting] = useState(false);
-  const [desktopView, setDesktopView] = useState(true)
+  const [desktopView, setDesktopView] = useState(true);
 
   const heightCheck = useMediaQuery("(min-height:500px)");
 
   const { deviceWidth, deviceHeight } = useWindowDimensions();
 
-  console.log(deviceHeight)
   const handleChange = (event, type) => {
     const value = event.target.value;
     const valueArray =
@@ -115,7 +139,74 @@ export default function CountryBridges() {
     }
   };
 
+  const handleRangeChange = (event, type, extrema, validRange) => {
+    const value = event.target.value;
+    if (type === "year_built" && value.length === 4 && isPositiveInt(value)) {
+      let newYearFilters;
+      if (extrema === "min") {
+        const maxValue = detailedFilters[type].max
+        if (maxValue !== '' && maxValue !== null && value > maxValue) {
+          newYearFilters = {...detailedFilters[type], [extrema]: parseInt(maxValue)}
+        } else if (value > validRange.max) {
+          newYearFilters = {...detailedFilters[type], [extrema]: parseInt(validRange.max)}
+        } else if (value < validRange.min) {
+          newYearFilters = {...detailedFilters[type], [extrema]: parseInt(validRange.min)}
+        } else {
+        newYearFilters = {...detailedFilters[type], [extrema]: parseInt(value)}
+        }
+        setDetailedFilters({...detailedFilters, [type]: newYearFilters})
+      }
+      if (extrema === "max") {
+        const minValue = detailedFilters[type].min
+        if (minValue !== '' && minValue !== null && value < minValue) {
+          newYearFilters = {...detailedFilters[type], [extrema]: parseInt(minValue)}
+        } else if (value > validRange.max) {
+          newYearFilters = {...detailedFilters[type], [extrema]: parseInt(validRange.max)}
+        } else if (value < validRange.min) {
+          newYearFilters = {...detailedFilters[type], [extrema]: parseInt(validRange.min)}
+        } else if (value === null || value === '') {
+          newYearFilters = {...detailedFilters[type], [extrema]: ''}
+        } else {
+          newYearFilters = {...detailedFilters[type], [extrema]: parseInt(value)}
+        }
+        setDetailedFilters({...detailedFilters, [type]: newYearFilters})
+      }
+    } else if (type !== "year_built" && value.length >= 1 && isPositiveInt(value)) {
+      let newNumberFilters;
+      if (extrema === "min") {
+        const maxValue = detailedFilters[type].max
+        if (maxValue !== '' && maxValue !== null && value > maxValue) {
+          newNumberFilters = {...detailedFilters[type], [extrema]: parseInt(maxValue)}
+        } else if (value > validRange.max) {
+          newNumberFilters = {...detailedFilters[type], [extrema]: parseInt(validRange.max)}
+        } else if (value < validRange.min) {
+          newNumberFilters = {...detailedFilters[type], [extrema]: parseInt(validRange.min)}
+        } else {
+          newNumberFilters = {...detailedFilters[type], [extrema]: parseInt(value)}
+        }
+        setDetailedFilters({...detailedFilters, [type]: newNumberFilters})
+      }
+      if (extrema === "max") {
+        const minValue = detailedFilters[type].min
+        if (minValue !== '' && minValue !== null && value < minValue) {
+          newNumberFilters = {...detailedFilters[type], [extrema]: parseInt(minValue)}
+        } else if (value > validRange.max) {
+          newNumberFilters = {...detailedFilters[type], [extrema]: parseInt(validRange.max)}
+        } else if (value < validRange.min) {
+          newNumberFilters = {...detailedFilters[type], [extrema]: parseInt(validRange.min)}
+        } else {
+          newNumberFilters = {...detailedFilters[type], [extrema]: parseInt(value)}
+        }
+        setDetailedFilters({...detailedFilters, [type]: newNumberFilters})
+      }
+    } else if (value === null || value === '') {
+      const newValueFilters = {...detailedFilters[type], [extrema]: ''}
+      setDetailedFilters({...detailedFilters, [type]: newValueFilters})
+    }
+  };
+
   const handleFormClose = (event) => {
+
     const newURI = constructURI(queryState);
     if (newURI !== queryURI) {
       setSubmitted(true);
@@ -128,6 +219,7 @@ export default function CountryBridges() {
       material: [],
       type: [],
       service: [],
+      service_under: [],
     };
     setQueryState(clearedQueryState);
     const newURI = constructURI(clearedQueryState);
@@ -136,9 +228,38 @@ export default function CountryBridges() {
     }
   };
 
+  const handleSubmitClick = (event) => {
+    const mergedQueryState = {...queryState, rangeFilters: detailedFilters}
+    setQueryState(mergedQueryState);
+    const newURI = constructURI(mergedQueryState);
+    if (newURI !== queryURI) {
+      setSubmitted(true);
+    }
+  };
+
+  const handleClearClick = (event) => {
+    const emptyDetailedFilters = {
+      year_built: {min: '', max: ''},
+      traffic: {min: '', max: ''},
+      bridge_length: {min: '', max: ''},
+      span_length: {min: '', max: ''},
+    }
+    const clearedQueryState = {
+      ...queryState,
+      rangeFilters: emptyDetailedFilters
+    }
+    setQueryState(clearedQueryState);
+    setDetailedFilters(emptyDetailedFilters)
+    const newURI = constructURI(clearedQueryState);
+    if (newURI !== queryURI) {
+      setSubmitted(true);
+    }
+  }
+
   useEffect(async () => {
     const newURI = constructURI(queryState);
     let bridgeData = await getNationalBridges(newURI);
+    console.log(bridgeData)
     setQueryURI(newURI);
     if (queryState.plot_type === "future_date_of_inspection") {
       bridgeData = fixDateData(bridgeData);
@@ -154,12 +275,12 @@ export default function CountryBridges() {
   const renderWaiting = waiting;
   const locality = "the U.S.";
 
-  const colWidth = { single: 4, multi: 4 };
+  const colWidth = { single: 3, multi: 3 };
 
   return html`
-<${Box} sx=${{ padding: [0,3], pt: [2,3], pb: [2,3] }}>
+<${Box} sx=${{ padding: [0, 3], pt: [2, 3], pb: [2, 3] }}>
   <${Container} maxWidth="lg">
-    <${Grid} container spacing=${[2,3]}>
+    <${Grid} container spacing=${[2, 3]}>
       <${Grid} item xs=${12}>
         <${Paper} sx=${{ padding: 3 }}>
           <${Grid} container spacing=${3}>
@@ -176,6 +297,15 @@ export default function CountryBridges() {
                           handleClick=${handleClick}
                           colWidth=${colWidth}
                           />
+           <${Grid} item xs=${12}>
+           <${DetailedForm} detailedQueryState=${detailedFilters}
+                            handleRangeChange=${handleRangeChange}
+                            handleSubmitClick=${handleSubmitClick}
+                            handleClearClick=${handleClearClick}
+                            validRanges=${validRanges}
+                            submitted=${renderSubmitted}
+                            />
+           </${Grid}>
           </${Grid}>
         </${Paper}>
       </${Grid}>
@@ -216,8 +346,7 @@ export default function CountryBridges() {
                 hexSize=${scaledHexBool}
                 submitted=${submitted}
                 heightCheck=${heightCheck}
-              />
-             `
+              /> `
           : null
       }
       ${

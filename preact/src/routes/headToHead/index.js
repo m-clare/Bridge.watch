@@ -164,7 +164,7 @@ export default function HeadToHead() {
   const renderField = searchField;
   const renderSubmitted = submitted;
   const renderWaiting = waiting;
-  const colWidth = { single: 4, multi: 4 };
+  const colWidth = { single: 3, multi: 3 };
 
   const { field, stateOne, stateTwo, ...queryAttrFilters } = queryState;
 
