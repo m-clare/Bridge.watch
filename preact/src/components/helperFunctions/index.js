@@ -1,13 +1,27 @@
 export function constructURI(baseQuery, detailedQuery, queryDicts) {
-  const { plotOptions, filterMaps, detailedQueryMaps } = queryDicts;
+  const {
+    plotOptions,
+    fieldOptions,
+    stateOptions,
+    filterMaps,
+    detailedQueryMaps,
+  } = queryDicts;
   const searchParams = new URLSearchParams();
   const baseKeys = Object.keys(baseQuery);
   const detailedKeys = Object.keys(detailedQuery);
+  // Get states for head to head query, undefined otherwise
+  const { stateOne, stateTwo } = baseQuery;
   // add base query components to searchParams
   baseKeys.forEach((item) => {
     if (item === "plot_type") {
       const value = baseQuery["plot_type"];
       searchParams.set(item, plotOptions[value].query);
+    } else if (item === "field") {
+      const value = baseQuery["field"];
+      searchParams.set(item, fieldOptions[value].query);
+    } else if (item === "stateOne" || item === "stateTwo") {
+      const value = baseQuery[item];
+      searchParams.set("state", stateOptions[value]);
     } else if (baseQuery[item].length !== 0) {
       const filterMap = filterMaps[item].options;
       searchParams.set(item, baseQuery[item].map((d) => filterMap[d]).sort());
@@ -40,7 +54,6 @@ export function constructURI(baseQuery, detailedQuery, queryDicts) {
     }
   });
   const uriString = searchParams.toString().toLowerCase();
-  console.log(uriString);
   return uriString;
 }
 
@@ -96,6 +109,8 @@ export const handleSingleChange = (event, type, stateInfo) => {
     setState,
     detailedQueryState,
     queryURI,
+    searchField,
+    setSearchField,
     plotType,
     setSubmitted,
     setWaiting,
@@ -115,5 +130,38 @@ export const handleSingleChange = (event, type, stateInfo) => {
   }
   if (plotType !== value) {
     setPlotType(value);
+  }
+  if ((type === "field") & (value !== searchField)) {
+    setSearchField(value);
+  }
+};
+
+export const handleClearFiltersClick = (event, stateInfo) => {
+  const {
+    state,
+    setState,
+    detailedQueryState,
+    queryDicts,
+    setSubmitted,
+    queryURI,
+    routeType,
+  } = stateInfo;
+  const clearedQueryState = {
+    ...state,
+    material: [],
+    type: [],
+    service: [],
+    service_under: [],
+  };
+  setState(clearedQueryState);
+  const newURI = constructURI(
+    clearedQueryState,
+    detailedQueryState,
+    queryDicts
+  );
+  if (routeType === "state" && newURI !== queryURI && state.statelength !== 0) {
+    setSubmitted(true);
+  } else if (newURI !== queryURI) {
+    setSubmitted(true);
   }
 };

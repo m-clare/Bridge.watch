@@ -18,9 +18,15 @@ import { TopForm } from "../../components/topForm";
 import {
   singleFilters,
   multiFilters,
+  filterMaps,
+  detailedQueryMaps,
+  validRanges,
+  fieldOptions,
   stateSingleFilters,
+  stateOptions,
 } from "../../components/options";
 import { SunburstChart } from "../../components/sunburstChart";
+import { constructURI, handleChange } from "../../components/helperFunctions"; 
 const html = htm.bind(h);
 
 const attrFilters = (({ material, type, service }) => ({
@@ -29,26 +35,11 @@ const attrFilters = (({ material, type, service }) => ({
   service,
 }))(multiFilters);
 
-function constructURIs(query) {
-  let { stateOne, stateTwo, ...rest } = query;
-  const keys = Object.keys(query);
-  const stateArray = [stateOne, stateTwo];
-  const uriArray = stateArray.map((d) => {
-    const searchParams = new URLSearchParams();
-    keys.forEach((item) => {
-      if (item === "field") {
-        const value = query["field"];
-        searchParams.set(item, singleFilters.field.options[value].query);
-      } else if (item === "stateOne" || item === "stateTwo") {
-        searchParams.set("state", stateSingleFilters[item].options[d]);
-      } else if (query[item].length !== 0) {
-        const filterMap = multiFilters[item].options;
-        searchParams.set(item, query[item].map((d) => filterMap[d]).sort());
-      }
-    });
-
-    return searchParams.toString().toLowerCase();
-  });
+function constructURIs(baseQuery, detailedQuery, queryDicts) {
+  let { stateOne, stateTwo, ...rest } = baseQuery;
+  const uriOne = constructURI({stateOne: stateOne, ...rest }, detailedQuery, queryDicts)
+  const uriTwo = constructURI({stateTwo: stateTwo, ...rest }, detailedQuery, queryDicts)
+  const uriArray = [uriOne, uriTwo]
   return uriArray;
 }
 
@@ -88,17 +79,27 @@ export default function HeadToHead() {
     stateOne: `California`,
     stateTwo: `New York`,
   });
+  const [detailedQueryState, setDetailedQueryState] = useState({
+    rating: [],
+    deck_type: [],
+    deck_surface: [],
+    rangeFilters: {
+      year_built: { min: "", max: "" },
+      traffic: { min: "", max: "" },
+      bridge_length: { min: "", max: "" },
+      span_length: { min: "", max: "" },
+    },
+  });
   const [searchField, setSearchField] = useState(queryState.field);
   const [queryURIs, setQueryURIs] = useState({ stateOne: "", stateTwo: "" });
   const [submitted, setSubmitted] = useState(true);
   const [waiting, setWaiting] = useState(false);
 
-  const handleChange = (event, type) => {
-    const value = event.target.value;
-    const valueArray =
-      typeof value === "string" ? value.split(",").sort() : value.sort();
-    setQueryState({ ...queryState, [type]: valueArray });
-    setWaiting(true);
+  const queryDicts = {
+    filterMaps: filterMaps,
+    detailedQueryMaps: detailedQueryMaps,
+    fieldOptions: fieldOptions,
+    stateOptions: stateOptions
   };
 
   const handleSingleChange = (event, type) => {
@@ -115,11 +116,6 @@ export default function HeadToHead() {
     if (type === "field" && value !== searchField) {
       setSearchField(value);
     }
-  };
-
-  const handleLimitedMultiSelect = (event) => {
-    const value = event.target.value.sort(); // array;
-    console.log(value);
   };
 
   const handleFormClose = (event) => {
@@ -151,7 +147,7 @@ export default function HeadToHead() {
 
   // run every time submitted is updated
   useEffect(async () => {
-    const newURIs = constructURIs(queryState);
+    const newURIs = constructURIs(queryState, detailedQueryState, queryDicts);
     const bridgeDataOne = await getConditionBridges(newURIs[0]);
     const bridgeDataTwo = await getConditionBridges(newURIs[1]);
     setQueryURIs({ stateOne: newURIs[0], stateTwo: newURIs[1] });
@@ -181,7 +177,19 @@ export default function HeadToHead() {
             <${Grid} item xs=${12}>
               <${TopForm}
                 queryState=${queryState}
-                handleChange=${handleChange}
+                stateInfo=${{
+                            state: queryState,
+                            detailedQueryState: detailedQueryState,
+                            submitted: submitted,
+                            queryURIs: queryURIs,
+                            setState: setQueryState,
+                            setWaiting: setWaiting,
+                            setSubmitted: setSubmitted,
+                            routeType: "headToHead",
+                            queryDicts: queryDicts,
+                            searchField: searchField,
+                            setSearchField: setSearchField
+                          }}
                 handleClose=${handleFormClose}
                 handleSingleChange=${handleSingleChange}
                 submitted=${renderSubmitted}

@@ -129,25 +129,6 @@ export default function CountryBridges() {
     }
   };
 
-  const handleClick = (event) => {
-    const clearedQueryState = {
-      ...queryState,
-      material: [],
-      type: [],
-      service: [],
-      service_under: [],
-    };
-    setQueryState(clearedQueryState);
-    const newURI = constructURI(
-      clearedQueryState,
-      detailedQueryState,
-      queryDicts
-    );
-    if (newURI !== queryURI) {
-      setSubmitted(true);
-    }
-  };
-
   const handleSubmitClick = (event) => {
     const newURI = constructURI(queryState, detailedQueryState, queryDicts);
     if (newURI !== queryURI) {
@@ -222,7 +203,6 @@ export default function CountryBridges() {
                           submitted=${renderSubmitted}
                           plotChoices=${singleFilters.plot_type}
                           filters=${countryFilters}
-                          handleClick=${handleClick}
                           colWidth=${colWidth}
                           />
            <${Grid} item xs=${12}>

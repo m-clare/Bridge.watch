@@ -19,6 +19,7 @@ const html = htm.bind(h);
 
 export function TopForm({
   queryState,
+  stateInfo,
   handleChange,
   handleClose,
   handleSingleChange,
@@ -29,6 +30,7 @@ export function TopForm({
   handleClick,
   colWidth,
 }) {
+  console.log(filters)
   const formHandlers = {};
   formHandlers.handleChange = handleChange;
   formHandlers.handleClose = handleClose;
@@ -65,7 +67,7 @@ export function TopForm({
      </${Typography}>
    </${Grid}>
    <${Grid} item xs=${12} md=${4} style=${"padding-top: 8px"}>
-     ${singleSelect(plotChoices, queryState, submitted, handleSingleChange)}
+     ${singleSelect(plotChoices, stateInfo)}
    </${Grid}>
    <${Grid} item xs=${12}>
      <${Typography} variant="h6"
@@ -77,7 +79,7 @@ export function TopForm({
    ${filters.map(
      (value) => html`
    <${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
-     ${multiFilter(value, queryState, formHandlers, false)}
+     ${multiFilter(value, stateInfo, false)}
    </${Grid}>`
    )}
    <${Grid} item xs=${12} md=${colWidth.single}>

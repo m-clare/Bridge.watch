@@ -16,7 +16,16 @@ import { grey } from "@mui/material/colors";
 
 import { SunburstChart } from "../../components/sunburstChart";
 import { QueryForm } from "../../components/queryForm";
-import { singleFilters, multiFilters } from "../../components/options";
+import {
+  singleFilters,
+  multiFilters,
+  filterMaps,
+  detailedQueryMaps,
+  validRanges,
+  fieldOptions
+} from "../../components/options";
+import { constructURI, fixDateData } from "../../components/helperFunctions";
+
 
 const html = htm.bind(h);
 
@@ -27,22 +36,6 @@ const stateFilters = (({ state, material, type, service, service_under }) => ({
   service,
   service_under,
 }))(multiFilters);
-
-function constructURI(query) {
-  const searchParams = new URLSearchParams();
-  const keys = Object.keys(query);
-  keys.forEach((item) => {
-    if (item === "field") {
-      const value = query["field"];
-      searchParams.set(item, singleFilters.field.options[value].query);
-    } else if (query[item].length !== 0) {
-      const filterMap = multiFilters[item].options;
-      searchParams.set(item, query[item].map((d) => filterMap[d]).sort());
-    }
-  });
-  const uriString = searchParams.toString().toLowerCase();
-  return uriString;
-}
 
 function getFiltersAsString(filters) {
   let filterStringArray = [];
@@ -79,57 +72,31 @@ export default function ConditionBridges() {
     service_under: [],
     state: [],
   });
+  const [detailedQueryState, setDetailedQueryState] = useState({
+    rating: [],
+    deck_type: [],
+    deck_surface: [],
+    rangeFilters: {
+      year_built: { min: "", max: "" },
+      traffic: { min: "", max: "" },
+      bridge_length: { min: "", max: "" },
+      span_length: { min: "", max: "" },
+    },
+  });
   const [searchField, setSearchField] = useState(queryState.field);
   const [queryURI, setQueryURI] = useState("");
   const [submitted, setSubmitted] = useState(true);
   const [waiting, setWaiting] = useState(false);
 
-  const handleChange = (event, type) => {
-    const value = event.target.value;
-    const valueArray =
-      typeof value === "string" ? value.split(",").sort() : value.sort();
-    setQueryState({ ...queryState, [type]: valueArray });
-    setWaiting(true);
-  };
-
-  const handleSingleChange = (event, type) => {
-    const value = event.target.value;
-    setQueryState({ ...queryState, [type]: value });
-    const newURI = constructURI({ ...queryState, [type]: value });
-    if (newURI !== queryURI) {
-      setSubmitted(true);
-      setWaiting(true);
-    }
-    if (type === "field" && value !== searchField) {
-      setSearchField(value);
-    }
-  };
-
-  const handleFormClose = (event) => {
-    const newURI = constructURI(queryState);
-    if (newURI !== queryURI) {
-      setSubmitted(true);
-    }
-  };
-
-  const handleClick = (event) => {
-    const clearedQueryState = {
-      ...queryState,
-      material: [],
-      type: [],
-      service: [],
-      service_under: [],
-    };
-    setQueryState(clearedQueryState);
-    const newURI = constructURI(clearedQueryState);
-    if (newURI !== queryURI) {
-      setSubmitted(true);
-    }
+  const queryDicts = {
+    filterMaps: filterMaps,
+    detailedQueryMaps: detailedQueryMaps,
+    fieldOptions: fieldOptions
   };
 
   // run every time submitted is updated
   useEffect(async () => {
-    const newURI = constructURI(queryState);
+    const newURI = constructURI(queryState, detailedQueryState, queryDicts);
     const bridgeData = await getConditionBridges(newURI);
     setQueryURI(newURI);
     setConditionBridges(bridgeData);
@@ -155,13 +122,22 @@ export default function ConditionBridges() {
               <${Typography} variant="h4" component="h1">Bridge Conditions</${Typography}>
             </${Grid}>
             <${QueryForm} queryState=${queryState}
-                          handleChange=${handleChange}
-                          handleClose=${handleFormClose}
-                          handleSingleChange=${handleSingleChange}
+                          stateInfo=${{
+                            state: queryState,
+                            detailedQueryState: detailedQueryState,
+                            submitted: submitted,
+                            queryURI: queryURI,
+                            setState: setQueryState,
+                            setWaiting: setWaiting,
+                            setSubmitted: setSubmitted,
+                            routeType: "condition",
+                            queryDicts: queryDicts,
+                            searchField: searchField,
+                            setSearchField: setSearchField
+                          }}
                           submitted=${renderSubmitted}
                           plotChoices=${singleFilters.field}
                           filters=${stateFilters}
-                          handleClick=${handleClick}
                           colWidth=${colWidth}
                           />
             <${Grid} item xs=${12}>

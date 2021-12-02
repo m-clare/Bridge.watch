@@ -16,7 +16,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
-
+import { handleClearFiltersClick } from "../helperFunctions"
 import { singleSelect, multiFilter } from "../formComponents";
 
 const html = htm.bind(h);
@@ -90,7 +90,7 @@ ${filters.map(
 </${Grid}>
 <${Grid} item container spacing=${3} xs=${12}>
 <${Grid} item xs=${12} md=${colWidth.single}>
-  <${Button} fullWidth disabled=${submitted} variant="contained" color="primary" onClick=${handleClick}>Clear filters</${Button}>
+  <${Button} fullWidth disabled=${submitted} variant="contained" color="primary" onClick=${(e) => handleClearFiltersClick(e, stateInfo)}>Clear filters</${Button}>
 </${Grid}>
 </${Grid}>
 `;
