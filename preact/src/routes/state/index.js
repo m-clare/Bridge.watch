@@ -36,7 +36,6 @@ const stateFilters = (({ state, material, type, service, service_under }) => ({
   service_under,
 }))(multiFilters);
 
-const dateKeys = ["min", "max", "mode"];
 
 export default function StateBridges() {
   const [stateBridges, setStateBridges] = useState({});
@@ -69,30 +68,6 @@ export default function StateBridges() {
     plotOptions: plotOptions,
     filterMaps: filterMaps,
     detailedQueryMaps: detailedQueryMaps,
-  };
-
-  /* const handleChange = (event, type) => {
-   *   const value = event.target.value;
-   *   const valueArray =
-   *     typeof value === "string" ? value.split(",").sort() : value.sort();
-   *   if (queryState.state.length === 0) {
-   *     setShowPlot(false);
-   *   }
-   *   setQueryState({ ...queryState, [type]: valueArray });
-   *   setWaiting(true);
-   * }; */
-
-  const handleSingleChange = (event, type) => {
-    const value = event.target.value;
-    setQueryState({ ...queryState, [type]: value });
-    const newURI = constructURI({ ...queryState, [type]: value }, detailedQueryState, queryDicts);
-    if (newURI !== queryURI) {
-      setSubmitted(true);
-      setWaiting(true);
-    }
-    if (type === "plot_type" && plotType !== value) {
-      setPlotType(value);
-    }
   };
 
   const handleFormClose = (event) => {
@@ -159,12 +134,18 @@ export default function StateBridges() {
             <${QueryForm} queryState=${queryState}
                           stateInfo=${{
                             state: queryState,
+                            detailedQueryState: detailedQueryState,
+                            submitted: renderSubmitted,
+                            plotType: plotType,
+                            queryURI: queryURI,
                             setState: setQueryState,
                             setWaiting: setWaiting,
+                            setSubmitted: setSubmitted,
+                            setPlotType: setPlotType,
+                            setShowPlot: setShowPlot,
                             routeType: "state",
+                            queryDicts: queryDicts
                           }}
-                          handleClose=${handleFormClose}
-                          handleSingleChange=${handleSingleChange}
                           submitted=${renderSubmitted}
                           plotChoices=${singleFilters.plot_type}
                           filters=${stateFilters}
@@ -172,18 +153,20 @@ export default function StateBridges() {
                           colWidth=${colWidth}
                           />
             <${Grid} item xs=${12}>
+            </${Grid}>
+            <${Grid} item xs=${12}>
               ${
                 renderSubmitted
                   ? html`
-              <${Paper} sx=${{ padding: 2 }} variant="outlined">
-                <${Typography} style=${"text-align: center"}
-                               variant="h6"
-                               color=${grey[500]}>
-                  <i>Loading query...</i>
-                </${Typography}>
-                <${LinearProgress} />
-                </${Paper}>
-                  `
+  <${Paper} sx=${{ padding: 2 }} variant="outlined">
+  <${Typography} style=${"text-align: center"}
+  variant="h6"
+  color=${grey[500]}>
+  <i>Loading query...</i>
+  </${Typography}>
+  <${LinearProgress} />
+  </${Paper}>
+  `
                   : null
               }
             </${Grid}>

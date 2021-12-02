@@ -24,18 +24,12 @@ const html = htm.bind(h);
 export function QueryForm({
   queryState,
   stateInfo,
-  handleClose,
-  handleSingleChange,
   submitted,
   plotChoices,
   filters,
   handleClick,
   colWidth,
 }) {
-
-  const formHandlers = {};
-  formHandlers.handleClose = handleClose;
-  formHandlers.submitted = submitted;
 
   const multiFilters = Object.values(
     (({ material, type, service, service_under }) => ({ material, type, service, service_under }))(filters)
@@ -63,7 +57,7 @@ export function QueryForm({
 ${stateFilter.map(
 (value) => html`
 <${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
-  ${multiFilter(value, queryState, stateInfo, submitted, handleClose, true)}
+  ${multiFilter(value, stateInfo, true)}
 </${Grid}>`
 )}`
 : null
@@ -77,7 +71,7 @@ ${stateFilter.map(
   </${Typography}>
 </${Grid}>
 <${Grid} item xs=${12} md=${colWidth.single} style=${"padding-top: 8px"}>
-  ${singleSelect(plotChoices, queryState, submitted, handleSingleChange)}
+  ${singleSelect(plotChoices, stateInfo)}
 </${Grid}>
 <${Grid} item container spacing=${3} xs=${12}>
 <${Grid} item xs=${12}>
@@ -90,7 +84,7 @@ ${stateFilter.map(
 ${filters.map(
 (value) => html`
 <${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
-    ${multiFilter(value, queryState, stateInfo, submitted, handleClose, false)}
+    ${multiFilter(value, stateInfo, false)}
 </${Grid}>`
 )}
 </${Grid}>

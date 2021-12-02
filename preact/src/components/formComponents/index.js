@@ -15,21 +15,20 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { helperText } from "../options";
 const html = htm.bind(h);
-import { handleChange } from "../helperFunctions";
+import { handleChange, handleClose, handleSingleChange } from "../helperFunctions";
 
 export function singleSelect(
   plotChoices,
-  queryState,
-  submitted,
-  handleSingleChange
+  stateInfo
 ) {
+  const { state } = stateInfo
   return html`
   <${FormControl} fullWidth>
     <${InputLabel}>${plotChoices.label}</${InputLabel}>
-    <${Select} value=${queryState[plotChoices.name]}
+    <${Select} value=${state[plotChoices.name]}
                label=${plotChoices.label}
-               disabled=${submitted}
-               onChange=${(e) => handleSingleChange(e, plotChoices.name)}
+               disabled=${stateInfo.submitted}
+               onChange=${(e) => handleSingleChange(e, plotChoices.name, stateInfo)}
       >
       ${Object.keys(plotChoices.options).map((shortName, index) => {
         return html`<${MenuItem} key=${shortName}
@@ -65,57 +64,17 @@ export function stateSingleSelect(
   </${FormControl}>`;
 }
 
-export function testMultiFilter(
-  filter,
-  queryState,
-  setQueryState,
-  setWaiting,
-  renderSubmitted
-) {
-  return html`
-  <${FormControl} required=${required} fullWidth>
-    <${InputLabel}>${filter.label}</${InputLabel}>
-    <${Select}
-      value=${queryState[filter.name]}
-      label=${filter.name}
-      onChange=${(e) =>
-        handleChange(e, filter.name, queryState, setQueryState, setWaiting)}
-      onClose=${handleClose}
-      multiple
-      disabled=${renderSubmitted}
-      input=${html`<${OutlinedInput}
-        id="select-multiple-chip"
-        label=${filter.label}
-      />`}
-      renderValue=${(selected) =>
-        html`<${Box} sx=${{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-        ${selected.map(
-          (value) => html`<${Chip} key=${value} label=${value} />`
-        )}
-      </${Box}>`}
-      >
-      ${Object.keys(filter.options).map((name, index) => {
-        return html`<${MenuItem} dense value=${name}>${name}</${MenuItem}>`;
-      })};
-    </${Select}>
-  </${FormControl}>
-`;
-}
-
-export function multiFilter(filter, queryState, stateInfo, submitted, handleClose, required) {
-
-  /* const handleChange = formHandlers.handleChange; */
-  /* const renderSubmitted = formHandlers.submitted; */
-  /* const handleClose = formHandlers.handleClose; */
+export function multiFilter(filter, stateInfo, required) {
+  const { state, submitted } = stateInfo
 
   return html`
   <${FormControl} required=${required} fullWidth>
     <${InputLabel}>${filter.label}</${InputLabel}>
     <${Select}
-      value=${queryState[filter.name]}
+      value=${state[filter.name]}
       label=${filter.name}
       onChange=${(e) => handleChange(e, filter.name, stateInfo)}
-      onClose=${handleClose}
+      onClose=${(e) => handleClose(e, stateInfo)}
       multiple
       disabled=${submitted}
       input=${html`<${OutlinedInput}

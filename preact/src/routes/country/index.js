@@ -80,23 +80,6 @@ export default function CountryBridges() {
 
   const { deviceWidth, deviceHeight } = useWindowDimensions();
 
-  const handleSingleChange = (event, type) => {
-    const value = event.target.value;
-    setQueryState({ ...queryState, [type]: value });
-    const newURI = constructURI(
-      { ...queryState, [type]: value },
-      detailedQueryState,
-      queryDicts
-    );
-    if (newURI !== queryURI) {
-      setSubmitted(true);
-      setWaiting(true);
-    }
-    if (plotType !== value) {
-      setPlotType(value);
-    }
-  };
-
   const handleRangeChange = (event, type, extrema, validRange) => {
     const value = event.target.value;
     const minValue = detailedQueryState.rangeFilters[type].min;
@@ -143,13 +126,6 @@ export default function CountryBridges() {
         ...detailedQueryState,
         rangeFilters: detailedRanges,
       });
-    }
-  };
-
-  const handleFormClose = (event) => {
-    const newURI = constructURI(queryState, detailedQueryState, queryDicts);
-    if (newURI !== queryURI) {
-      setSubmitted(true);
     }
   };
 
@@ -232,12 +208,17 @@ export default function CountryBridges() {
             <${QueryForm} queryState=${queryState}
                           stateInfo=${{
                             state: queryState,
+                            detailedQueryState: detailedQueryState,
+                            submitted: renderSubmitted,
+                            plotType: plotType,
+                            queryURI: queryURI,
                             setState: setQueryState,
                             setWaiting: setWaiting,
+                            setSubmitted: setSubmitted,
+                            setPlotType: setPlotType,
                             routeType: "country",
+                            queryDicts: queryDicts
                           }}
-                          handleClose=${handleFormClose}
-                          handleSingleChange=${handleSingleChange}
                           submitted=${renderSubmitted}
                           plotChoices=${singleFilters.plot_type}
                           filters=${countryFilters}
