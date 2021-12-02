@@ -17,6 +17,7 @@ import { grey } from "@mui/material/colors";
 
 import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
+import { DetailedForm } from "../../components/detailedForm";
 import {
   singleFilters,
   multiFilters,
@@ -128,6 +129,18 @@ export default function StateBridges() {
                           colWidth=${colWidth}
                           />
             <${Grid} item xs=${12}>
+              <${DetailedForm} stateInfo=${{
+                            state: queryState,
+                            detailedQueryState: detailedQueryState,
+                            submitted: renderSubmitted,
+                            queryURI: queryURI,
+                            setSubmitted: setSubmitted,
+                            setDetailedQueryState: setDetailedQueryState,
+                            validRange: validRanges,
+                            queryDicts: queryDicts
+                            }}
+                            colWidth=12
+                            />
             </${Grid}>
             <${Grid} item xs=${12}>
               ${

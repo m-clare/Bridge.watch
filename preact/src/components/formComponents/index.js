@@ -15,7 +15,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { helperText } from "../options";
 const html = htm.bind(h);
-import { handleChange, handleClose, handleSingleChange } from "../helperFunctions";
+import { handleChange, handleClose, handleSingleChange, handleRangeChange } from "../helperFunctions";
 
 export function singleSelect(
   plotChoices,
@@ -96,12 +96,10 @@ export function multiFilter(filter, stateInfo, required) {
 `;
 }
 
-export function yearRangeFilter({
-  detailedQueryState,
-  handleRangeChange,
-  submitted,
-  validRange,
-}) {
+export function yearRangeFilter(
+  stateInfo
+) {
+  const { detailedQueryState, submitted, validRange } = stateInfo
   return html`
 <${Box} sx=${{
     display: "flex",
@@ -109,10 +107,10 @@ export function yearRangeFilter({
     "& > :not(style)": { m: 1 },
   }}>
 <${TextField} id="year-min"
-              value=${detailedQueryState.year_built.min}
+              value=${detailedQueryState.rangeFilters.year_built.min}
               disabled=${submitted}
               onBlur=${(e) =>
-                handleRangeChange(e, "year_built", "min", validRange)}
+                handleRangeChange(e, "year_built", stateInfo, "min")}
               label="Minimum"
               type="number"
               helperText=" "
@@ -124,10 +122,10 @@ export function yearRangeFilter({
               }}
 />
 <${TextField} id="year-max"
-              value=${detailedQueryState.year_built.max}
+              value=${detailedQueryState.rangeFilters.year_built.max}
               disabled=${submitted}
               onBlur=${(e) =>
-                handleRangeChange(e, "year_built", "max", validRange)}
+                handleRangeChange(e, "year_built", stateInfo, "max")}
               label="Maximum"
               type="number"
               helperText=" "
@@ -142,13 +140,11 @@ export function yearRangeFilter({
 `;
 }
 
-export function numberRangeFilter({
-  detailedQueryState,
+export function numberRangeFilter(
+  stateInfo,
   field,
-  handleRangeChange,
-  submitted,
-  validRange,
-}) {
+) {
+  const { detailedQueryState, submitted, validRange } = stateInfo
   return html`
 <${Box} sx=${{
     display: "flex",
@@ -156,29 +152,29 @@ export function numberRangeFilter({
     "& > :not(style)": { m: 1 },
   }}>
 <${TextField} id=${field + "-min"}
-              value=${detailedQueryState[field].min}
+              value=${detailedQueryState.rangeFilters[field].min}
               disabled=${submitted}
-              onBlur=${(e) => handleRangeChange(e, field, "min", validRange)}
+              onBlur=${(e) => handleRangeChange(e, field, stateInfo, "min")}
               label="Minimum"
               type="number"
               helperText=${helperText[field]}
               inputProps=${{
                 inputMode: "numeric",
-                pattern: "[1,2][0-9]{3}",
+                pattern: "[0-9]*",
               }}
 />
 <${TextField} id=${field + "-max"}
-              value=${detailedQueryState[field].max}
+              value=${detailedQueryState.rangeFilters[field].max}
               disabled=${submitted}
-              onBlur=${(e) => handleRangeChange(e, field, "max", validRange)}
+              onBlur=${(e) => handleRangeChange(e, field, stateInfo, "max")}
               label="Maximum"
               type="number"
               helperText=${helperText[field]}
               inputProps=${{
                 inputMode: "numeric",
-                pattern: "[1,2][0-9]{3}",
+                pattern: "[0-9]*",
               }}
 />
 </${Box}>
-`;
+  `;
 }

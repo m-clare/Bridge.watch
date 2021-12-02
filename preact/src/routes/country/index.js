@@ -80,62 +80,6 @@ export default function CountryBridges() {
 
   const { deviceWidth, deviceHeight } = useWindowDimensions();
 
-  const handleRangeChange = (event, type, extrema, validRange) => {
-    const value = event.target.value;
-    const minValue = detailedQueryState.rangeFilters[type].min;
-    const maxValue = detailedQueryState.rangeFilters[type].max;
-    // Validation for year, positive number otherwise
-    if (
-      ((type === "year_built" && value.length === 4) ||
-        (type !== "year_built" && value.length >= 1)) &&
-      isPositiveInt(value)
-    ) {
-      let inputValue;
-      if (value > validRange.max) {
-        inputValue = parseInt(validRange.max);
-      } else if (value < validRange.min) {
-        inputValue = parseInt(validRange.min);
-      } else if (
-        extrema === "min" &&
-        maxValue !== "" &&
-        maxValue !== null &&
-        value > maxValue
-      ) {
-        inputValue = parseInt(maxValue);
-      } else if (
-        extrema === "max" &&
-        minValue !== "" &&
-        minValue !== null &&
-        value < minValue
-      ) {
-        inputValue = parseInt(minValue);
-      } else if (value === null || value === "") {
-        inputValue = "";
-      } else {
-        inputValue = value;
-      }
-      const newNumberFilters = {
-        ...detailedQueryState.rangeFilters[type],
-        [extrema]: inputValue,
-      };
-      const detailedRanges = {
-        ...detailedQueryState.rangeFilters,
-        [type]: newNumberFilters,
-      };
-      setDetailedQueryState({
-        ...detailedQueryState,
-        rangeFilters: detailedRanges,
-      });
-    }
-  };
-
-  const handleSubmitClick = (event) => {
-    const newURI = constructURI(queryState, detailedQueryState, queryDicts);
-    if (newURI !== queryURI) {
-      setSubmitted(true);
-    }
-  };
-
   const handleClearClick = (event) => {
     const emptyDetailedFilters = {
       rating: [],
@@ -158,7 +102,6 @@ export default function CountryBridges() {
   useEffect(async () => {
     const newURI = constructURI(queryState, detailedQueryState, queryDicts);
     let bridgeData = await getNationalBridges(newURI);
-    console.log(bridgeData);
     setQueryURI(newURI);
     if (queryState.plot_type === "future_date_of_inspection") {
       bridgeData = fixDateData(bridgeData, "hexBin");
@@ -204,12 +147,17 @@ export default function CountryBridges() {
                           colWidth=${colWidth}
                           />
            <${Grid} item xs=${12}>
-           <${DetailedForm} detailedQueryState=${detailedQueryState}
-                            handleRangeChange=${handleRangeChange}
-                            handleSubmitClick=${handleSubmitClick}
-                            handleClearClick=${handleClearClick}
-                            validRanges=${validRanges}
-                            submitted=${renderSubmitted}
+           <${DetailedForm} stateInfo=${{
+                            state: queryState,
+                            detailedQueryState: detailedQueryState,
+                            submitted: renderSubmitted,
+                            queryURI: queryURI,
+                            setSubmitted: setSubmitted,
+                            setDetailedQueryState: setDetailedQueryState,
+                            validRange: validRanges,
+                            queryDicts: queryDicts
+                            }}
+                            colWidth=3
                             />
            </${Grid}>
           </${Grid}>

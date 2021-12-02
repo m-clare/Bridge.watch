@@ -129,8 +129,8 @@ export const handleSingleChange = (event, type, stateInfo) => {
     setSubmitted(true);
     setWaiting(true);
   }
-  if (routeType === ("state" || "country")) {
-    if (plotType !== value) {
+  if (routeType === "state" || routeType === "country") {
+    if (type === "plot_type" && plotType !== value) {
       setPlotType(value);
     }
   }
@@ -166,9 +166,104 @@ export const handleClearFiltersClick = (event, stateInfo) => {
   );
   if (routeType === "state") {
     if (newURI !== queryURI && state.statelength !== 0) {
-    setSubmitted(true);
+      setSubmitted(true);
     }
   } else if (newURI !== queryURI) {
     setSubmitted(true);
   }
 };
+
+function isPositiveInt(val) {
+  return /^\d+$/.test(val);
+}
+
+export const handleRangeChange = (event, type, stateInfo, extrema) => {
+  const { detailedQueryState, setDetailedQueryState, validRange } = stateInfo;
+  const value = event.target.value;
+  const minValue = detailedQueryState.rangeFilters[type].min;
+  const maxValue = detailedQueryState.rangeFilters[type].max;
+  // Validation for year, positive number otherwise
+  if (
+    ((type === "year_built" && value.length === 4) ||
+      (type !== "year_built" && value.length >= 1)) &&
+    isPositiveInt(value)
+  ) {
+    let inputValue;
+    if (value > validRange.max) {
+      inputValue = parseInt(validRange.max);
+    } else if (value < validRange.min) {
+      inputValue = parseInt(validRange.min);
+    } else if (
+      extrema === "min" &&
+      maxValue !== "" &&
+      maxValue !== null &&
+      value > maxValue
+    ) {
+      inputValue = parseInt(maxValue);
+    } else if (
+      extrema === "max" &&
+      minValue !== "" &&
+      minValue !== null &&
+      value < minValue
+    ) {
+      inputValue = parseInt(minValue);
+    } else {
+      inputValue = value;
+    }
+    const newNumberFilters = {
+      ...detailedQueryState.rangeFilters[type],
+      [extrema]: inputValue,
+    };
+    const detailedRanges = {
+      ...detailedQueryState.rangeFilters,
+      [type]: newNumberFilters,
+    };
+    setDetailedQueryState({
+      ...detailedQueryState,
+      rangeFilters: detailedRanges,
+    });
+  } else if (value === null || value === "") {
+    const inputValue = "";
+    const newNumberFilters = {
+      ...detailedQueryState.rangeFilters[type],
+      [extrema]: inputValue,
+    };
+    const detailedRanges = {
+      ...detailedQueryState.rangeFilters,
+      [type]: newNumberFilters,
+    };
+    setDetailedQueryState({
+      ...detailedQueryState,
+      rangeFilters: detailedRanges,
+    });
+  }
+};
+
+export const handleDetailedSubmitClick = (event, stateInfo) => {
+  const { state, detailedQueryState, queryURI, setSubmitted, queryDicts } =
+    stateInfo;
+  const newURI = constructURI(state, detailedQueryState, queryDicts);
+  if (newURI !== queryURI) {
+    setSubmitted(true);
+  }
+};
+
+export const handleDetailedClearClick = (event, stateInfo) => {
+  const {setDetailedQueryState, state, queryDicts, setSubmitted, queryURI} = stateInfo
+  const emptyDetailedFilters = {
+    rating: [],
+    deck_type: [],
+    deck_surface: [],
+    rangeFilters: {
+      year_built: { min: "", max: "" },
+      traffic: { min: "", max: "" },
+      bridge_length: { min: "", max: "" },
+      span_length: { min: "", max: "" },
+    },
+  };
+  setDetailedQueryState(emptyDetailedFilters);
+  const newURI = constructURI(state, emptyDetailedFilters, queryDicts);
+  if (newURI !== queryURI) {
+    setSubmitted(true);
+  }
+}

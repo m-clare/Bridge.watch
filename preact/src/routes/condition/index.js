@@ -16,6 +16,7 @@ import { grey } from "@mui/material/colors";
 
 import { SunburstChart } from "../../components/sunburstChart";
 import { QueryForm } from "../../components/queryForm";
+import { DetailedForm } from "../../components/detailedForm";
 import {
   singleFilters,
   multiFilters,
@@ -138,6 +139,20 @@ export default function ConditionBridges() {
                           filters=${stateFilters}
                           colWidth=${colWidth}
                           />
+            <${Grid} item xs=${12}>
+              <${DetailedForm} stateInfo=${{
+                            state: queryState,
+                            detailedQueryState: detailedQueryState,
+                            submitted: renderSubmitted,
+                            queryURI: queryURI,
+                            setSubmitted: setSubmitted,
+                            setDetailedQueryState: setDetailedQueryState,
+                            validRange: validRanges,
+                            queryDicts: queryDicts
+                            }}
+                            colWidth=12
+                            />
+            </${Grid}>
             <${Grid} item xs=${12}>
               ${
                 renderSubmitted
