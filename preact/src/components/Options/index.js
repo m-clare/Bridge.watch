@@ -170,7 +170,7 @@ export const fieldOptions = {
   },
 }
 
-export const detailedQueries = {
+export const detailedQueryMaps = {
   year_built: {
     min: "min_year",
     max: "max_year"
@@ -209,7 +209,7 @@ export const validRanges = {
 }
 
 export const helperText = {
-  traffic: "# cars + trucks",
+  traffic: "# vehicles/day",
   bridge_length: "total length (ft)",
   span_length: "span length (ft)"
 }
@@ -247,6 +247,35 @@ export const stateSingleFilters = {
     'options': stateOptions,
     'query': 'state'
   }  
+}
+
+export const filterMaps = {
+  material: {
+    name: "material",
+    label: "Bridge Material",
+    options: materialOptions,
+  },
+  type: { name: "type", label: "Bridge Type", options: structureTypeOptions },
+  service: {
+    name: "service",
+    label: "Service On Bridge",
+    options: serviceTypeOptions,
+  },
+  service_under: {
+    name: "service_under",
+    label: "Service Under Bridge",
+    options: serviceUnderTypeOptions,
+  },
+  state: {
+    name: "state",
+    label: "State(s)",
+    options: stateOptions,
+  },
+  rating: {
+    name: "rating",
+    label: "Ratings",
+    options: ratingOptions
+  },
 }
 
 export const multiFilters = {

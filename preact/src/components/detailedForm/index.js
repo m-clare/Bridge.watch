@@ -41,7 +41,7 @@ export function DetailedForm({
                  color="${grey[500]}">
     <i>Year Built</i>
   </${Typography}>
-<${yearRangeFilter} detailedQueryState=${detailedQueryState}
+<${yearRangeFilter} detailedQueryState=${detailedQueryState.rangeFilters}
                     handleRangeChange=${handleRangeChange}
                     validRange=${validRanges.year_built}
                     submitted=${submitted} />
@@ -52,7 +52,7 @@ export function DetailedForm({
                  color="${grey[500]}">
     <i>Traffic</i>
   </${Typography}>
-<${numberRangeFilter} detailedQueryState=${detailedQueryState}
+<${numberRangeFilter} detailedQueryState=${detailedQueryState.rangeFilters}
                       field="traffic"
                       handleRangeChange=${handleRangeChange}
                       validRange=${validRanges.traffic}
@@ -64,7 +64,7 @@ export function DetailedForm({
                  color="${grey[500]}">
     <i>Overall Bridge Length</i>
   </${Typography}>
-<${numberRangeFilter} detailedQueryState=${detailedQueryState}
+<${numberRangeFilter} detailedQueryState=${detailedQueryState.rangeFilters}
                       field="bridge_length"
                       handleRangeChange=${handleRangeChange}
                       validRange=${validRanges.bridge_length}
@@ -76,7 +76,7 @@ export function DetailedForm({
                  color="${grey[500]}">
     <i>Maximum Span Length</i>
   </${Typography}>
-<${numberRangeFilter} detailedQueryState=${detailedQueryState}
+<${numberRangeFilter} detailedQueryState=${detailedQueryState.rangeFilters}
                       field="span_length"
                       handleRangeChange=${handleRangeChange}
                       validRange=${validRanges.span_length}

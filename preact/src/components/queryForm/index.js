@@ -23,7 +23,7 @@ const html = htm.bind(h);
 
 export function QueryForm({
   queryState,
-  handleChange,
+  stateInfo,
   handleClose,
   handleSingleChange,
   submitted,
@@ -34,7 +34,6 @@ export function QueryForm({
 }) {
 
   const formHandlers = {};
-  formHandlers.handleChange = handleChange;
   formHandlers.handleClose = handleClose;
   formHandlers.submitted = submitted;
 
@@ -64,7 +63,7 @@ export function QueryForm({
 ${stateFilter.map(
 (value) => html`
 <${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
-  ${multiFilter(value, queryState, formHandlers, true)}
+  ${multiFilter(value, queryState, stateInfo, submitted, handleClose, true)}
 </${Grid}>`
 )}`
 : null
@@ -91,7 +90,7 @@ ${stateFilter.map(
 ${filters.map(
 (value) => html`
 <${Grid} item xs=${12} md=${colWidth.multi} style=${"padding-top: 8px"}>
-  ${multiFilter(value, queryState, formHandlers, false)}
+    ${multiFilter(value, queryState, stateInfo, submitted, handleClose, false)}
 </${Grid}>`
 )}
 </${Grid}>

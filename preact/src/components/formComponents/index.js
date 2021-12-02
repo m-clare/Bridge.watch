@@ -15,6 +15,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { helperText } from "../options";
 const html = htm.bind(h);
+import { handleChange } from "../helperFunctions";
 
 export function singleSelect(
   plotChoices,
@@ -64,18 +65,21 @@ export function stateSingleSelect(
   </${FormControl}>`;
 }
 
-export function multiFilter(filter, queryState, formHandlers, required) {
-  const handleChange = formHandlers.handleChange;
-  const renderSubmitted = formHandlers.submitted;
-  const handleClose = formHandlers.handleClose;
-
+export function testMultiFilter(
+  filter,
+  queryState,
+  setQueryState,
+  setWaiting,
+  renderSubmitted
+) {
   return html`
   <${FormControl} required=${required} fullWidth>
     <${InputLabel}>${filter.label}</${InputLabel}>
     <${Select}
       value=${queryState[filter.name]}
       label=${filter.name}
-      onChange=${(e) => handleChange(e, filter.name)}
+      onChange=${(e) =>
+        handleChange(e, filter.name, queryState, setQueryState, setWaiting)}
       onClose=${handleClose}
       multiple
       disabled=${renderSubmitted}
@@ -98,40 +102,100 @@ export function multiFilter(filter, queryState, formHandlers, required) {
 `;
 }
 
-export function yearRangeFilter({detailedQueryState, handleRangeChange, submitted, validRange }) {
+export function multiFilter(filter, queryState, stateInfo, submitted, handleClose, required) {
+
+  /* const handleChange = formHandlers.handleChange; */
+  /* const renderSubmitted = formHandlers.submitted; */
+  /* const handleClose = formHandlers.handleClose; */
+
   return html`
-<${Box} sx=${{display: 'flex', alignItems:'center', '& > :not(style)': {m: 1}, }}>
+  <${FormControl} required=${required} fullWidth>
+    <${InputLabel}>${filter.label}</${InputLabel}>
+    <${Select}
+      value=${queryState[filter.name]}
+      label=${filter.name}
+      onChange=${(e) => handleChange(e, filter.name, stateInfo)}
+      onClose=${handleClose}
+      multiple
+      disabled=${submitted}
+      input=${html`<${OutlinedInput}
+        id="select-multiple-chip"
+        label=${filter.label}
+      />`}
+      renderValue=${(selected) =>
+        html`<${Box} sx=${{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+        ${selected.map(
+          (value) => html`<${Chip} key=${value} label=${value} />`
+        )}
+      </${Box}>`}
+      >
+      ${Object.keys(filter.options).map((name, index) => {
+        return html`<${MenuItem} dense value=${name}>${name}</${MenuItem}>`;
+      })};
+    </${Select}>
+  </${FormControl}>
+`;
+}
+
+export function yearRangeFilter({
+  detailedQueryState,
+  handleRangeChange,
+  submitted,
+  validRange,
+}) {
+  return html`
+<${Box} sx=${{
+    display: "flex",
+    alignItems: "center",
+    "& > :not(style)": { m: 1 },
+  }}>
 <${TextField} id="year-min"
               value=${detailedQueryState.year_built.min}
               disabled=${submitted}
-              onBlur=${(e) => handleRangeChange(e, "year_built", "min", validRange)}
+              onBlur=${(e) =>
+                handleRangeChange(e, "year_built", "min", validRange)}
               label="Minimum"
               type="number"
               helperText=" "
-              inputProps=${{ inputMode: 'numeric',
-                             min: 1697,
-                             max: 2021,
-                             pattern: '[1,2][0-9]{3}'}}
+              inputProps=${{
+                inputMode: "numeric",
+                min: 1697,
+                max: 2021,
+                pattern: "[1,2][0-9]{3}",
+              }}
 />
 <${TextField} id="year-max"
               value=${detailedQueryState.year_built.max}
               disabled=${submitted}
-              onBlur=${(e) => handleRangeChange(e, "year_built", "max", validRange)}
+              onBlur=${(e) =>
+                handleRangeChange(e, "year_built", "max", validRange)}
               label="Maximum"
               type="number"
               helperText=" "
-              inputProps=${{ inputMode: 'numeric',
-                             min: 1697,
-                             max: 2021,
-                             pattern: '[1,2][0-9]{3}'}}
+              inputProps=${{
+                inputMode: "numeric",
+                min: 1697,
+                max: 2021,
+                pattern: "[1,2][0-9]{3}",
+              }}
 />
 </${Box}>
-`
+`;
 }
 
-export function numberRangeFilter({detailedQueryState, field, handleRangeChange, submitted, validRange }) {
+export function numberRangeFilter({
+  detailedQueryState,
+  field,
+  handleRangeChange,
+  submitted,
+  validRange,
+}) {
   return html`
-<${Box} sx=${{display: 'flex', alignItems:'center', '& > :not(style)': {m: 1}, }}>
+<${Box} sx=${{
+    display: "flex",
+    alignItems: "center",
+    "& > :not(style)": { m: 1 },
+  }}>
 <${TextField} id=${field + "-min"}
               value=${detailedQueryState[field].min}
               disabled=${submitted}
@@ -139,10 +203,10 @@ export function numberRangeFilter({detailedQueryState, field, handleRangeChange,
               label="Minimum"
               type="number"
               helperText=${helperText[field]}
-              inputProps=${{ inputMode: 'numeric',
-                             min: 1697,
-                             max: 2021,
-                             pattern: '[1,2][0-9]{3}'}}
+              inputProps=${{
+                inputMode: "numeric",
+                pattern: "[1,2][0-9]{3}",
+              }}
 />
 <${TextField} id=${field + "-max"}
               value=${detailedQueryState[field].max}
@@ -151,11 +215,11 @@ export function numberRangeFilter({detailedQueryState, field, handleRangeChange,
               label="Maximum"
               type="number"
               helperText=${helperText[field]}
-              inputProps=${{ inputMode: 'numeric',
-                             min: 1697,
-                             max: 2021,
-                             pattern: '[1,2][0-9]{3}'}}
+              inputProps=${{
+                inputMode: "numeric",
+                pattern: "[1,2][0-9]{3}",
+              }}
 />
 </${Box}>
-`
+`;
 }

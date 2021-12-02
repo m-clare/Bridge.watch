@@ -17,8 +17,15 @@ import { grey } from "@mui/material/colors";
 
 import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
-import { singleFilters, multiFilters } from "../../components/options";
-
+import {
+  singleFilters,
+  multiFilters,
+  filterMaps,
+  detailedQueryMaps,
+  validRanges,
+  plotOptions,
+} from "../../components/options";
+import { constructURI, fixDateData } from "../../components/helperFunctions";
 const html = htm.bind(h);
 
 const stateFilters = (({ state, material, type, service, service_under }) => ({
@@ -26,47 +33,10 @@ const stateFilters = (({ state, material, type, service, service_under }) => ({
   material,
   type,
   service,
-  service_under 
+  service_under,
 }))(multiFilters);
 
-function constructURI(query) {
-  const searchParams = new URLSearchParams();
-  const keys = Object.keys(query);
-  keys.forEach((item) => {
-    if (item === "plot_type") {
-      const value = query["plot_type"];
-      searchParams.set(item, singleFilters.plot_type.options[value].query);
-    } else {
-      if (query[item].length !== 0) {
-        const filterMap = multiFilters[item].options;
-        searchParams.set(item, query[item].map((d) => filterMap[d]).sort());
-      }
-    }
-  });
-  const uriString = searchParams.toString().toLowerCase();
-  return uriString;
-}
-
-const dateKeys = ['min', 'max', 'mode']
-
-function fixDateData(data) {
-  if (!data.totalValues) {
-    return data
-  }
-  data.totalValues = data.totalValues.map(d => ({...d, 'future_date_of_inspection': new Date(d.future_date_of_inspection)}))
-  let keyValues = data.keyData
-  data.keyData.min = new Date(keyValues.min)
-  data.keyData.max = new Date(keyValues.max)
-  data.keyData.mode = new Date(keyValues.mode)
-  data.countyBin.forEach(d => {
-    d.objKeyValues.min = new Date(d.objKeyValues.min)
-    d.objKeyValues.max = new Date(d.objKeyValues.max)
-    d.objKeyValues.mode = new Date(d.objKeyValues.mode)
-    d.objHistogram = d.objHistogram.map(f => ({...f, "future_date_of_inspection": new Date(f.future_date_of_inspection)}))
-  }
-  )
-  return data
-}
+const dateKeys = ["min", "max", "mode"];
 
 export default function StateBridges() {
   const [stateBridges, setStateBridges] = useState({});
@@ -78,27 +48,44 @@ export default function StateBridges() {
     service_under: [],
     state: ["California"],
   });
+  const [detailedQueryState, setDetailedQueryState] = useState({
+    rating: [],
+    deck_type: [],
+    deck_surface: [],
+    rangeFilters: {
+      year_built: { min: "", max: "" },
+      traffic: { min: "", max: "" },
+      bridge_length: { min: "", max: "" },
+      span_length: { min: "", max: "" },
+    },
+  });
   const [queryURI, setQueryURI] = useState("rating");
   const [submitted, setSubmitted] = useState(true);
   const [waiting, setWaiting] = useState(false);
   const [plotType, setPlotType] = useState(queryState.plot_type);
   const [showPlot, setShowPlot] = useState(true);
 
-  const handleChange = (event, type) => {
-    const value = event.target.value;
-    const valueArray =
-      typeof value === "string" ? value.split(",").sort() : value.sort();
-    if (queryState.state.length === 0) {
-      setShowPlot(false);
-    }
-    setQueryState({ ...queryState, [type]: valueArray });
-    setWaiting(true);
+  const queryDicts = {
+    plotOptions: plotOptions,
+    filterMaps: filterMaps,
+    detailedQueryMaps: detailedQueryMaps,
   };
+
+  /* const handleChange = (event, type) => {
+   *   const value = event.target.value;
+   *   const valueArray =
+   *     typeof value === "string" ? value.split(",").sort() : value.sort();
+   *   if (queryState.state.length === 0) {
+   *     setShowPlot(false);
+   *   }
+   *   setQueryState({ ...queryState, [type]: valueArray });
+   *   setWaiting(true);
+   * }; */
 
   const handleSingleChange = (event, type) => {
     const value = event.target.value;
     setQueryState({ ...queryState, [type]: value });
-    const newURI = constructURI({ ...queryState, [type]: value });
+    const newURI = constructURI({ ...queryState, [type]: value }, detailedQueryState, queryDicts);
     if (newURI !== queryURI) {
       setSubmitted(true);
       setWaiting(true);
@@ -109,28 +96,34 @@ export default function StateBridges() {
   };
 
   const handleFormClose = (event) => {
-    const newURI = constructURI(queryState);
+    const newURI = constructURI(queryState, detailedQueryState, queryDicts);
     if (newURI !== queryURI && queryState.state.length !== 0) {
       setSubmitted(true);
     }
   };
 
   const handleClick = (event) => {
-    const clearedQueryState = {...queryState, 'material': [], 'type': [], 'service': [], 'service_under': []}
-    setQueryState(clearedQueryState)
-    const newURI = constructURI(clearedQueryState);
+    const clearedQueryState = {
+      ...queryState,
+      material: [],
+      type: [],
+      service: [],
+      service_under: [],
+    };
+    setQueryState(clearedQueryState);
+    const newURI = constructURI(clearedQueryState, detailedQueryState, queryDicts);
     if (newURI !== queryURI && queryState.state.length !== 0) {
       setSubmitted(true);
     }
-  }
+  };
 
   // run every time submitted is updated
   useEffect(async () => {
-    const newURI = constructURI(queryState);
+    const newURI = constructURI(queryState, detailedQueryState, queryDicts);
     let bridgeData = await getStateBridges(newURI);
     setQueryURI(newURI);
     if (queryState.plot_type === "future_date_of_inspection") {
-      bridgeData = fixDateData(bridgeData)
+      bridgeData = fixDateData(bridgeData, "countyBin");
     }
     setStateBridges(bridgeData);
     setSubmitted(false);
@@ -154,17 +147,22 @@ export default function StateBridges() {
   const colWidth = { single: 12, multi: 12 };
 
   return html`
-<${Box} sx=${{ padding: [0, 3], pt: [2,3] }}>
+<${Box} sx=${{ padding: [0, 3], pt: [2, 3] }}>
   <${Container} maxWidth="lg">
-    <${Grid} container spacing=${[2,3]}>
+    <${Grid} container spacing=${[2, 3]}>
       <${Grid} item xs=${12} md=${4}>
-        <${Paper} sx=${{ padding: 3, minHeight: {xs: 0, md: 880}}}>
+        <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 880 } }}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
               <${Typography} variant="h4" component="h1">Bridges By State Selection</${Typography}>
             </${Grid}>
             <${QueryForm} queryState=${queryState}
-                          handleChange=${handleChange}
+                          stateInfo=${{
+                            state: queryState,
+                            setState: setQueryState,
+                            setWaiting: setWaiting,
+                            routeType: "state",
+                          }}
                           handleClose=${handleFormClose}
                           handleSingleChange=${handleSingleChange}
                           submitted=${renderSubmitted}
@@ -174,8 +172,10 @@ export default function StateBridges() {
                           colWidth=${colWidth}
                           />
             <${Grid} item xs=${12}>
-              ${renderSubmitted ? html`
-              <${Paper} sx=${{padding: 2}} variant="outlined">
+              ${
+                renderSubmitted
+                  ? html`
+              <${Paper} sx=${{ padding: 2 }} variant="outlined">
                 <${Typography} style=${"text-align: center"}
                                variant="h6"
                                color=${grey[500]}>
@@ -183,57 +183,60 @@ export default function StateBridges() {
                 </${Typography}>
                 <${LinearProgress} />
                 </${Paper}>
-                  ` : null}
+                  `
+                  : null
+              }
             </${Grid}>
           </${Grid}>
         </${Paper}>
       </${Grid}>
       <${Grid} item xs=${12} md=${8}>
-        <${Paper} sx=${{ padding: 3, minHeight: {xs: 0, md: 880} }}>
+        <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 880 } }}>
           <${Grid} container spacing=${3}>
             ${
-            !isEmpty(stateBridges) &&
-            !stateBridges.hasOwnProperty("message") &&
-            showPlot
-            ? html`
-            <${ChoroplethMap}
-              bridgeCountyData=${stateBridges}
-              displayStates=${queryState.state}
-              plotType=${plotType}
-              submitted=${renderSubmitted}
-              />`
-            : null
+              !isEmpty(stateBridges) &&
+              !stateBridges.hasOwnProperty("message") &&
+              showPlot
+                ? html` <${ChoroplethMap}
+                    bridgeCountyData=${stateBridges}
+                    displayStates=${queryState.state}
+                    plotType=${plotType}
+                    submitted=${renderSubmitted}
+                  />`
+                : null
             }
-            ${(!renderSubmitted && stateBridges.hasOwnProperty("message")) ?
-            html`
+            ${
+              !renderSubmitted && stateBridges.hasOwnProperty("message")
+                ? html`
             <${Grid} item xs=${12}>
               <${Typography} style=${"text-align: center"}
                              variant="h6"
                              color=${grey[500]}>
                 <i>${stateBridges.message}</i>
               </${Typography}>
-            </${Grid}>` : null}
+            </${Grid}>`
+                : null
+            }
           </${Grid}>
         </${Paper}>
       </${Grid}>
       ${
-      !isEmpty(stateBridges) &&
-      !stateBridges.hasOwnProperty("message") &&
-      showPlot &&
-      queryState.state.length !== 0
-      ? html`
-      <${LocaleDescription}
-        summaryType=${renderPlotType}
-        keyValues=${{
-        field: renderPlotType,
-        count: stateBridges.keyData.count,
-        locality: localityString,
-        filters: queryState,
-        }}
-        waiting=${renderWaiting}
-        submitted=${renderSubmitted}
-        />`
-      : null
+        !isEmpty(stateBridges) &&
+        !stateBridges.hasOwnProperty("message") &&
+        showPlot &&
+        queryState.state.length !== 0
+          ? html` <${LocaleDescription}
+              summaryType=${renderPlotType}
+              keyValues=${{
+                field: renderPlotType,
+                count: stateBridges.keyData.count,
+                locality: localityString,
+                filters: queryState,
+              }}
+              waiting=${renderWaiting}
+              submitted=${renderSubmitted}
+            />`
+          : null
       }
     </${Grid}>
   </${Container}>
