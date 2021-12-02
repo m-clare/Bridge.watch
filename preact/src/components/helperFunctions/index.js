@@ -83,7 +83,7 @@ export function fixDateData(data, binType) {
 }
 
 export const handleChange = (event, type, stateInfo) => {
-  const { state, setState, setWaiting, setShowPlot, routeType } = stateInfo;
+  const { routeType, state, setState, setWaiting, setShowPlot } = stateInfo;
   const value = event.target.value;
   const valueArray =
     typeof value === "string" ? value.split(",").sort() : value.sort();
@@ -105,6 +105,7 @@ export const handleClose = (event, stateInfo) => {
 
 export const handleSingleChange = (event, type, stateInfo) => {
   const {
+    routeType,
     state,
     setState,
     detailedQueryState,
@@ -128,23 +129,27 @@ export const handleSingleChange = (event, type, stateInfo) => {
     setSubmitted(true);
     setWaiting(true);
   }
-  if (plotType !== value) {
-    setPlotType(value);
+  if (routeType === ("state" || "country")) {
+    if (plotType !== value) {
+      setPlotType(value);
+    }
   }
-  if ((type === "field") & (value !== searchField)) {
-    setSearchField(value);
+  if (routeType === ("condition" || "headToHead")) {
+    if (type === "field" && value !== searchField) {
+      setSearchField(value);
+    }
   }
 };
 
 export const handleClearFiltersClick = (event, stateInfo) => {
   const {
+    routeType,
     state,
     setState,
     detailedQueryState,
     queryDicts,
     setSubmitted,
     queryURI,
-    routeType,
   } = stateInfo;
   const clearedQueryState = {
     ...state,
@@ -159,8 +164,10 @@ export const handleClearFiltersClick = (event, stateInfo) => {
     detailedQueryState,
     queryDicts
   );
-  if (routeType === "state" && newURI !== queryURI && state.statelength !== 0) {
+  if (routeType === "state") {
+    if (newURI !== queryURI && state.statelength !== 0) {
     setSubmitted(true);
+    }
   } else if (newURI !== queryURI) {
     setSubmitted(true);
   }
