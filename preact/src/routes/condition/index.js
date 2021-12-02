@@ -121,21 +121,19 @@ export default function ConditionBridges() {
             <${Grid} item xs=${12}>
               <${Typography} variant="h4" component="h1">Bridge Conditions</${Typography}>
             </${Grid}>
-            <${QueryForm} queryState=${queryState}
-                          stateInfo=${{
-                            state: queryState,
-                            detailedQueryState: detailedQueryState,
-                            submitted: submitted,
-                            queryURI: queryURI,
-                            setState: setQueryState,
-                            setWaiting: setWaiting,
-                            setSubmitted: setSubmitted,
-                            routeType: "condition",
-                            queryDicts: queryDicts,
-                            searchField: searchField,
-                            setSearchField: setSearchField
+            <${QueryForm} stateInfo=${{
+                          routeType: "condition",
+                          state: queryState,
+                          detailedQueryState: detailedQueryState,
+                          searchField: searchField,
+                          submitted: submitted,
+                          queryURI: queryURI,
+                          setState: setQueryState,
+                          setWaiting: setWaiting,
+                          setSubmitted: setSubmitted,
+                          setSearchField: setSearchField,
+                          queryDicts: queryDicts
                           }}
-                          submitted=${renderSubmitted}
                           plotChoices=${singleFilters.field}
                           filters=${stateFilters}
                           colWidth=${colWidth}

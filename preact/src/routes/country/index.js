@@ -186,21 +186,19 @@ export default function CountryBridges() {
             <${Grid} item xs=${12}>
               <${Typography} variant="h3" component="h1">U.S. Bridges</${Typography}>
             </${Grid}>
-            <${QueryForm} queryState=${queryState}
-                          stateInfo=${{
-                            state: queryState,
-                            detailedQueryState: detailedQueryState,
-                            submitted: renderSubmitted,
-                            plotType: plotType,
-                            queryURI: queryURI,
-                            setState: setQueryState,
-                            setWaiting: setWaiting,
-                            setSubmitted: setSubmitted,
-                            setPlotType: setPlotType,
-                            routeType: "country",
-                            queryDicts: queryDicts
+            <${QueryForm} stateInfo=${{
+                          routeType: "country",
+                          state: queryState,
+                          detailedQueryState: detailedQueryState,
+                          submitted: renderSubmitted,
+                          plotType: plotType,
+                          queryURI: queryURI,
+                          setState: setQueryState,
+                          setWaiting: setWaiting,
+                          setSubmitted: setSubmitted,
+                          setPlotType: setPlotType,
+                          queryDicts: queryDicts,
                           }}
-                          submitted=${renderSubmitted}
                           plotChoices=${singleFilters.plot_type}
                           filters=${countryFilters}
                           colWidth=${colWidth}
@@ -220,19 +218,19 @@ export default function CountryBridges() {
       ${
         renderSubmitted
           ? html`<${Grid} item xs=${12}>
-        <${Paper} sx=${{ padding: 2 }}>
-          <${Grid} container>
-            <${Grid} item xs=${12}>
-              <${Typography} style=${"text-align: center"}
-                             variant="h6"
-                             color=${grey[500]}>
-                <i>Loading query...</i>
-                  </${Typography}>
-              <${LinearProgress} />
-            </${Grid}>
-          </${Grid}>
-        </${Paper}>
-      </${Grid}>`
+  <${Paper} sx=${{ padding: 2 }}>
+  <${Grid} container>
+  <${Grid} item xs=${12}>
+  <${Typography} style=${"text-align: center"}
+  variant="h6"
+  color=${grey[500]}>
+  <i>Loading query...</i>
+  </${Typography}>
+  <${LinearProgress} />
+  </${Grid}>
+  </${Grid}>
+  </${Paper}>
+  </${Grid}>`
           : null
       }
       ${

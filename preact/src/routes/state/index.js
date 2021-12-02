@@ -70,13 +70,6 @@ export default function StateBridges() {
     detailedQueryMaps: detailedQueryMaps,
   };
 
-  const handleFormClose = (event) => {
-    const newURI = constructURI(queryState, detailedQueryState, queryDicts);
-    if (newURI !== queryURI && queryState.state.length !== 0) {
-      setSubmitted(true);
-    }
-  };
-
   // run every time submitted is updated
   useEffect(async () => {
     const newURI = constructURI(queryState, detailedQueryState, queryDicts);
@@ -116,22 +109,20 @@ export default function StateBridges() {
             <${Grid} item xs=${12}>
               <${Typography} variant="h4" component="h1">Bridges By State Selection</${Typography}>
             </${Grid}>
-            <${QueryForm} queryState=${queryState}
-                          stateInfo=${{
-                            state: queryState,
-                            detailedQueryState: detailedQueryState,
-                            submitted: renderSubmitted,
-                            plotType: plotType,
-                            queryURI: queryURI,
-                            setState: setQueryState,
-                            setWaiting: setWaiting,
-                            setSubmitted: setSubmitted,
-                            setPlotType: setPlotType,
-                            setShowPlot: setShowPlot,
-                            routeType: "state",
-                            queryDicts: queryDicts
+            <${QueryForm} stateInfo=${{
+                          routeType: "state",
+                          state: queryState,
+                          detailedQueryState: detailedQueryState,
+                          submitted: renderSubmitted,
+                          plotType: plotType,
+                          queryURI: queryURI,
+                          setState: setQueryState,
+                          setWaiting: setWaiting,
+                          setSubmitted: setSubmitted,
+                          setPlotType: setPlotType,
+                          setShowPlot: setShowPlot,
+                          queryDicts: queryDicts
                           }}
-                          submitted=${renderSubmitted}
                           plotChoices=${singleFilters.plot_type}
                           filters=${stateFilters}
                           colWidth=${colWidth}
