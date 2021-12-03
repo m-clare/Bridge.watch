@@ -64,6 +64,31 @@ const ratingOptions = {
   'Failed Condition (0)': 0
 }
 
+const deckTypeOptions = {
+  'Concrete Cast-in-Place': 1,
+  'Concrete Precast Panels': 2,
+  'Open Grating': 3,
+  'Closed Grating': 4,
+  'Steel Plate (includes orthotropic)': 5,
+  'Corrugated Steel': 6,
+  'Aluminum': 7,
+  'Wood or Timber': 8,
+  'Other': 9
+}
+
+const deckSurfaceOptions = {
+  'Monolithic Concrete': 1,
+  'Integral Concrete': 2,
+  'Latex Concrete': 3,
+  'Low Slump Concrete': 4,
+  'Epoxy Overlay': 5,
+  'Bituminous': 6,
+  'Wood or Timber': 7,
+  'Gravel': 8,
+  'Other': 9,
+  'None': 0
+}
+
 export const stateOptions = {
   Alabama: "01",
   Alaska: "02",
@@ -271,11 +296,21 @@ export const filterMaps = {
     label: "State(s)",
     options: stateOptions,
   },
-  rating: {
-    name: "rating",
+  ratings: {
+    name: "ratings",
     label: "Ratings",
     options: ratingOptions
   },
+  deck_type: {
+    name: "deck_type",
+    label: "Deck Type",
+    options: deckTypeOptions
+  },
+  deck_surface: {
+    name: "deck_surface",
+    label: "Deck Surface",
+    options: deckSurfaceOptions
+  }
 }
 
 export const multiFilters = {
@@ -300,10 +335,20 @@ export const multiFilters = {
     label: "State(s)",
     options: stateOptions,
   },
-  rating: {
-    name: "rating",
+  ratings: {
+    name: "ratings",
     label: "Ratings",
     options: ratingOptions
+  },
+  deck_type: {
+    name: "deck_type",
+    label: "Deck Type",
+    options: deckTypeOptions
+  },
+  deck_surface: {
+    name: "deck_surface",
+    label: "Deck Surface",
+    options: deckSurfaceOptions
   }
 };
 

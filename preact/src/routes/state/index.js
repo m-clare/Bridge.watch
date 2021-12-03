@@ -37,6 +37,9 @@ const stateFilters = (({ state, material, type, service, service_under }) => ({
   service_under,
 }))(multiFilters);
 
+const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
+  ratings, deck_type, deck_surface
+}))(multiFilters);
 
 export default function StateBridges() {
   const [stateBridges, setStateBridges] = useState({});
@@ -49,7 +52,7 @@ export default function StateBridges() {
     state: ["California"],
   });
   const [detailedQueryState, setDetailedQueryState] = useState({
-    rating: [],
+    ratings: [],
     deck_type: [],
     deck_surface: [],
     rangeFilters: {
@@ -140,6 +143,7 @@ export default function StateBridges() {
                             queryDicts: queryDicts
                             }}
                             colWidth=12
+                            filters=${detailedFilters}
                             />
             </${Grid}>
             <${Grid} item xs=${12}>

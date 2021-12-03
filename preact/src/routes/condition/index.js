@@ -38,6 +38,10 @@ const stateFilters = (({ state, material, type, service, service_under }) => ({
   service_under,
 }))(multiFilters);
 
+const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
+  ratings, deck_type, deck_surface
+}))(multiFilters);
+
 function getFiltersAsString(filters) {
   let filterStringArray = [];
   for (const prop in filters) {
@@ -74,7 +78,7 @@ export default function ConditionBridges() {
     state: [],
   });
   const [detailedQueryState, setDetailedQueryState] = useState({
-    rating: [],
+    ratings: [],
     deck_type: [],
     deck_surface: [],
     rangeFilters: {
@@ -151,6 +155,7 @@ export default function ConditionBridges() {
                             queryDicts: queryDicts
                             }}
                             colWidth=12
+                            filters=${detailedFilters}
                             />
             </${Grid}>
             <${Grid} item xs=${12}>

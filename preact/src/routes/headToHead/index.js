@@ -26,13 +26,19 @@ import {
   stateOptions,
 } from "../../components/options";
 import { SunburstChart } from "../../components/sunburstChart";
-import { constructURI, handleChange } from "../../components/helperFunctions"; 
+import { constructURI, handleChange, getFiltersAsString } from "../../components/helperFunctions";
+import { DetailedForm } from "../../components/detailedForm";
 const html = htm.bind(h);
 
-const attrFilters = (({ material, type, service }) => ({
+const attrFilters = (({ material, type, service, service_under }) => ({
   material,
   type,
   service,
+  service_under
+}))(multiFilters);
+
+const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
+  ratings, deck_type, deck_surface
 }))(multiFilters);
 
 function constructURIs(baseQuery, detailedQuery, queryDicts) {
@@ -43,31 +49,6 @@ function constructURIs(baseQuery, detailedQuery, queryDicts) {
   return uriArray;
 }
 
-function getFiltersAsString(filters) {
-  let filterStringArray = [];
-  for (const prop in filters) {
-    if (filters[prop].length !== 0) {
-      const propCapped = prop
-        .split(" ")
-        .map((word) => {
-          return word[0].toUpperCase() + word.substring(1);
-        })
-        .join(" ");
-      let filteredPropString;
-      if (prop.length > 1) {
-        filteredPropString = [
-          filters[prop].slice(0, -1).join(", "),
-          filters[prop].slice(-1)[0],
-        ].join(filters[prop].length < 2 ? "" : "  or ");
-      } else {
-        filteredPropString = prop;
-      }
-      filterStringArray.push(`${propCapped}: ${filteredPropString}`);
-    }
-  }
-  return filterStringArray;
-}
-
 export default function HeadToHead() {
   const [conditionBridgesOne, setConditionBridgesOne] = useState({});
   const [conditionBridgesTwo, setConditionBridgesTwo] = useState({});
@@ -76,11 +57,12 @@ export default function HeadToHead() {
     material: [],
     type: [],
     service: [],
+    service_under: [],
     stateOne: `California`,
     stateTwo: `New York`,
   });
   const [detailedQueryState, setDetailedQueryState] = useState({
-    rating: [],
+    ratings: [],
     deck_type: [],
     deck_surface: [],
     rangeFilters: {
@@ -105,7 +87,7 @@ export default function HeadToHead() {
   const handleSingleChange = (event, type) => {
     const value = event.target.value;
     setQueryState({ ...queryState, [type]: value });
-    const newURIs = constructURIs({ ...queryState, [type]: value });
+    const newURIs = constructURIs({ ...queryState, [type]: value }, detailedQueryState, queryDicts);
     if (
       newURIs[0] !== queryURIs["stateOne"] ||
       newURIs[1] !== queryURIs["stateTwo"]
@@ -119,7 +101,7 @@ export default function HeadToHead() {
   };
 
   const handleFormClose = (event) => {
-    const newURIs = constructURIs(queryState);
+    const newURIs = constructURIs(queryState, detailedQueryState, queryDicts);
     if (
       newURIs[0] !== queryURIs["stateOne"] ||
       newURIs[1] !== queryURIs["stateTwo"]
@@ -136,7 +118,7 @@ export default function HeadToHead() {
       service: [],
     };
     setQueryState(clearedQueryState);
-    const newURIs = constructURIs(clearedQueryState);
+    const newURIs = constructURIs(clearedQueryState, detailedQueryState, queryDicts);
     if (
       newURIs[0] !== queryURIs["stateOne"] ||
       newURIs[1] !== queryURIs["stateTwo"]

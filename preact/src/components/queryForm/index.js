@@ -27,7 +27,6 @@ export function QueryForm({
   filters,
   colWidth,
 }) {
-
   const multiFilters = Object.values(
     (({ material, type, service, service_under }) => ({ material, type, service, service_under }))(filters)
   );

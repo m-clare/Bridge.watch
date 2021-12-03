@@ -11,6 +11,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { getFiltersAsString } from "../helperFunctions";
 
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
@@ -152,33 +153,6 @@ const summaryTitle = {
   future_date_of_inspection: "Upcoming Inspection Required"
 };
 
-function getFiltersAsString(filters) {
-  let filterStringArray = [];
-  for (const prop in filters) {
-    if (prop === "rangeFilters") {
-      // pass
-    } else if (filters[prop].length !== 0) {
-      console.log(filters[prop])
-      const propCapped = prop
-        .split("_")
-        .map((word) => {
-          return word[0].toUpperCase() + word.substring(1);
-        })
-        .join(" ");
-      let filteredPropString;
-      if (prop.length > 1) {
-        filteredPropString = [
-          filters[prop].slice(0, -1).join(", "),
-          filters[prop].slice(-1)[0],
-        ].join(filters[prop].length < 2 ? "" : "  or ");
-      } else {
-        filteredPropString = prop;
-      }
-      filterStringArray.push(`${propCapped}: ${filteredPropString}`);
-    }
-  }
-  return filterStringArray;
-}
 
 export function LocaleDescription({ summaryType, keyValues, waiting, submitted }) {
   const [expanded, setExpanded] = useState(false);

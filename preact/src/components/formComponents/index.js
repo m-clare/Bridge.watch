@@ -15,7 +15,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { helperText } from "../options";
 const html = htm.bind(h);
-import { handleChange, handleClose, handleSingleChange, handleRangeChange } from "../helperFunctions";
+import { handleChange, handleClose, handleDetailedChange, handleSingleChange, handleRangeChange } from "../helperFunctions";
 
 export function singleSelect(
   plotChoices,
@@ -94,6 +94,36 @@ export function multiFilter(filter, stateInfo, required) {
     </${Select}>
   </${FormControl}>
 `;
+}
+
+export function multiDetailedFilter(filter, stateInfo, required) {
+  const { detailedQueryState, submitted } = stateInfo
+  return html`
+<${FormControl} required=${required} fullWidth>
+    <${InputLabel}>${filter.label}</${InputLabel}>
+    <${Select}
+      value=${detailedQueryState[filter.name]}
+      label=${filter.name}
+      onChange=${(e) => handleDetailedChange(e, filter.name, stateInfo)}
+      multiple
+      disabled=${submitted}
+      input=${html`<${OutlinedInput}
+    id="select-multiple-chip"
+    label=${filter.label}
+    />`}
+      renderValue=${(selected) =>
+        html`<${Box} sx=${{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+    ${selected.map(
+      (value) => html`<${Chip} key=${value} label=${value} />`
+    )}
+    </${Box}>`}
+      >
+      ${Object.keys(filter.options).map((name, index) => {
+        return html`<${MenuItem} dense value=${name}>${name}</${MenuItem}>`;
+      })};
+    </${Select}>
+  </${FormControl}>
+        `;
 }
 
 export function yearRangeFilter(

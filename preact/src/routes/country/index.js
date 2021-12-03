@@ -16,10 +16,10 @@ import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import useWindowDimensions from "../../components/windowDimensions";
-
 import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
 import { DetailedForm } from "../../components/detailedForm";
+import Divider from "@mui/material/Divider";
 import {
   singleFilters,
   multiFilters,
@@ -39,6 +39,10 @@ const countryFilters = (({ material, type, service, service_under }) => ({
   service_under,
 }))(multiFilters);
 
+const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
+  ratings, deck_type, deck_surface
+}))(multiFilters);
+
 function isPositiveInt(val) {
   return /^\d+$/.test(val);
 }
@@ -53,7 +57,7 @@ export default function CountryBridges() {
     service_under: [],
   });
   const [detailedQueryState, setDetailedQueryState] = useState({
-    rating: [],
+    ratings: [],
     deck_type: [],
     deck_surface: [],
     rangeFilters: {
@@ -80,28 +84,10 @@ export default function CountryBridges() {
 
   const { deviceWidth, deviceHeight } = useWindowDimensions();
 
-  const handleClearClick = (event) => {
-    const emptyDetailedFilters = {
-      rating: [],
-      deck_type: [],
-      deck_surface: [],
-      rangeFilters: {
-        year_built: { min: "", max: "" },
-        traffic: { min: "", max: "" },
-        bridge_length: { min: "", max: "" },
-        span_length: { min: "", max: "" },
-      },
-    };
-    setDetailedQueryState(emptyDetailedFilters);
-    const newURI = constructURI(queryState, emptyDetailedFilters, queryDicts);
-    if (newURI !== queryURI) {
-      setSubmitted(true);
-    }
-  };
-
   useEffect(async () => {
     const newURI = constructURI(queryState, detailedQueryState, queryDicts);
     let bridgeData = await getNationalBridges(newURI);
+    console.log(newURI)
     setQueryURI(newURI);
     if (queryState.plot_type === "future_date_of_inspection") {
       bridgeData = fixDateData(bridgeData, "hexBin");
@@ -147,6 +133,9 @@ export default function CountryBridges() {
                           colWidth=${colWidth}
                           />
            <${Grid} item xs=${12}>
+           <${Divider} variant="middle">Detailed Filters</${Divider}>
+           </${Grid}>
+           <${Grid} item xs=${12}>
            <${DetailedForm} stateInfo=${{
                             state: queryState,
                             detailedQueryState: detailedQueryState,
@@ -158,6 +147,7 @@ export default function CountryBridges() {
                             queryDicts: queryDicts
                             }}
                             colWidth=3
+                            filters=${detailedFilters}
                             />
            </${Grid}>
           </${Grid}>

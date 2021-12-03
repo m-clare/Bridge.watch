@@ -30,7 +30,6 @@ export function TopForm({
   handleClick,
   colWidth,
 }) {
-  console.log(filters)
   const formHandlers = {};
   formHandlers.handleChange = handleChange;
   formHandlers.handleClose = handleClose;

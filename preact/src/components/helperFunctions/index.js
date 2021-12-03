@@ -103,6 +103,14 @@ export const handleClose = (event, stateInfo) => {
   }
 };
 
+export const handleDetailedChange = (event, type, stateInfo) => {
+  const { routeType, detailedQueryState, setDetailedQueryState } = stateInfo;
+  const value = event.target.value;
+  const valueArray =
+        typeof value === "string" ? value.split(",").sort() : value.sort();
+  setDetailedQueryState({ ...detailedQueryState, [type]: valueArray });
+};
+
 export const handleSingleChange = (event, type, stateInfo) => {
   const {
     routeType,
@@ -251,7 +259,7 @@ export const handleDetailedSubmitClick = (event, stateInfo) => {
 export const handleDetailedClearClick = (event, stateInfo) => {
   const {setDetailedQueryState, state, queryDicts, setSubmitted, queryURI} = stateInfo
   const emptyDetailedFilters = {
-    rating: [],
+    ratings: [],
     deck_type: [],
     deck_surface: [],
     rangeFilters: {
@@ -266,4 +274,31 @@ export const handleDetailedClearClick = (event, stateInfo) => {
   if (newURI !== queryURI) {
     setSubmitted(true);
   }
+}
+
+export function getFiltersAsString(filters) {
+  let filterStringArray = [];
+  for (const prop in filters) {
+    if (prop === "rangeFilters") {
+      // pass
+    } else if (filters[prop].length !== 0) {
+      const propCapped = prop
+            .split("_")
+            .map((word) => {
+              return word[0].toUpperCase() + word.substring(1);
+            })
+            .join(" ");
+      let filteredPropString;
+      if (prop.length > 1) {
+        filteredPropString = [
+          filters[prop].slice(0, -1).join(", "),
+          filters[prop].slice(-1)[0],
+        ].join(filters[prop].length < 2 ? "" : "  or ");
+      } else {
+        filteredPropString = prop;
+      }
+      filterStringArray.push(`${propCapped}: ${filteredPropString}`);
+    }
+  }
+  return filterStringArray;
 }
