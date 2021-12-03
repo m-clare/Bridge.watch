@@ -170,7 +170,7 @@ export default function CountryBridges() {
       : null
       }
       ${
-      renderWaiting
+      renderWaiting && !renderSubmitted
       ? html`<${Grid} item xs=${12}>
         <${Paper} sx=${{ padding: 2 }}>
           <${Grid} container>

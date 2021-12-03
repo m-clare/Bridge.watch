@@ -188,7 +188,7 @@ function isPositiveInt(val) {
 }
 
 export const handleRangeChange = (event, type, stateInfo, extrema) => {
-  const { detailedQueryState, setDetailedQueryState, validRange } = stateInfo;
+  const { detailedQueryState, setDetailedQueryState, setWaiting, validRange } = stateInfo;
   const value = event.target.value;
   const minValue = detailedQueryState.rangeFilters[type].min;
   const maxValue = detailedQueryState.rangeFilters[type].max;
@@ -232,6 +232,7 @@ export const handleRangeChange = (event, type, stateInfo, extrema) => {
       ...detailedQueryState,
       rangeFilters: detailedRanges,
     });
+    setWaiting(true);
   } else if (value === null || value === "") {
     const inputValue = "";
     const newNumberFilters = {
@@ -246,6 +247,7 @@ export const handleRangeChange = (event, type, stateInfo, extrema) => {
       ...detailedQueryState,
       rangeFilters: detailedRanges,
     });
+    setWaiting(true);
   }
 };
 
@@ -295,11 +297,28 @@ export function getFiltersAsString(filters) {
       const contents = Object.keys(filters[prop]);
       contents.map((field) => {
         const fieldCapped = getPropCapped(field);
+        let minPropString;
+        let maxPropString;
+        let count = 0;
         // check if min and max have been added
         if (filters.rangeFilters[field].min !== null && filters.rangeFilters[field].min !== "") {
-          const filteredPropString = "Minimum = " + filters.rangeFilters[field].min
-          console.log(fieldCapped)
-          console.log(filteredPropString)
+          minPropString = "Minimum = " + filters.rangeFilters[field].min
+          count += 1;
+        }
+        if (filters.rangeFilters[field].max !== null && filters.rangeFilters[field].max !== "") {
+          maxPropString = "Maximum = " + filters.rangeFilters[field].max;
+          count += 1;
+        }
+        if (count > 0) {
+          let fieldString = fieldCapped + ": "
+          if (minPropString && maxPropString) {
+            fieldString = fieldString + minPropString + ", " + maxPropString
+          } else if (minPropString) {
+            fieldString = fieldString + minPropString
+          } else if (maxPropString) {
+            fieldString = fieldString + maxPropString
+          }
+          filterStringArray.push(fieldString)
         }
       });
     } else if (filters[prop].length !== 0) {

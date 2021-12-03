@@ -26,7 +26,7 @@ import {
   validRanges,
   fieldOptions
 } from "../../components/options";
-import { constructURI, fixDateData } from "../../components/helperFunctions";
+import { constructURI, fixDateData, getFiltersAsString } from "../../components/helperFunctions";
 
 
 const html = htm.bind(h);
@@ -42,31 +42,6 @@ const stateFilters = (({ state, material, type, service, service_under }) => ({
 const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
   ratings, deck_type, deck_surface
 }))(multiFilters);
-
-function getFiltersAsString(filters) {
-  let filterStringArray = [];
-  for (const prop in filters) {
-    if (filters[prop].length !== 0) {
-      const propCapped = prop
-        .split("_")
-        .map((word) => {
-          return word[0].toUpperCase() + word.substring(1);
-        })
-        .join(" ");
-      let filteredPropString;
-      if (prop.length > 1) {
-        filteredPropString = [
-          filters[prop].slice(0, -1).join(", "),
-          filters[prop].slice(-1)[0],
-        ].join(filters[prop].length < 2 ? "" : "  or ");
-      } else {
-        filteredPropString = prop;
-      }
-      filterStringArray.push(`${propCapped}: ${filteredPropString}`);
-    }
-  }
-  return filterStringArray;
-}
 
 export default function ConditionBridges() {
   const [conditionBridges, setConditionBridges] = useState({});
@@ -116,6 +91,7 @@ export default function ConditionBridges() {
   const colWidth = { single: 12, multi: 12 };
 
   const { field, ...filters } = queryState;
+  const combinedFilters = {...filters, ...detailedQueryState}
 
   return html`
 <${Box} sx=${{ padding: 3 }}>
@@ -188,7 +164,7 @@ export default function ConditionBridges() {
         <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 820 } }}>
           <${Grid} container spacing=${3}>
             ${
-            renderWaiting
+            renderWaiting && !renderSubmitted
             ? html`
             <${Grid} item xs=${12}>
               <${Typography} style=${"text-align: center"}
@@ -260,7 +236,7 @@ export default function ConditionBridges() {
               `
               : null
               }
-              ${getFiltersAsString(filters).map(
+              ${getFiltersAsString(combinedFilters).map(
               (d) =>
               html`<${Typography} 
                      variant="h6"

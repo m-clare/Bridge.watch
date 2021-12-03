@@ -176,7 +176,7 @@ export default function StateBridges() {
   <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 880 } }}>
     <${Grid} container spacing=${3}>
       ${
-      renderWaiting
+      renderWaiting && !renderSubmitted
       ? html`
       <${Grid} item xs=${12}>
         <${Typography} style=${"text-align: center"}
