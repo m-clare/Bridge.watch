@@ -127,104 +127,104 @@ export default function CountryBridges() {
                           filters=${countryFilters}
                           colWidth=${colWidth}
                           />
-           <${Grid} item xs=${12}>
-           <${Divider} variant="middle">Detailed Filters</${Divider}>
-           <${Typography} variant="h6">Note: </${Typography}>
-           <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
-           </${Grid}>
-           <${Grid} item xs=${12}>
-           <${DetailedForm} stateInfo=${{
-                            state: queryState,
-                            detailedQueryState: detailedQueryState,
-                            submitted: renderSubmitted,
-                            queryURI: queryURI,
-                            setSubmitted: setSubmitted,
-                            setWaiting: setWaiting,
-                            setDetailedQueryState: setDetailedQueryState,
-                            validRange: validRanges,
-                            queryDicts: queryDicts
-                            }}
-                            colWidth=3
-                            filters=${detailedFilters}
-                            />
-           </${Grid}>
+            <${Grid} item xs=${12}>
+              <${Divider} variant="middle">Detailed Filters</${Divider}>
+              <${Typography} variant="h6">Note: </${Typography}>
+              <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
+            </${Grid}>
+            <${Grid} item xs=${12}>
+              <${DetailedForm} stateInfo=${{
+                               state: queryState,
+                               detailedQueryState: detailedQueryState,
+                               submitted: renderSubmitted,
+                               queryURI: queryURI,
+                               setSubmitted: setSubmitted,
+                               setWaiting: setWaiting,
+                               setDetailedQueryState: setDetailedQueryState,
+                               validRange: validRanges,
+                               queryDicts: queryDicts
+                               }}
+                               colWidth=3
+                               filters=${detailedFilters}
+                               />
+            </${Grid}>
           </${Grid}>
         </${Paper}>
       </${Grid}>
       ${
-        renderSubmitted
-          ? html`<${Grid} item xs=${12}>
-  <${Paper} sx=${{ padding: 2 }}>
-  <${Grid} container>
-  <${Grid} item xs=${12}>
-  <${Typography} style=${"text-align: center"}
-  variant="h6"
-  color=${grey[500]}>
-  <i>Loading query...</i>
-  </${Typography}>
-  <${LinearProgress} />
-  </${Grid}>
-  </${Grid}>
-  </${Paper}>
-  </${Grid}>`
-          : null
+      renderSubmitted
+      ? html`<${Grid} item xs=${12}>
+        <${Paper} sx=${{ padding: 2 }}>
+          <${Grid} container>
+            <${Grid} item xs=${12}>
+              <${Typography} style=${"text-align: center"}
+                             variant="h6"
+                             color=${grey[500]}>
+                <i>Loading query...</i>
+              </${Typography}>
+              <${LinearProgress} />
+            </${Grid}>
+          </${Grid}>
+        </${Paper}>
+      </${Grid}>`
+      : null
       }
       ${
-        renderWaiting
-          ? html`<${Grid} item xs=${12}>
-  <${Paper} sx=${{ padding: 2 }}>
-  <${Grid} container>
-  <${Grid} item xs=${12}>
-  <${Typography} style=${"text-align: center"}
-  variant="h6"
-  color=${grey[500]}>
-  <i>Submit query to update plots.</i>
-  </${Typography}>
-  </${Grid}>
-  </${Grid}>
-  </${Paper}>
-  </${Grid}>`
-          : null
+      renderWaiting
+      ? html`<${Grid} item xs=${12}>
+        <${Paper} sx=${{ padding: 2 }}>
+          <${Grid} container>
+            <${Grid} item xs=${12}>
+              <${Typography} style=${"text-align: center"}
+                             variant="h6"
+                             color=${grey[500]}>
+                <i>Submit query to update plots.</i>
+              </${Typography}>
+            </${Grid}>
+          </${Grid}>
+        </${Paper}>
+      </${Grid}>`
+      : null
       }
       ${
-        !isEmpty(bridges) && !bridges.hasOwnProperty("message") && !renderWaiting
-          ? html`<${LocaleDescription}
-  summaryType=${renderPlotType}
-                keyValues=${{
-                  field: renderPlotType,
-                  count: bridges.keyData.count,
-                  locality: locality,
-                  filters: {...queryState, ...detailedQueryState},
-                }}
-                waiting=${renderWaiting}
-                submitted=${renderSubmitted}
-              />` : null}
-       ${!isEmpty(bridges) && !bridges.hasOwnProperty("message") ? html`
-              <${StaticHexbinChart}
-                bridgeData=${bridges}
-                plotType=${renderPlotType}
-                hexSize=${scaledHexBool}
-                submitted=${submitted}
-                heightCheck=${heightCheck}
-              /> `
-          : null
+      !isEmpty(bridges) && !bridges.hasOwnProperty("message") && !renderWaiting
+      ? html`<${LocaleDescription}
+               summaryType=${renderPlotType}
+               keyValues=${{
+               field: renderPlotType,
+               count: bridges.keyData.count,
+               locality: locality,
+               filters: {...queryState, ...detailedQueryState},
+               }}
+               waiting=${renderWaiting}
+               submitted=${renderSubmitted}
+               />` : null}
+      ${!isEmpty(bridges) && !bridges.hasOwnProperty("message") ? html`
+      <${StaticHexbinChart}
+        bridgeData=${bridges}
+        plotType=${renderPlotType}
+        hexSize=${scaledHexBool}
+        submitted=${submitted}
+        heightCheck=${heightCheck}
+        /> `
+      : null
       }
       ${
-        !renderSubmitted && bridges.hasOwnProperty("message")
-          ? html`<${Grid} item xs=${12}>
-         <${Paper} sx=${{ padding: 2 }}>
-         <${Grid} container>
-         <${Grid} item xs=${12}>
-         <${Typography} style=${"text-align: center"}
-         variant="h6"
-         color=${grey[500]}>
-         <i>${bridges.message}</i>
-         </${Typography}>
-         </${Grid}>
-         </${Grid}>
-         </${Paper}>
-         </${Grid}>`
-          : null
+      !renderSubmitted && bridges.hasOwnProperty("message")
+      ? html`<${Grid} item xs=${12}>
+        <${Paper} sx=${{ padding: 2 }}>
+          <${Grid} container>
+            <${Grid} item xs=${12}>
+              <${Typography} style=${"text-align: center"}
+                             variant="h6"
+                             color=${grey[500]}>
+                <i>${bridges.message}</i>
+              </${Typography}>
+            </${Grid}>
+          </${Grid}>
+        </${Paper}>
+      </${Grid}>`
+      : null
       }
     </${Grid}>
   </${Container}>

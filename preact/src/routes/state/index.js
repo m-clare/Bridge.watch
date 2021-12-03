@@ -132,109 +132,109 @@ export default function StateBridges() {
                           filters=${stateFilters}
                           colWidth=${colWidth}
                           />
-           <${Grid} item xs=${12}>
-           <${Divider} variant="middle">Detailed Filters</${Divider}>
-           <${Typography} variant="h6">Note: </${Typography}>
-           <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
-           </${Grid}>
-            <${Grid} item xs=${12}>
-              <${DetailedForm} stateInfo=${{
-                            state: queryState,
-                            detailedQueryState: detailedQueryState,
-                            submitted: renderSubmitted,
-                            queryURI: queryURI,
-                            setSubmitted: setSubmitted,
-                            setWaiting: setWaiting,
-                            setDetailedQueryState: setDetailedQueryState,
-                            validRange: validRanges,
-                            queryDicts: queryDicts
-                            }}
-                            colWidth=12
-                            filters=${detailedFilters}
-                            />
-            </${Grid}>
-            <${Grid} item xs=${12}>
-              ${
-                renderSubmitted
-                  ? html`
-  <${Paper} sx=${{ padding: 2 }} variant="outlined">
-  <${Typography} style=${"text-align: center"}
-  variant="h6"
-  color=${grey[500]}>
-  <i>Loading query...</i>
-  </${Typography}>
-  <${LinearProgress} />
-  </${Paper}>
-  `
-                  : null
-              }
-            </${Grid}>
-          </${Grid}>
-        </${Paper}>
-      </${Grid}>
-      <${Grid} item xs=${12} md=${8}>
-        <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 880 } }}>
-          <${Grid} container spacing=${3}>
-${
-        renderWaiting
-          ? html`
-    <${Grid} item xs=${12}>
-  <${Typography} style=${"text-align: center"}
-  variant="h6"
-  color=${grey[500]}>
-  <i>Submit query to update plots.</i>
-  </${Typography}>
-    </${Grid}>
- `
-          : null
-      }
-            ${
-              !isEmpty(stateBridges) &&
-              !stateBridges.hasOwnProperty("message") &&
-              showPlot
-                ? html` <${ChoroplethMap}
-                    bridgeCountyData=${stateBridges}
-                    displayStates=${queryState.state}
-                    plotType=${plotType}
-                    submitted=${renderSubmitted}
-                  />`
-                : null
-            }
-            ${
-              !renderSubmitted && stateBridges.hasOwnProperty("message")
-                ? html`
-            <${Grid} item xs=${12}>
-              <${Typography} style=${"text-align: center"}
-                             variant="h6"
-                             color=${grey[500]}>
-                <i>${stateBridges.message}</i>
-              </${Typography}>
-            </${Grid}>`
-                : null
-            }
-          </${Grid}>
-        </${Paper}>
-      </${Grid}>
+                          <${Grid} item xs=${12}>
+                            <${Divider} variant="middle">Detailed Filters</${Divider}>
+                            <${Typography} variant="h6">Note: </${Typography}>
+                            <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
+                          </${Grid}>
+                          <${Grid} item xs=${12}>
+                            <${DetailedForm} stateInfo=${{
+                                             state: queryState,
+                                             detailedQueryState: detailedQueryState,
+                                             submitted: renderSubmitted,
+                                             queryURI: queryURI,
+                                             setSubmitted: setSubmitted,
+                                             setWaiting: setWaiting,
+                                             setDetailedQueryState: setDetailedQueryState,
+                                             validRange: validRanges,
+                                             queryDicts: queryDicts
+                                             }}
+                                             colWidth=12
+                                             filters=${detailedFilters}
+                                             />
+                          </${Grid}>
+                          <${Grid} item xs=${12}>
+                            ${
+                            renderSubmitted
+                            ? html`
+                            <${Paper} sx=${{ padding: 2 }} variant="outlined">
+                              <${Typography} style=${"text-align: center"}
+                                             variant="h6"
+                                             color=${grey[500]}>
+                                <i>Loading query...</i>
+                              </${Typography}>
+                              <${LinearProgress} />
+                            </${Paper}>
+                            `
+                            : null
+                            }
+                          </${Grid}>
+</${Grid}>
+</${Paper}>
+</${Grid}>
+<${Grid} item xs=${12} md=${8}>
+  <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 880 } }}>
+    <${Grid} container spacing=${3}>
       ${
-        !isEmpty(stateBridges) &&
-        !stateBridges.hasOwnProperty("message") &&
-        showPlot &&
-        queryState.state.length !== 0 &&
-        !renderWaiting
-          ? html` <${LocaleDescription}
-              summaryType=${renderPlotType}
-              keyValues=${{
-                field: renderPlotType,
-                count: stateBridges.keyData.count,
-                locality: localityString,
-                filters: {...queryState, ...detailedQueryState},
-              }}
-              waiting=${renderWaiting}
-              submitted=${renderSubmitted}
-            />`
-          : null
+      renderWaiting
+      ? html`
+      <${Grid} item xs=${12}>
+        <${Typography} style=${"text-align: center"}
+                       variant="h6"
+                       color=${grey[500]}>
+          <i>Submit query to update plots.</i>
+        </${Typography}>
+      </${Grid}>
+      `
+      : null
+      }
+      ${
+      !isEmpty(stateBridges) &&
+      !stateBridges.hasOwnProperty("message") &&
+      showPlot
+      ? html` <${ChoroplethMap}
+                bridgeCountyData=${stateBridges}
+                displayStates=${queryState.state}
+                plotType=${plotType}
+                submitted=${renderSubmitted}
+                />`
+      : null
+      }
+      ${
+      !renderSubmitted && stateBridges.hasOwnProperty("message")
+      ? html`
+      <${Grid} item xs=${12}>
+        <${Typography} style=${"text-align: center"}
+                       variant="h6"
+                       color=${grey[500]}>
+          <i>${stateBridges.message}</i>
+        </${Typography}>
+      </${Grid}>`
+      : null
       }
     </${Grid}>
-  </${Container}>
+  </${Paper}>
+</${Grid}>
+${
+!isEmpty(stateBridges) &&
+!stateBridges.hasOwnProperty("message") &&
+showPlot &&
+queryState.state.length !== 0 &&
+!renderWaiting
+? html` <${LocaleDescription}
+          summaryType=${renderPlotType}
+          keyValues=${{
+          field: renderPlotType,
+          count: stateBridges.keyData.count,
+          locality: localityString,
+          filters: {...queryState, ...detailedQueryState},
+          }}
+          waiting=${renderWaiting}
+          submitted=${renderSubmitted}
+          />`
+: null
+}
+</${Grid}>
+</${Container}>
 </${Box}>`;
 }

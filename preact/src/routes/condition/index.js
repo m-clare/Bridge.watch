@@ -144,31 +144,31 @@ export default function ConditionBridges() {
                           filters=${stateFilters}
                           colWidth=${colWidth}
                           />
-           <${Grid} item xs=${12}>
-           <${Divider} variant="middle">Detailed Filters</${Divider}>
-           <${Typography} variant="h6">Note: </${Typography}>
-           <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
-           </${Grid}>
+            <${Grid} item xs=${12}>
+              <${Divider} variant="middle">Detailed Filters</${Divider}>
+              <${Typography} variant="h6">Note: </${Typography}>
+              <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
+            </${Grid}>
             <${Grid} item xs=${12}>
               <${DetailedForm} stateInfo=${{
-                            state: queryState,
-                            detailedQueryState: detailedQueryState,
-                            submitted: renderSubmitted,
-                            setWaiting: setWaiting,
-                            queryURI: queryURI,
-                            setSubmitted: setSubmitted,
-                            setDetailedQueryState: setDetailedQueryState,
-                            validRange: validRanges,
-                            queryDicts: queryDicts
-                            }}
-                            colWidth=12
-                            filters=${detailedFilters}
-                            />
+                               state: queryState,
+                               detailedQueryState: detailedQueryState,
+                               submitted: renderSubmitted,
+                               setWaiting: setWaiting,
+                               queryURI: queryURI,
+                               setSubmitted: setSubmitted,
+                               setDetailedQueryState: setDetailedQueryState,
+                               validRange: validRanges,
+                               queryDicts: queryDicts
+                               }}
+                               colWidth=12
+                               filters=${detailedFilters}
+                               />
             </${Grid}>
             <${Grid} item xs=${12}>
               ${
-                renderSubmitted
-                  ? html`
+              renderSubmitted
+              ? html`
               <${Paper} sx=${{ padding: 2 }} variant="outlined">
                 <${Typography} style=${"text-align: center"}
                                variant="h6"
@@ -176,9 +176,9 @@ export default function ConditionBridges() {
                   <i>Loading query...</i>
                 </${Typography}>
                 <${LinearProgress} />
-                </${Paper}>
-                  `
-                  : null
+              </${Paper}>
+              `
+              : null
               }
             </${Grid}>
           </${Grid}>
@@ -188,23 +188,22 @@ export default function ConditionBridges() {
         <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 820 } }}>
           <${Grid} container spacing=${3}>
             ${
-        renderWaiting
-          ? html`
-    <${Grid} item xs=${12}>
-    <${Typography} style=${"text-align: center"}
-  variant="h6"
-  color=${grey[500]}>
-    <i>Submit query to update plots.</i>
-    </${Typography}>
-    </${Grid}>
-    `
-          : null
-      }
-
+            renderWaiting
+            ? html`
+            <${Grid} item xs=${12}>
+              <${Typography} style=${"text-align: center"}
+                             variant="h6"
+                             color=${grey[500]}>
+                <i>Submit query to update plots.</i>
+              </${Typography}>
+            </${Grid}>
+            `
+            : null
+            }
             ${
-              !isEmpty(conditionBridges) &&
-              !conditionBridges.hasOwnProperty("message")
-                ? html`
+            !isEmpty(conditionBridges) &&
+            !conditionBridges.hasOwnProperty("message")
+            ? html`
             <${Grid} item xs=${12}>
               <${Typography} variant="h6" style=${"text-align: center"}>
                 Click each wedge to zoom in. Click the center to zoom out.
@@ -233,14 +232,15 @@ export default function ConditionBridges() {
           </${Grid}>
         </${Paper}>
       </${Grid}>
+      ${
+      !isEmpty(conditionBridges) &&
+      !conditionBridges.hasOwnProperty("message") &&
+      !submitted &&
+      !renderWaiting
+      ? html`
       <${Grid} item xs=${12}>
         <${Paper} sx=${{ padding: 3 }}>
           <${Grid} container spacing=${3}>
-            ${
-            !isEmpty(conditionBridges) &&
-            !conditionBridges.hasOwnProperty("message") &&
-            !submitted
-            ? html`
             <${Grid} item xs=${12}>
               <${Typography} style=${"font-weight: 400"}
                              variant="h4"
@@ -272,12 +272,13 @@ export default function ConditionBridges() {
                 The plot above is a zoomable sunburst diagram (similar to a pie chart), which allows you to zoom into the lowest levels of the hierarchy by clicking on a segment of the diagram. To back out a level, you can click the center of the diagram. The small map in the upper left hand corner is for orientation within the entire diagram. </${Typography}>
               <${Typography} variant="body1" paragraph>
                 The sunburst diagram allows for a closer look at which bridge components determine the overall rating given to the bridge. The overall bridge rating is determined by the lowest of three values: superstructure condition, substructure condition, and deck condition. The lowest levels of the hierarchy indicate whether the overall rating is due to "all components" being rated at that value (i.e. super/sub and deck are all at a 5) or if only some of the components are at the lowest rating (i.e. superstructure is a 6, substructure is a 7, and deck is an 8, leading to an overall rating of Satisfactory Condition - 6 with "superstructure at 6").  </${Typography}>
-            </${Grid}>`
-            : null
-            }
+            </${Grid}>
           </${Grid}>
         </${Paper}>
       </${Grid}>
+      `
+      : null
+      }
     </${Grid}>
   </${Container}>
 </${Box}>`;
