@@ -43,10 +43,6 @@ const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
   ratings, deck_type, deck_surface
 }))(multiFilters);
 
-function isPositiveInt(val) {
-  return /^\d+$/.test(val);
-}
-
 export default function CountryBridges() {
   const [bridges, setBridges] = useState({});
   const [queryState, setQueryState] = useState({
@@ -87,7 +83,6 @@ export default function CountryBridges() {
   useEffect(async () => {
     const newURI = constructURI(queryState, detailedQueryState, queryDicts);
     let bridgeData = await getNationalBridges(newURI);
-    console.log(newURI)
     setQueryURI(newURI);
     if (queryState.plot_type === "future_date_of_inspection") {
       bridgeData = fixDateData(bridgeData, "hexBin");
@@ -134,6 +129,8 @@ export default function CountryBridges() {
                           />
            <${Grid} item xs=${12}>
            <${Divider} variant="middle">Detailed Filters</${Divider}>
+           <${Typography} variant="h6">Note: </${Typography}>
+           <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
            </${Grid}>
            <${Grid} item xs=${12}>
            <${DetailedForm} stateInfo=${{
@@ -142,6 +139,7 @@ export default function CountryBridges() {
                             submitted: renderSubmitted,
                             queryURI: queryURI,
                             setSubmitted: setSubmitted,
+                            setWaiting: setWaiting,
                             setDetailedQueryState: setDetailedQueryState,
                             validRange: validRanges,
                             queryDicts: queryDicts
@@ -172,18 +170,36 @@ export default function CountryBridges() {
           : null
       }
       ${
-        !isEmpty(bridges) && !bridges.hasOwnProperty("message")
+        renderWaiting
+          ? html`<${Grid} item xs=${12}>
+  <${Paper} sx=${{ padding: 2 }}>
+  <${Grid} container>
+  <${Grid} item xs=${12}>
+  <${Typography} style=${"text-align: center"}
+  variant="h6"
+  color=${grey[500]}>
+  <i>Submit query to update plots.</i>
+  </${Typography}>
+  </${Grid}>
+  </${Grid}>
+  </${Paper}>
+  </${Grid}>`
+          : null
+      }
+      ${
+        !isEmpty(bridges) && !bridges.hasOwnProperty("message") && !renderWaiting
           ? html`<${LocaleDescription}
-                summaryType=${renderPlotType}
+  summaryType=${renderPlotType}
                 keyValues=${{
                   field: renderPlotType,
                   count: bridges.keyData.count,
                   locality: locality,
-                  filters: queryState,
+                  filters: {...queryState, ...detailedQueryState},
                 }}
                 waiting=${renderWaiting}
                 submitted=${renderSubmitted}
-              />
+              />` : null}
+       ${!isEmpty(bridges) && !bridges.hasOwnProperty("message") ? html`
               <${StaticHexbinChart}
                 bridgeData=${bridges}
                 plotType=${renderPlotType}
@@ -196,18 +212,18 @@ export default function CountryBridges() {
       ${
         !renderSubmitted && bridges.hasOwnProperty("message")
           ? html`<${Grid} item xs=${12}>
-        <${Paper} sx=${{ padding: 2 }}>
-          <${Grid} container>
-            <${Grid} item xs=${12}>
-              <${Typography} style=${"text-align: center"}
-                             variant="h6"
-                             color=${grey[500]}>
-                <i>${bridges.message}</i>
-              </${Typography}>
-            </${Grid}>
-          </${Grid}>
-        </${Paper}>
-      </${Grid}>`
+         <${Paper} sx=${{ padding: 2 }}>
+         <${Grid} container>
+         <${Grid} item xs=${12}>
+         <${Typography} style=${"text-align: center"}
+         variant="h6"
+         color=${grey[500]}>
+         <i>${bridges.message}</i>
+         </${Typography}>
+         </${Grid}>
+         </${Grid}>
+         </${Paper}>
+         </${Grid}>`
           : null
       }
     </${Grid}>

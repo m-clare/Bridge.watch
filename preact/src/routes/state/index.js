@@ -14,6 +14,7 @@ import Paper from "@mui/material/Paper";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
+import Divider from "@mui/material/Divider";
 
 import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
@@ -131,6 +132,11 @@ export default function StateBridges() {
                           filters=${stateFilters}
                           colWidth=${colWidth}
                           />
+           <${Grid} item xs=${12}>
+           <${Divider} variant="middle">Detailed Filters</${Divider}>
+           <${Typography} variant="h6">Note: </${Typography}>
+           <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
+           </${Grid}>
             <${Grid} item xs=${12}>
               <${DetailedForm} stateInfo=${{
                             state: queryState,
@@ -138,6 +144,7 @@ export default function StateBridges() {
                             submitted: renderSubmitted,
                             queryURI: queryURI,
                             setSubmitted: setSubmitted,
+                            setWaiting: setWaiting,
                             setDetailedQueryState: setDetailedQueryState,
                             validRange: validRanges,
                             queryDicts: queryDicts
@@ -168,6 +175,19 @@ export default function StateBridges() {
       <${Grid} item xs=${12} md=${8}>
         <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 880 } }}>
           <${Grid} container spacing=${3}>
+${
+        renderWaiting
+          ? html`
+    <${Grid} item xs=${12}>
+  <${Typography} style=${"text-align: center"}
+  variant="h6"
+  color=${grey[500]}>
+  <i>Submit query to update plots.</i>
+  </${Typography}>
+    </${Grid}>
+ `
+          : null
+      }
             ${
               !isEmpty(stateBridges) &&
               !stateBridges.hasOwnProperty("message") &&
@@ -199,14 +219,15 @@ export default function StateBridges() {
         !isEmpty(stateBridges) &&
         !stateBridges.hasOwnProperty("message") &&
         showPlot &&
-        queryState.state.length !== 0
+        queryState.state.length !== 0 &&
+        !renderWaiting
           ? html` <${LocaleDescription}
               summaryType=${renderPlotType}
               keyValues=${{
                 field: renderPlotType,
                 count: stateBridges.keyData.count,
                 locality: localityString,
-                filters: queryState,
+                filters: {...queryState, ...detailedQueryState},
               }}
               waiting=${renderWaiting}
               submitted=${renderSubmitted}

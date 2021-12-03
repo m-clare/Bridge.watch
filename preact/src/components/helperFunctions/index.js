@@ -95,20 +95,22 @@ export const handleChange = (event, type, stateInfo) => {
 };
 
 export const handleClose = (event, stateInfo) => {
-  const { state, queryURI, setSubmitted, detailedQueryState, queryDicts } =
+  const { state, queryURI, setSubmitted, setWaiting, detailedQueryState, queryDicts } =
     stateInfo;
   const newURI = constructURI(state, detailedQueryState, queryDicts);
   if (newURI !== queryURI) {
     setSubmitted(true);
   }
+  setWaiting(true);
 };
 
 export const handleDetailedChange = (event, type, stateInfo) => {
-  const { routeType, detailedQueryState, setDetailedQueryState } = stateInfo;
+  const { routeType, detailedQueryState, setDetailedQueryState, setWaiting} = stateInfo;
   const value = event.target.value;
   const valueArray =
-        typeof value === "string" ? value.split(",").sort() : value.sort();
+    typeof value === "string" ? value.split(",").sort() : value.sort();
   setDetailedQueryState({ ...detailedQueryState, [type]: valueArray });
+  setWaiting(true);
 };
 
 export const handleSingleChange = (event, type, stateInfo) => {
@@ -257,7 +259,8 @@ export const handleDetailedSubmitClick = (event, stateInfo) => {
 };
 
 export const handleDetailedClearClick = (event, stateInfo) => {
-  const {setDetailedQueryState, state, queryDicts, setSubmitted, queryURI} = stateInfo
+  const { setDetailedQueryState, state, queryDicts, setSubmitted, queryURI } =
+    stateInfo;
   const emptyDetailedFilters = {
     ratings: [],
     deck_type: [],
@@ -274,20 +277,33 @@ export const handleDetailedClearClick = (event, stateInfo) => {
   if (newURI !== queryURI) {
     setSubmitted(true);
   }
-}
+};
+
+const getPropCapped = (prop) => {
+  return prop
+    .split("_")
+    .map((word) => {
+      return word[0].toUpperCase() + word.substring(1);
+    })
+    .join(" ");
+};
 
 export function getFiltersAsString(filters) {
   let filterStringArray = [];
   for (const prop in filters) {
     if (prop === "rangeFilters") {
-      // pass
+      const contents = Object.keys(filters[prop]);
+      contents.map((field) => {
+        const fieldCapped = getPropCapped(field);
+        // check if min and max have been added
+        if (filters.rangeFilters[field].min !== null && filters.rangeFilters[field].min !== "") {
+          const filteredPropString = "Minimum = " + filters.rangeFilters[field].min
+          console.log(fieldCapped)
+          console.log(filteredPropString)
+        }
+      });
     } else if (filters[prop].length !== 0) {
-      const propCapped = prop
-            .split("_")
-            .map((word) => {
-              return word[0].toUpperCase() + word.substring(1);
-            })
-            .join(" ");
+      const propCapped = getPropCapped(prop);
       let filteredPropString;
       if (prop.length > 1) {
         filteredPropString = [
