@@ -6,11 +6,14 @@ import { StaticHexbinChart } from "../../components/StaticHexbinMap";
 import { isEmpty } from "lodash-es";
 import { isEqual } from "lodash-es";
 import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
+import Collapse from "@mui/material/Collapse";
 
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
+import CardActions from "@mui/material/CardActions";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
@@ -20,6 +23,10 @@ import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
 import { DetailedForm } from "../../components/detailedForm";
 import Divider from "@mui/material/Divider";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+
 import {
   singleFilters,
   multiFilters,
@@ -42,6 +49,18 @@ const countryFilters = (({ material, type, service, service_under }) => ({
 const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
   ratings, deck_type, deck_surface
 }))(multiFilters);
+
+const ExpandMore = styled((props) => {
+  const { expand, ...other } = props;
+  return html`<${IconButton} ...${other} />`;
+})(({ theme, expand }) => ({
+  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
+
 
 export default function CountryBridges() {
   const [bridges, setBridges] = useState({});
@@ -68,7 +87,12 @@ export default function CountryBridges() {
   const [hexSize, setHexSize] = useState(true);
   const [plotType, setPlotType] = useState(queryState.plot_type);
   const [waiting, setWaiting] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [desktopView, setDesktopView] = useState(true);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
 
   const queryDicts = {
     plotOptions: plotOptions,
@@ -112,12 +136,13 @@ export default function CountryBridges() {
             </${Grid}>
             <${QueryForm} stateInfo=${{
                           routeType: "country",
-                          state: queryState,
+                          queryState: queryState,
                           detailedQueryState: detailedQueryState,
                           submitted: renderSubmitted,
                           plotType: plotType,
                           queryURI: queryURI,
-                          setState: setQueryState,
+                          setQueryState: setQueryState,
+                          setDetailedQueryState: setDetailedQueryState,
                           setWaiting: setWaiting,
                           setSubmitted: setSubmitted,
                           setPlotType: setPlotType,
@@ -127,6 +152,21 @@ export default function CountryBridges() {
                           filters=${countryFilters}
                           colWidth=${colWidth}
                           />
+            <${Grid} item xs=${12}>
+            <${CardActions} disableSpacing style=${"padding: 0px"}>
+              <${Button} variant="outlined" onClick=${handleExpandClick} fullWidth>Show advanced detailed filters
+                <${ExpandMore}
+                expand=${expanded}
+                aria-expanded=${expanded}
+                aria-label="more filters"
+                >
+                <${ExpandMoreIcon} />
+              </${ExpandMore}>
+              </${Button}>
+            </${CardActions}>
+            </${Grid}>
+            <${Collapse} in=${expanded} timeout="auto" unmountOnExit>
+            <${Grid} container spacing=${3} style=${"padding: 24px"}>
             <${Grid} item xs=${12}>
               <${Divider} variant="middle">Detailed Filters</${Divider}>
               <${Typography} variant="h6">Note: </${Typography}>
@@ -142,40 +182,43 @@ export default function CountryBridges() {
                                setWaiting: setWaiting,
                                setDetailedQueryState: setDetailedQueryState,
                                validRange: validRanges,
-                               queryDicts: queryDicts
+                               queryDicts: queryDicts,
+                               setExpanded: setExpanded
                                }}
                                colWidth=3
                                filters=${detailedFilters}
                                />
             </${Grid}>
+            </${Grid}>
+            </${Collapse}>
           </${Grid}>
         </${Paper}>
       </${Grid}>
       ${
       renderSubmitted
       ? html`<${Grid} item xs=${12}>
-        <${Paper} sx=${{ padding: 2 }}>
-          <${Grid} container>
-            <${Grid} item xs=${12}>
-              <${Typography} style=${"text-align: center"}
-                             variant="h6"
-                             color=${grey[500]}>
-                <i>Loading query...</i>
-              </${Typography}>
-              <${LinearProgress} />
-            </${Grid}>
-          </${Grid}>
-        </${Paper}>
-      </${Grid}>`
+  <${Paper} sx=${{ padding: 2 }}>
+  <${Grid} container>
+  <${Grid} item xs=${12}>
+  <${Typography} style=${"text-align: center"}
+  variant="h6"
+  color=${grey[500]}>
+  <i>Loading query...</i>
+  </${Typography}>
+  <${LinearProgress} />
+  </${Grid}>
+  </${Grid}>
+  </${Paper}>
+  </${Grid}>`
       : null
       }
       ${
       renderWaiting && !renderSubmitted
       ? html`<${Grid} item xs=${12}>
-        <${Paper} sx=${{ padding: 2 }}>
-          <${Grid} container>
-            <${Grid} item xs=${12}>
-              <${Typography} style=${"text-align: center"}
+  <${Paper} sx=${{ padding: 2 }}>
+  <${Grid} container>
+  <${Grid} item xs=${12}>
+  <${Typography} style=${"text-align: center"}
                              variant="h6"
                              color=${grey[500]}>
                 <i>Submit query to update plots.</i>

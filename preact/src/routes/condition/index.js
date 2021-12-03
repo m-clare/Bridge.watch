@@ -15,6 +15,15 @@ import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
 import Divider from "@mui/material/Divider";
 
+//Imports for collapsible form
+import { styled } from "@mui/material/styles";
+import CardActions from "@mui/material/CardActions";
+import Collapse from "@mui/material/Collapse";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+
+
 import { SunburstChart } from "../../components/sunburstChart";
 import { QueryForm } from "../../components/queryForm";
 import { DetailedForm } from "../../components/detailedForm";
@@ -43,6 +52,17 @@ const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
   ratings, deck_type, deck_surface
 }))(multiFilters);
 
+const ExpandMore = styled((props) => {
+const { expand, ...other } = props;
+  return html`<${IconButton} ...${other} />`;
+})(({ theme, expand }) => ({
+  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
+
 export default function ConditionBridges() {
   const [conditionBridges, setConditionBridges] = useState({});
   const [queryState, setQueryState] = useState({
@@ -68,6 +88,11 @@ export default function ConditionBridges() {
   const [queryURI, setQueryURI] = useState("");
   const [submitted, setSubmitted] = useState(true);
   const [waiting, setWaiting] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
 
   const queryDicts = {
     filterMaps: filterMaps,
@@ -98,19 +123,20 @@ export default function ConditionBridges() {
   <${Container} maxWidth="lg">
     <${Grid} container spacing=${3}>
       <${Grid} item xs=${12} md=${4}>
-        <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 820 } }}>
+        <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 900 } }}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
               <${Typography} variant="h4" component="h1">Bridge Conditions</${Typography}>
             </${Grid}>
             <${QueryForm} stateInfo=${{
                           routeType: "condition",
-                          state: queryState,
+                          queryState: queryState,
                           detailedQueryState: detailedQueryState,
                           searchField: searchField,
                           submitted: submitted,
                           queryURI: queryURI,
-                          setState: setQueryState,
+                          setQueryState: setQueryState,
+                          setDetailedQueryState: setDetailedQueryState,
                           setWaiting: setWaiting,
                           setSubmitted: setSubmitted,
                           setSearchField: setSearchField,
@@ -121,26 +147,44 @@ export default function ConditionBridges() {
                           colWidth=${colWidth}
                           />
             <${Grid} item xs=${12}>
-              <${Divider} variant="middle">Detailed Filters</${Divider}>
-              <${Typography} variant="h6">Note: </${Typography}>
-              <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
+              <${CardActions} disableSpacing style=${"padding: 0px"}>
+                <${Button} variant="outlined" onClick=${handleExpandClick} fullWidth>Show advanced detailed filters
+                  <${ExpandMore}
+                    expand=${expanded}
+                    aria-expanded=${expanded}
+                    aria-label="more filters"
+                    >
+                    <${ExpandMoreIcon} />
+                  </${ExpandMore}>
+                </${Button}>
+              </${CardActions}>
             </${Grid}>
-            <${Grid} item xs=${12}>
-              <${DetailedForm} stateInfo=${{
-                               state: queryState,
-                               detailedQueryState: detailedQueryState,
-                               submitted: renderSubmitted,
-                               setWaiting: setWaiting,
-                               queryURI: queryURI,
-                               setSubmitted: setSubmitted,
-                               setDetailedQueryState: setDetailedQueryState,
-                               validRange: validRanges,
-                               queryDicts: queryDicts
-                               }}
-                               colWidth=12
-                               filters=${detailedFilters}
-                               />
-            </${Grid}>
+            <${Collapse} in=${expanded} timeout="auto" unmountOnExit>
+              <${Grid} container spacing=${3} style=${"padding: 24px"}>
+                <${Grid} item xs=${12}>
+                  <${Divider} variant="middle">Detailed Filters</${Divider}>
+                  <${Typography} variant="h6">Note: </${Typography}>
+                  <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
+                </${Grid}>
+                <${Grid} item xs=${12}>
+                  <${DetailedForm} stateInfo=${{
+                                   queryState: queryState,
+                                   detailedQueryState: detailedQueryState,
+                                   submitted: renderSubmitted,
+                                   setWaiting: setWaiting,
+                                   queryURI: queryURI,
+                                   setSubmitted: setSubmitted,
+                                   setDetailedQueryState: setDetailedQueryState,
+                                   validRange: validRanges,
+                                   queryDicts: queryDicts,
+                                   setExpanded: setExpanded
+                                   }}
+                                   colWidth=12
+                                   filters=${detailedFilters}
+                                   />
+                </${Grid}>
+              </${Grid}>
+            </${Collapse}>
             <${Grid} item xs=${12}>
               ${
               renderSubmitted
@@ -161,7 +205,7 @@ export default function ConditionBridges() {
         </${Paper}>
       </${Grid}>
       <${Grid} item xs=${12} md=${8}>
-        <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 820 } }}>
+        <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 900 } }}>
           <${Grid} container spacing=${3}>
             ${
             renderWaiting && !renderSubmitted

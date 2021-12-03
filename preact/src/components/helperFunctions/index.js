@@ -83,29 +83,35 @@ export function fixDateData(data, binType) {
 }
 
 export const handleChange = (event, type, stateInfo) => {
-  const { routeType, state, setState, setWaiting, setShowPlot } = stateInfo;
+  const { routeType, queryState, setQueryState, setWaiting, setShowPlot } = stateInfo;
   const value = event.target.value;
   const valueArray =
     typeof value === "string" ? value.split(",").sort() : value.sort();
-  if (routeType === "state" && state.state.length === 0) {
+  if (routeType === "state" && queryState.state.length === 0) {
     setShowPlot(false);
   }
-  setState({ ...state, [type]: valueArray });
-  setWaiting(true);
+  setQueryState({ ...queryState, [type]: valueArray });
 };
 
 export const handleClose = (event, stateInfo) => {
-  const { state, queryURI, setSubmitted, setWaiting, detailedQueryState, queryDicts } =
-    stateInfo;
-  const newURI = constructURI(state, detailedQueryState, queryDicts);
+  const {
+    queryState,
+    queryURI,
+    setSubmitted,
+    setWaiting,
+    detailedQueryState,
+    queryDicts,
+  } = stateInfo;
+  const newURI = constructURI(queryState, detailedQueryState, queryDicts);
   if (newURI !== queryURI) {
     setSubmitted(true);
+    setWaiting(true);
   }
-  setWaiting(true);
 };
 
 export const handleDetailedChange = (event, type, stateInfo) => {
-  const { routeType, detailedQueryState, setDetailedQueryState, setWaiting} = stateInfo;
+  const { routeType, detailedQueryState, setDetailedQueryState, setWaiting } =
+    stateInfo;
   const value = event.target.value;
   const valueArray =
     typeof value === "string" ? value.split(",").sort() : value.sort();
@@ -116,8 +122,8 @@ export const handleDetailedChange = (event, type, stateInfo) => {
 export const handleSingleChange = (event, type, stateInfo) => {
   const {
     routeType,
-    state,
-    setState,
+    queryState,
+    setQueryState,
     detailedQueryState,
     queryURI,
     searchField,
@@ -129,9 +135,9 @@ export const handleSingleChange = (event, type, stateInfo) => {
     queryDicts,
   } = stateInfo;
   const value = event.target.value;
-  setState({ ...state, [type]: value });
+  setQueryState({ ...queryState, [type]: value });
   const newURI = constructURI(
-    { ...state, [type]: value },
+    { ...queryState, [type]: value },
     detailedQueryState,
     queryDicts
   );
@@ -151,31 +157,88 @@ export const handleSingleChange = (event, type, stateInfo) => {
   }
 };
 
+export const handleClearAllFiltersClick = (event, stateInfo) => {
+  const {
+    routeType,
+    queryState,
+    setQueryState,
+    detailedQueryState,
+    setDetailedQueryState,
+    queryDicts,
+    setSubmitted,
+    queryURI,
+  } = stateInfo;
+  let clearedQueryState;
+  if (routeType === "state" || routeType === "country") {
+  clearedQueryState = {
+      ...queryState,
+      material: [],
+      type: [],
+      service: [],
+      service_under: [],
+    };
+  } else {
+    clearedQueryState = {
+      ...queryState,
+      state: [],
+      material: [],
+      type: [],
+      service: [],
+      service_under: [],
+    };
+  }
+  setQueryState(clearedQueryState);
+  const emptyDetailedFilters = {
+    ratings: [],
+    deck_type: [],
+    deck_surface: [],
+    rangeFilters: {
+      year_built: { min: "", max: "" },
+      traffic: { min: "", max: "" },
+      bridge_length: { min: "", max: "" },
+      span_length: { min: "", max: "" },
+    },
+  };
+  setDetailedQueryState(emptyDetailedFilters);
+  const newURI = constructURI(
+    clearedQueryState,
+    emptyDetailedFilters,
+    queryDicts
+  );
+  if (routeType === "state") {
+    if (newURI !== queryURI && queryState.state.length !== 0) {
+      setSubmitted(true);
+    }
+  } else if (newURI !== queryURI) {
+    setSubmitted(true);
+  }
+};
+
 export const handleClearFiltersClick = (event, stateInfo) => {
   const {
     routeType,
-    state,
-    setState,
+    queryState,
+    setQueryState,
     detailedQueryState,
     queryDicts,
     setSubmitted,
     queryURI,
   } = stateInfo;
   const clearedQueryState = {
-    ...state,
+    ...queryState,
     material: [],
     type: [],
     service: [],
     service_under: [],
   };
-  setState(clearedQueryState);
+  setQueryState(clearedQueryState);
   const newURI = constructURI(
     clearedQueryState,
     detailedQueryState,
     queryDicts
   );
   if (routeType === "state") {
-    if (newURI !== queryURI && state.statelength !== 0) {
+    if (newURI !== queryURI && queryState.state.length !== 0) {
       setSubmitted(true);
     }
   } else if (newURI !== queryURI) {
@@ -188,7 +251,8 @@ function isPositiveInt(val) {
 }
 
 export const handleRangeChange = (event, type, stateInfo, extrema) => {
-  const { detailedQueryState, setDetailedQueryState, setWaiting, validRange } = stateInfo;
+  const { detailedQueryState, setDetailedQueryState, setWaiting, validRange } =
+    stateInfo;
   const value = event.target.value;
   const minValue = detailedQueryState.rangeFilters[type].min;
   const maxValue = detailedQueryState.rangeFilters[type].max;
@@ -252,17 +316,30 @@ export const handleRangeChange = (event, type, stateInfo, extrema) => {
 };
 
 export const handleDetailedSubmitClick = (event, stateInfo) => {
-  const { state, detailedQueryState, queryURI, setSubmitted, queryDicts } =
-    stateInfo;
-  const newURI = constructURI(state, detailedQueryState, queryDicts);
+  const {
+    queryState,
+    detailedQueryState,
+    queryURI,
+    setSubmitted,
+    setExpanded,
+    queryDicts,
+  } = stateInfo;
+  const newURI = constructURI(queryState, detailedQueryState, queryDicts);
   if (newURI !== queryURI) {
     setSubmitted(true);
+    setExpanded(false);
   }
 };
 
 export const handleDetailedClearClick = (event, stateInfo) => {
-  const { setDetailedQueryState, state, queryDicts, setSubmitted, queryURI } =
-    stateInfo;
+  const {
+    setDetailedQueryState,
+    queryState,
+    queryDicts,
+    setSubmitted,
+    setExpanded,
+    queryURI,
+  } = stateInfo;
   const emptyDetailedFilters = {
     ratings: [],
     deck_type: [],
@@ -275,9 +352,10 @@ export const handleDetailedClearClick = (event, stateInfo) => {
     },
   };
   setDetailedQueryState(emptyDetailedFilters);
-  const newURI = constructURI(state, emptyDetailedFilters, queryDicts);
+  const newURI = constructURI(queryState, emptyDetailedFilters, queryDicts);
   if (newURI !== queryURI) {
     setSubmitted(true);
+    setExpanded(false);
   }
 };
 
@@ -301,24 +379,30 @@ export function getFiltersAsString(filters) {
         let maxPropString;
         let count = 0;
         // check if min and max have been added
-        if (filters.rangeFilters[field].min !== null && filters.rangeFilters[field].min !== "") {
-          minPropString = "Minimum = " + filters.rangeFilters[field].min
+        if (
+          filters.rangeFilters[field].min !== null &&
+          filters.rangeFilters[field].min !== ""
+        ) {
+          minPropString = "Minimum = " + filters.rangeFilters[field].min;
           count += 1;
         }
-        if (filters.rangeFilters[field].max !== null && filters.rangeFilters[field].max !== "") {
+        if (
+          filters.rangeFilters[field].max !== null &&
+          filters.rangeFilters[field].max !== ""
+        ) {
           maxPropString = "Maximum = " + filters.rangeFilters[field].max;
           count += 1;
         }
         if (count > 0) {
-          let fieldString = fieldCapped + ": "
+          let fieldString = fieldCapped + ": ";
           if (minPropString && maxPropString) {
-            fieldString = fieldString + minPropString + ", " + maxPropString
+            fieldString = fieldString + minPropString + ", " + maxPropString;
           } else if (minPropString) {
-            fieldString = fieldString + minPropString
+            fieldString = fieldString + minPropString;
           } else if (maxPropString) {
-            fieldString = fieldString + maxPropString
+            fieldString = fieldString + maxPropString;
           }
-          filterStringArray.push(fieldString)
+          filterStringArray.push(fieldString);
         }
       });
     } else if (filters[prop].length !== 0) {

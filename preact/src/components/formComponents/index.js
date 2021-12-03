@@ -21,11 +21,11 @@ export function singleSelect(
   plotChoices,
   stateInfo
 ) {
-  const { state } = stateInfo
+  const { queryState } = stateInfo
   return html`
   <${FormControl} fullWidth>
     <${InputLabel}>${plotChoices.label}</${InputLabel}>
-    <${Select} value=${state[plotChoices.name]}
+    <${Select} value=${queryState[plotChoices.name]}
                label=${plotChoices.label}
                disabled=${stateInfo.submitted}
                onChange=${(e) => handleSingleChange(e, plotChoices.name, stateInfo)}
@@ -65,13 +65,13 @@ export function stateSingleSelect(
 }
 
 export function multiFilter(filter, stateInfo, required) {
-  const { state, submitted } = stateInfo
+  const { queryState, submitted } = stateInfo
 
   return html`
   <${FormControl} required=${required} fullWidth>
     <${InputLabel}>${filter.label}</${InputLabel}>
     <${Select}
-      value=${state[filter.name]}
+      value=${queryState[filter.name]}
       label=${filter.name}
       onChange=${(e) => handleChange(e, filter.name, stateInfo)}
       onClose=${(e) => handleClose(e, stateInfo)}

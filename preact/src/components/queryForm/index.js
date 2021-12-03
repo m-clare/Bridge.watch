@@ -16,7 +16,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
-import { handleClearFiltersClick } from "../helperFunctions"
+import { handleClearFiltersClick, handleClearAllFiltersClick } from "../helperFunctions"
 import { singleSelect, multiFilter } from "../formComponents";
 
 const html = htm.bind(h);
@@ -74,7 +74,7 @@ ${stateFilter.map(
   <${Typography} variant="h6"
                  component="h2"
                  color="${grey[500]}">
-    <i>Filters</i>
+    <i>Basic Filters</i>
   </${Typography}>
 </${Grid}>
 ${filters.map(
@@ -86,7 +86,10 @@ ${filters.map(
 </${Grid}>
 <${Grid} item container spacing=${3} xs=${12}>
 <${Grid} item xs=${12} md=${colWidth.single}>
-  <${Button} fullWidth disabled=${stateInfo.submitted} variant="contained" color="primary" onClick=${(e) => handleClearFiltersClick(e, stateInfo)}>Clear filters</${Button}>
+  <${Button} fullWidth disabled=${stateInfo.submitted} variant="contained" color="primary" onClick=${(e) => handleClearFiltersClick(e, stateInfo)}>Clear basic filters</${Button}>
+</${Grid}>
+<${Grid} item xs=${12} md=${colWidth.single}>
+  <${Button} fullWidth disabled=${stateInfo.submitted} variant="contained" color="primary" onClick=${(e) => handleClearAllFiltersClick(e, stateInfo)}>Clear all filters</${Button}>
 </${Grid}>
 </${Grid}>
 `;

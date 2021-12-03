@@ -16,6 +16,14 @@ import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
 import Divider from "@mui/material/Divider";
 
+//Imports for collapsible form
+import { styled } from "@mui/material/styles";
+import CardActions from "@mui/material/CardActions";
+import Collapse from "@mui/material/Collapse";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+
 import { LocaleDescription } from "../../components/localeDescription";
 import { QueryForm } from "../../components/queryForm";
 import { DetailedForm } from "../../components/detailedForm";
@@ -41,6 +49,17 @@ const stateFilters = (({ state, material, type, service, service_under }) => ({
 const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
   ratings, deck_type, deck_surface
 }))(multiFilters);
+
+const ExpandMore = styled((props) => {
+const { expand, ...other } = props;
+  return html`<${IconButton} ...${other} />`;
+})(({ theme, expand }) => ({
+  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
 
 export default function StateBridges() {
   const [stateBridges, setStateBridges] = useState({});
@@ -68,6 +87,11 @@ export default function StateBridges() {
   const [waiting, setWaiting] = useState(false);
   const [plotType, setPlotType] = useState(queryState.plot_type);
   const [showPlot, setShowPlot] = useState(true);
+  const [expanded, setExpanded] = useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
 
   const queryDicts = {
     plotOptions: plotOptions,
@@ -109,19 +133,20 @@ export default function StateBridges() {
   <${Container} maxWidth="lg">
     <${Grid} container spacing=${[2, 3]}>
       <${Grid} item xs=${12} md=${4}>
-        <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 880 } }}>
+        <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 920 } }}>
           <${Grid} container spacing=${3}>
             <${Grid} item xs=${12}>
               <${Typography} variant="h4" component="h1">Bridges By State Selection</${Typography}>
             </${Grid}>
             <${QueryForm} stateInfo=${{
                           routeType: "state",
-                          state: queryState,
+                          queryState: queryState,
                           detailedQueryState: detailedQueryState,
                           submitted: renderSubmitted,
                           plotType: plotType,
                           queryURI: queryURI,
-                          setState: setQueryState,
+                          setQueryState: setQueryState,
+                          setDetailedQueryState: setDetailedQueryState,
                           setWaiting: setWaiting,
                           setSubmitted: setSubmitted,
                           setPlotType: setPlotType,
@@ -132,27 +157,46 @@ export default function StateBridges() {
                           filters=${stateFilters}
                           colWidth=${colWidth}
                           />
+                          
                           <${Grid} item xs=${12}>
-                            <${Divider} variant="middle">Detailed Filters</${Divider}>
-                            <${Typography} variant="h6">Note: </${Typography}>
-                            <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
+                            <${CardActions} disableSpacing style=${"padding: 0px"}>
+                              <${Button} variant="outlined" onClick=${handleExpandClick} fullWidth>Show advanced detailed filters
+                                <${ExpandMore}
+                                  expand=${expanded}
+                                  aria-expanded=${expanded}
+                                  aria-label="more filters"
+                                  >
+                                  <${ExpandMoreIcon} />
+                                </${ExpandMore}>
+                              </${Button}>
+                            </${CardActions}>
                           </${Grid}>
-                          <${Grid} item xs=${12}>
-                            <${DetailedForm} stateInfo=${{
-                                             state: queryState,
-                                             detailedQueryState: detailedQueryState,
-                                             submitted: renderSubmitted,
-                                             queryURI: queryURI,
-                                             setSubmitted: setSubmitted,
-                                             setWaiting: setWaiting,
-                                             setDetailedQueryState: setDetailedQueryState,
-                                             validRange: validRanges,
-                                             queryDicts: queryDicts
-                                             }}
-                                             colWidth=12
-                                             filters=${detailedFilters}
-                                             />
-                          </${Grid}>
+                          <${Collapse} in=${expanded} timeout="auto" unmountOnExit>
+                            <${Grid} container spacing=${3} style=${"padding: 24px"}>
+                              <${Grid} item xs=${12}>
+                                <${Divider} variant="middle">Detailed Filters</${Divider}>
+                                <${Typography} variant="h6">Note: </${Typography}>
+                                <${Typography} paragraph>You <b>must</b> click "Submit Detailed Query" to apply the following filters.</${Typography}>
+                              </${Grid}>
+                              <${Grid} item xs=${12}>
+                                <${DetailedForm} stateInfo=${{
+                                                 queryState: queryState,
+                                                 detailedQueryState: detailedQueryState,
+                                                 submitted: renderSubmitted,
+                                                 queryURI: queryURI,
+                                                 setSubmitted: setSubmitted,
+                                                 setWaiting: setWaiting,
+                                                 setDetailedQueryState: setDetailedQueryState,
+                                                 validRange: validRanges,
+                                                 queryDicts: queryDicts,
+                                                 setExpanded: setExpanded
+                                                 }}
+                                                 colWidth=12
+                                                 filters=${detailedFilters}
+                                                 />
+                              </${Grid}>
+                            </${Grid}>
+                          </${Collapse}>
                           <${Grid} item xs=${12}>
                             ${
                             renderSubmitted
@@ -173,7 +217,7 @@ export default function StateBridges() {
 </${Paper}>
 </${Grid}>
 <${Grid} item xs=${12} md=${8}>
-  <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 880 } }}>
+  <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 920 } }}>
     <${Grid} container spacing=${3}>
       ${
       renderWaiting && !renderSubmitted
