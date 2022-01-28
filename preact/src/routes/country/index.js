@@ -132,8 +132,14 @@ export default function CountryBridges() {
     }
     if (submitted) {
       const newURI = constructURI(queryState, detailedQueryState, queryDicts);
-      // add to URL as query string
+      // fix URI if percent_poor is plot type
+      if (queryState.plot_type === "percent_poor") {
+        const displayURI = newURI.replace("plot_type=rating", "plot_type=percent_poor")
+        window.history.pushState("object", "", "?".concat(displayURI));
+      } else {
+        // add to URL as query string
       window.history.pushState("object", "", "?".concat(newURI));
+      }
       setQueryURI(newURI)
       getBridgeData(newURI)
       setSubmitted(false)
