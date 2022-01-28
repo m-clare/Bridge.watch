@@ -247,9 +247,10 @@ export function StaticHexbinChart({
         .attr("stroke-width", "0.1em")
         .on("mouseover", function (event, d) {
           let data = d3.select(this).data()[0];
-          if (!heightCheck) {
-            console.log("short");
-          }
+          // if (!heightCheck) {
+
+          //   console.log("short");
+          // }
           setActiveHex(data);
           setHexSelected(true);
           d3.select(this)
