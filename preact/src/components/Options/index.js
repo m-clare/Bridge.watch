@@ -3,22 +3,22 @@
 const structureTypeOptions = {
   Slab: "1",
   "Tee Beam": "4",
-  "Box Beam or Girders": "2,3,5,6",
+  "Box Beam or Girders": [2, 3, 5, 6],
   Frame: "7",
   Orthotropic: "8",
-  Truss: "9,10",
-  Arch: "11,12",
+  Truss: [9, 10],
+  Arch: [11, 12],
   Suspension: "13",
   "Stayed Girder": "14",
-  "Movable (Lift, Bascule, or Swing)": "15,16,17",
+  "Movable (Lift, Bascule, or Swing)": [15, 16, 17],
   "Segmental Box Girder": "21",
   "Channel Beam": "22",
 };
 
 const materialOptions = {
-  "Reinforced Concrete": "1,2",
-  Steel: "3,4",
-  "Prestressed or Post-tensioned Concrete": "5,6",
+  "Reinforced Concrete": [1, 2],
+  Steel: [3, 4],
+  "Prestressed or Post-tensioned Concrete": [5, 6],
   "Wood or Timber": "7",
   Masonry: "8",
   "Aluminum, Wrought Iron, or Cast Iron": "9",
@@ -43,7 +43,7 @@ const serviceUnderTypeOptions = {
   Railroad: "2",
   "Pedestrian-bicycle": "3",
   "Highway-railroad": "4",
-  "Waterway": "5",
+  Waterway: "5",
   "Highway-waterway": "6",
   "Railroad-waterway": "7",
   "Highway-waterway-railroad": "8",
@@ -52,42 +52,42 @@ const serviceUnderTypeOptions = {
 };
 
 const ratingOptions = {
-  'Excellent Condition (9)': 9,
-  'Very Good Condition (8)': 8,
-  'Good Condition (7)': 7,
-  'Satisfactory Condition  (6)': 6,
-  'Fair Condition (5)': 5,
-  'Poor Condition (4)': 4,
-  'Serious Condition (3)': 3,
-  'Critical Condition (2)': 2,
-  'Imminent Failure Condition (1)': 1,
-  'Failed Condition (0)': 0
-}
+  "Excellent Condition (9)": 9,
+  "Very Good Condition (8)": 8,
+  "Good Condition (7)": 7,
+  "Satisfactory Condition  (6)": 6,
+  "Fair Condition (5)": 5,
+  "Poor Condition (4)": 4,
+  "Serious Condition (3)": 3,
+  "Critical Condition (2)": 2,
+  "Imminent Failure Condition (1)": 1,
+  "Failed Condition (0)": 0,
+};
 
 const deckTypeOptions = {
-  'Concrete Cast-in-Place': 1,
-  'Concrete Precast Panels': 2,
-  'Open Grating': 3,
-  'Closed Grating': 4,
-  'Steel Plate (includes orthotropic)': 5,
-  'Corrugated Steel': 6,
-  'Aluminum': 7,
-  'Wood or Timber': 8,
-  'Other': 9
-}
+  "Concrete Cast-in-Place": 1,
+  "Concrete Precast Panels": 2,
+  "Open Grating": 3,
+  "Closed Grating": 4,
+  "Steel Plate (includes orthotropic)": 5,
+  "Corrugated Steel": 6,
+  Aluminum: 7,
+  "Wood or Timber": 8,
+  Other: 9,
+};
 
 const deckSurfaceOptions = {
-  'Monolithic Concrete': 1,
-  'Integral Concrete': 2,
-  'Latex Concrete': 3,
-  'Low Slump Concrete': 4,
-  'Epoxy Overlay': 5,
-  'Bituminous': 6,
-  'Wood or Timber': 7,
-  'Gravel': 8,
-  'Other': 9,
-  'None': 0
-}
+  "Monolithic Concrete": 1,
+  "Integral Concrete": 2,
+  "Latex Concrete": 3,
+  "Low Slump Concrete": 4,
+  "Epoxy Overlay": 5,
+  Bituminous: 6,
+  "Wood or Timber": 7,
+  Gravel: 8,
+  Other: 9,
+  None: 0,
+};
 
 export const stateOptions = {
   Alabama: "01",
@@ -193,16 +193,16 @@ export const fieldOptions = {
     query: "service",
     display: "Group by type of service on bridge",
   },
-}
+};
 
 export const detailedQueryMaps = {
   year_built: {
-    min: "min_year",
-    max: "max_year"
+    min: "min_year_built",
+    max: "max_year_built",
   },
   traffic: {
     min: "min_traffic",
-    max: "max_traffic"
+    max: "max_traffic",
   },
   bridge_length: {
     min: "min_bridge_length",
@@ -211,107 +211,68 @@ export const detailedQueryMaps = {
   span_length: {
     min: "min_span_length",
     max: "max_span_length",
-  }
-}
+  },
+};
 
-export const validRanges = {
+export const validRange = {
   year_built: {
     min: 1697,
-    max: 2021
+    max: 2021,
   },
   traffic: {
     min: 0,
-    max: 1000000
+    max: 1000000,
   },
   bridge_length: {
     min: 0,
-    max: 1000000
+    max: 1000000,
   },
   span_length: {
     min: 0,
-    max: 1000000
+    max: 1000000,
   },
-}
+};
 
 export const helperText = {
   traffic: "# vehicles/day",
   bridge_length: "total length (ft)",
-  span_length: "span length (ft)"
-}
+  span_length: "span length (ft)",
+};
 const otherOptions = {
   repair_cost_per_foot: {
     query: "repair_cost_per_foot",
     display: "Estimated repair cost per foot of bridge (in $1000s)",
     histogram: "Repair $1000s / ft bridge",
   },
-}
+};
 
 export const singleFilters = {
   plot_type: {
-    'name': 'plot_type',
-    'label': 'Plot Type',
-    'options': plotOptions
+    name: "plot_type",
+    label: "Plot Type",
+    options: plotOptions,
   },
   field: {
-    'name': 'field',
-    'label': 'Field',
-    'options': fieldOptions
+    name: "field",
+    label: "Field",
+    options: fieldOptions,
   },
-}
+};
 
 export const stateSingleFilters = {
   stateOne: {
-    'name': 'stateOne',
-    'label': 'State One',
-    'options': stateOptions,
-    'query': 'state'
+    name: "stateOne",
+    label: "State One",
+    options: stateOptions,
+    query: "state",
   },
   stateTwo: {
-    'name': 'stateTwo',
-    'label': 'State Two',
-    'options': stateOptions,
-    'query': 'state'
-  }  
-}
-
-export const filterMaps = {
-  material: {
-    name: "material",
-    label: "Bridge Material",
-    options: materialOptions,
-  },
-  type: { name: "type", label: "Bridge Type", options: structureTypeOptions },
-  service: {
-    name: "service",
-    label: "Service On Bridge",
-    options: serviceTypeOptions,
-  },
-  service_under: {
-    name: "service_under",
-    label: "Service Under Bridge",
-    options: serviceUnderTypeOptions,
-  },
-  state: {
-    name: "state",
-    label: "State(s)",
+    name: "stateTwo",
+    label: "State Two",
     options: stateOptions,
+    query: "state",
   },
-  ratings: {
-    name: "ratings",
-    label: "Ratings",
-    options: ratingOptions
-  },
-  deck_type: {
-    name: "deck_type",
-    label: "Deck Type",
-    options: deckTypeOptions
-  },
-  deck_surface: {
-    name: "deck_surface",
-    label: "Deck Surface",
-    options: deckSurfaceOptions
-  }
-}
+};
 
 export const multiFilters = {
   material: {
@@ -338,18 +299,31 @@ export const multiFilters = {
   ratings: {
     name: "ratings",
     label: "Ratings",
-    options: ratingOptions
+    options: ratingOptions,
   },
   deck_type: {
     name: "deck_type",
     label: "Deck Type",
-    options: deckTypeOptions
+    options: deckTypeOptions,
   },
   deck_surface: {
     name: "deck_surface",
     label: "Deck Surface",
-    options: deckSurfaceOptions
-  }
+    options: deckSurfaceOptions,
+  },
 };
 
-export const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+export const monthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];

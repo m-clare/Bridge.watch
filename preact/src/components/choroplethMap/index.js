@@ -170,26 +170,16 @@ export function ChoroplethMap({
       const fipsStates = displayStates.map((d) => stateOptions[d]);
       const selectedStates = getSelectedStates(fipsStates, us);
 
-      let current_position;
-      // const tooltip = d3.tip().attr("class", "d3-tip").offset(function(){
-      //   if (current_position[0] > width){
-      //     return [-20, -120];
-      //   } else {
-      //     return [20, 120]
-      //   }
-      // })
 
-      // const tipSVG = d3.
-
-      // const tooltip = d3
-      //   .select("body")
-      //   .append("div")
-      //   .style("position", "absolute")
-      //   .style("z-index", "10")
-      //   .attr("class", "tooltip")
-      //   .style("visibility", "hidden")
-      //   .style("font-family", "Fira Sans")
-      //   .style("font-size", "0.8rem");
+      const tooltip = d3
+        .select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .attr("class", "tooltip")
+        .style("visibility", "hidden")
+        .style("font-family", "Fira Sans")
+        .style("font-size", "0.8rem");
 
       const selectedCounties = feature(
         selectedStates,
@@ -263,7 +253,13 @@ export function ChoroplethMap({
         .attr("stroke-linejoin", "round")
         .attr("d", path)
         .on("mouseover", function (e, d) {
-          // current_position = d3.mouse(this);
+          tooltip
+            .style("visibility", "visible")
+            .html(
+              `${d.properties.name}<br>${
+                getInterestValue(plotType, d).stringDescription
+              }`
+            );
           let data = d3.select(this).data()[0];
           setActiveCounty(data);
           setCountySelected(true);
@@ -274,7 +270,13 @@ export function ChoroplethMap({
             .attr("stroke-width", "0.25em")
             .attr("stroke", "#fff");
         })
+        .on("mousemove", function (e, d) {
+          return tooltip
+            .style("top", e.pageY - 20 + "px")
+            .style("left", e.pageX + 20 + "px");
+        })
         .on("mouseout", function (e, d) {
+          tooltip.style("visibility", "hidden");
           setCountySelected(false);
           d3.select(this)
             .transition()

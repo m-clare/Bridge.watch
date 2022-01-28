@@ -6,7 +6,6 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 
 import * as d3 from "d3";
-import { tip as d3tip } from "d3-v6-tip";
 import { hexbin } from "d3-hexbin";
 import { mesh } from "topojson-client";
 import { legend } from "../colorLegend";
@@ -25,7 +24,7 @@ import Switch from "@mui/material/Switch";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 const html = htm.bind(h);
 import { monthNames } from "../../components/options";
 
@@ -33,44 +32,45 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
   height: 16,
   padding: 0,
-  display: 'flex',
-  '&:active': {
-    '& .MuiSwitch-thumb': {
+  display: "flex",
+  "&:active": {
+    "& .MuiSwitch-thumb": {
       width: 15,
     },
-    '& .MuiSwitch-switchBase.Mui-checked': {
-      transform: 'translateX(9px)',
+    "& .MuiSwitch-switchBase.Mui-checked": {
+      transform: "translateX(9px)",
     },
   },
-  '& .MuiSwitch-switchBase': {
+  "& .MuiSwitch-switchBase": {
     padding: 2,
-    '&.Mui-checked': {
-      transform: 'translateX(12px)',
-      color: '#fff',
-      '& + .MuiSwitch-track': {
+    "&.Mui-checked": {
+      transform: "translateX(12px)",
+      color: "#fff",
+      "& + .MuiSwitch-track": {
         opacity: 1,
         backgroundColor: "primary",
       },
     },
   },
-  '& .MuiSwitch-thumb': {
-    boxShadow: '0 2px 4px 0 rgb(0 35 11 / 20%)',
+  "& .MuiSwitch-thumb": {
+    boxShadow: "0 2px 4px 0 rgb(0 35 11 / 20%)",
     width: 12,
     height: 12,
     borderRadius: 6,
-    transition: theme.transitions.create(['width'], {
+    transition: theme.transitions.create(["width"], {
       duration: 200,
     }),
   },
-  '& .MuiSwitch-track': {
+  "& .MuiSwitch-track": {
     borderRadius: 16 / 2,
     opacity: 1,
     backgroundColor:
-    theme.palette.mode === 'dark' ? 'rgba(255,255,255,.35)' : 'rgba(0,0,0,.25)',
-    boxSizing: 'border-box',
+      theme.palette.mode === "dark"
+        ? "rgba(255,255,255,.35)"
+        : "rgba(0,0,0,.25)",
+    boxSizing: "border-box",
   },
 }));
-
 
 // Based on Hexbin Chart from Observable, attribution below
 // Copyright 2021 Observable, Inc.
@@ -114,10 +114,10 @@ const getInterestValue = (plotType, hexValues) => {
       histogram[4].count;
     return Math.round((numPoor / hexValues.count) * 100);
   } else if (plotType === "future_date_of_inspection") {
-    return  hexValues.objKeyValues.mode
-  } else if (plotType ==="average_daily_traffic || truck_traffic"){
+    return hexValues.objKeyValues.mode;
+  } else if (plotType === "average_daily_traffic || truck_traffic") {
     return hexValues.objKeyValues.avg;
-    } else {
+  } else {
     return hexValues.objKeyValues.median;
   }
 };
@@ -144,16 +144,18 @@ const getAttribution = (svg) => {
   return svg.select("#attributionContainer");
 };
 
-
-export function StaticHexbinChart({ bridgeData, plotType, submitted, heightCheck }) {
+export function StaticHexbinChart({
+  bridgeData,
+  plotType,
+  submitted,
+  heightCheck,
+}) {
   const [activeHex, setActiveHex] = useState({});
   const [totalValues, setTotalValues] = useState({});
   const [hexSelected, setHexSelected] = useState(false);
   const [hexSize, setHexSize] = useState(true);
 
   const d3Container = useRef(null);
-
-  console.log(heightCheck)
 
   const handleSwitchChange = (event) => {
     setHexSize(!hexSize);
@@ -195,15 +197,16 @@ export function StaticHexbinChart({ bridgeData, plotType, submitted, heightCheck
 
       // every other tick value
       const tickFormatting = (interval, i) => {
-        let modInterval
+        let modInterval;
         if (plotType === "future_date_of_inspection") {
-          let modDate = new Date(interval)
-          modInterval = monthNames[modDate.getMonth()] + '-' + modDate.getFullYear()
+          let modDate = new Date(interval);
+          modInterval =
+            monthNames[modDate.getMonth()] + "-" + modDate.getFullYear();
         } else {
-          modInterval = interval
+          modInterval = interval;
         }
         return i % 2 !== 0 ? " " : modInterval;
-      }
+      };
 
       legendNode
         .attr("transform", `translate(${0.6 * width}, ${stdMargin - 10})`)
@@ -244,8 +247,8 @@ export function StaticHexbinChart({ bridgeData, plotType, submitted, heightCheck
         .attr("stroke-width", "0.1em")
         .on("mouseover", function (event, d) {
           let data = d3.select(this).data()[0];
-          if (heightCheck < 500){
-            console.log("short")
+          if (!heightCheck) {
+            console.log("short");
           }
           setActiveHex(data);
           setHexSelected(true);
@@ -260,7 +263,6 @@ export function StaticHexbinChart({ bridgeData, plotType, submitted, heightCheck
         })
         .on("mouseout", function (event, d) {
           setHexSelected(false);
-          const toolbarChart = d3.select("#toolBarChart").remove()
           d3.select(this)
             .transition()
             .duration(200)
@@ -273,11 +275,12 @@ export function StaticHexbinChart({ bridgeData, plotType, submitted, heightCheck
       //add attribution
       const attrNode = getAttribution(svg);
       attrNode.select("#attribution").remove();
- 
+
       attrNode
         .attr(
           "transform",
-          `translate(${0.53 * width}, ${height - (stdMargin - 20)})`)
+          `translate(${0.53 * width}, ${height - (stdMargin - 20)})`
+        )
         .raise()
         .append("g")
         .attr("id", "attribution")
@@ -289,17 +292,87 @@ export function StaticHexbinChart({ bridgeData, plotType, submitted, heightCheck
     }
   }, [bridgeData, hexSize, plotType]);
 
+  // useEffect(() => {
+  //   if (
+  //     !isEmpty(bridgeData) &&
+  //     d3Container.current &&
+  //     !submitted &&
+  //     !heightCheck &&
+  //       plotType !== "future_date_of_inspection"
+  //   ) {
+  //     const svg = d3.select(d3Container.current);
+
+  //     const hexBridge = {
+  //       hexBin: bridgeData.hexBin,
+  //       totalValues: bridgeData.totalValues,
+  //     };
+
+  //     const getHex = () => {
+  //       if (!document.getElementById("hexes")) {
+  //         svg.append("g").attr("id", "hexes");
+  //       }
+  //       return svg.select("#hexes");
+  //     };
+  //     const hexNode = getHex();
+
+  //     const radius = getRadius(hexBridge.hexBin);
+  //     const color = colorDict[plotType];
+
+  //     const hexBool = hexSize;
+
+  //     hexNode
+  //       .selectAll("path")
+  //       .data(hexBridge.hexBin)
+  //       .join("path")
+  //       .attr("transform", (d) => `translate(${d.x}, ${d.y})`)
+  //       .on("mouseover", function (event, d) {
+  //         let data = d3.select(this).data()[0];
+  //         svg.append(() =>
+  //           barChart(
+  //             width,
+  //             height,
+  //             [data.x, data.y],
+  //             data.objHistogram,
+  //             bridgeData.field,
+  //             color
+  //           )
+  //         );
+  //         setActiveHex(data);
+  //         setHexSelected(true);
+  //         d3.select(this)
+  //           .raise()
+  //           .transition()
+  //           .duration(200)
+  //           .attr("d", (d) =>
+  //             myHexbin.hexagon(d3.max([radius(d.count) * 1.5, 15]))
+  //           )
+  //           .attr("stroke-width", "0.2em");
+  //       })
+  //       .on("mouseout", function (event, d) {
+  //         setHexSelected(false);
+  //         const toolbarChart = d3.select("#toolBarChart").remove();
+  //         d3.select(this)
+  //           .transition()
+  //           .duration(200)
+  //           .attr("d", (d) =>
+  //             myHexbin.hexagon(getHexSize(hexBool, radius, d.count))
+  //           )
+  //           .attr("stroke-width", "0.1em");
+  //       });
+  //   }
+  // }, [bridgeData, plotType, hexSize, heightCheck]);
+
   return html`
  <${Grid} item container spacing=${3}>
   <${Grid} item xs=${12} md=${8}>
-    <${Paper} sx=${{padding: [2,2,3], minHeight: {xs: 0, md: 600} }}>
+    <${Paper} sx=${{ padding: [2, 2, 3], minHeight: { xs: 0, md: 600 } }}>
       <${Grid} container>
       <${Grid} item xs=${12}>
         <${Stack} direction="row" spacing=${1}>
           <${AntSwitch} defaultChecked
                         checked=${hexSize}
                         onChange=${handleSwitchChange}
-                        inputProps=${{ 'aria-label': 'ant design' }} />
+                        inputProps=${{ "aria-label": "ant design" }} />
           <${Typography} variant="caption text">Scaled hex area</${Typography}>
         </${Stack}>
       </${Grid}>

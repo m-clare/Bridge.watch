@@ -79,6 +79,20 @@ export default function SideMenu() {
           <${ListItem}>
             <${ListItemText} sx=${{
                              fontVariant: "small-caps",
+                             }} primary="Case Studies"/>
+          </${ListItem}>
+          <${RouterLink} className=${classes.link}
+                         activeClassName="active"
+                         href="/posts/west_seattle_bridge">
+          <${ListItem} button key="West Seattle Bridge"
+                         onClick=${toggleDrawer(false)}
+                         sx=${{ pl: 4 }}>
+            <${ListItemText} primary="West Seattle Bridge" />
+          </${ListItem}>
+          </${RouterLink}>
+          <${ListItem}>
+            <${ListItemText} sx=${{
+                             fontVariant: "small-caps",
                              }} primary="Background Information"/>
           </${ListItem}>
           ${backgroundRoutes.map(

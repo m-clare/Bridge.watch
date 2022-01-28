@@ -1,19 +1,17 @@
 import { h } from "preact";
 import htm from "htm";
-import { getConditionBridges } from "../../utils/nbi-api";
-import { useEffect, useState, useRef } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { isEmpty } from "lodash-es";
-import { isEqual } from "lodash-es";
-import { makeStyles } from "@mui/styles";
+import * as d3 from "d3";
 
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import LinearProgress from "@mui/material/LinearProgress";
-import Typography from "@mui/material/Typography";
-import { grey } from "@mui/material/colors";
 import Divider from "@mui/material/Divider";
+import { grey } from "@mui/material/colors";
+import Grid from "@mui/material/Grid";
+import LinearProgress from "@mui/material/LinearProgress";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 //Imports for collapsible form
 import { styled } from "@mui/material/styles";
@@ -23,20 +21,22 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 
-
+import { getConditionBridges } from "../../utils/nbi-api";
 import { SunburstChart } from "../../components/sunburstChart";
 import { QueryForm } from "../../components/queryForm";
 import { DetailedForm } from "../../components/detailedForm";
 import {
   singleFilters,
   multiFilters,
-  filterMaps,
   detailedQueryMaps,
-  validRanges,
-  fieldOptions
+  validRange,
+  fieldOptions,
 } from "../../components/options";
-import { constructURI, fixDateData, getFiltersAsString } from "../../components/helperFunctions";
-
+import {
+  constructURI,
+  getFiltersAsString,
+  queryDictFromURI,
+} from "../../components/helperFunctions";
 
 const html = htm.bind(h);
 
@@ -49,11 +49,13 @@ const stateFilters = (({ state, material, type, service, service_under }) => ({
 }))(multiFilters);
 
 const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
-  ratings, deck_type, deck_surface
+  ratings,
+  deck_type,
+  deck_surface,
 }))(multiFilters);
 
 const ExpandMore = styled((props) => {
-const { expand, ...other } = props;
+  const { expand, ...other } = props;
   return html`<${IconButton} ...${other} />`;
 })(({ theme, expand }) => ({
   transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
@@ -85,8 +87,8 @@ export default function ConditionBridges() {
     },
   });
   const [searchField, setSearchField] = useState(queryState.field);
-  const [queryURI, setQueryURI] = useState("");
-  const [submitted, setSubmitted] = useState(true);
+  const [queryURI, setQueryURI] = useState("field=material");
+  const [submitted, setSubmitted] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
@@ -95,28 +97,51 @@ export default function ConditionBridges() {
   };
 
   const queryDicts = {
-    filterMaps: filterMaps,
-    detailedQueryMaps: detailedQueryMaps,
-    fieldOptions: fieldOptions
+    multiFilters,
+    detailedQueryMaps,
+    fieldOptions,
   };
 
-  // run every time submitted is updated
-  useEffect(async () => {
-    const newURI = constructURI(queryState, detailedQueryState, queryDicts);
-    const bridgeData = await getConditionBridges(newURI);
-    setQueryURI(newURI);
-    setConditionBridges(bridgeData);
-    setSubmitted(false);
-    setWaiting(false);
+  // Check if Filtered view has been passed in initial URL (will run once)
+  useEffect(() => {
+    const qs = window.location.search.substring(1);
+    if (qs) {
+      const [newQueryState, newDetailedQueryState] = queryDictFromURI(
+        qs,
+        multiFilters,
+        queryState,
+        detailedQueryState
+      );
+      setQueryState(newQueryState);
+      setDetailedQueryState(newDetailedQueryState);
+      setSearchField(newQueryState.field);
+      setQueryURI(qs);
+    }
+    setSubmitted(true);
+  }, []);
+
+  // run every time submitted is updated to true
+  useEffect(() => {
+    async function getBridgeData(newURI) {
+      let bridgeData = await getConditionBridges(newURI)
+      setConditionBridges(bridgeData)
+    }
+    if (submitted) {
+      const newURI = constructURI(queryState, detailedQueryState, queryDicts);
+      // add to URL as query string
+      window.history.pushState("object", "", "?".concat(newURI));
+      setQueryURI(newURI);
+      getBridgeData(newURI)
+      setSubmitted(false);
+      setWaiting(false);
+    }
   }, [submitted]);
 
-  const renderField = searchField;
-  const renderSubmitted = submitted;
-  const renderWaiting = waiting;
   const colWidth = { single: 12, multi: 12 };
 
   const { field, ...filters } = queryState;
-  const combinedFilters = {...filters, ...detailedQueryState}
+  const combinedFilters = { ...filters, ...detailedQueryState };
+  const recordCount = d3.hierarchy(conditionBridges).sum((d) => d.value).value
 
   return html`
 <${Box} sx=${{ padding: 3 }}>
@@ -129,19 +154,19 @@ export default function ConditionBridges() {
               <${Typography} variant="h4" component="h1">Bridge Conditions</${Typography}>
             </${Grid}>
             <${QueryForm} stateInfo=${{
-                          routeType: "condition",
-                          queryState: queryState,
-                          detailedQueryState: detailedQueryState,
-                          searchField: searchField,
-                          submitted: submitted,
-                          queryURI: queryURI,
-                          setQueryState: setQueryState,
-                          setDetailedQueryState: setDetailedQueryState,
-                          setWaiting: setWaiting,
-                          setSubmitted: setSubmitted,
-                          setSearchField: setSearchField,
-                          queryDicts: queryDicts
-                          }}
+    routeType: "condition",
+    queryState,
+    detailedQueryState,
+    searchField,
+    submitted,
+    queryURI,
+    setQueryState,
+    setDetailedQueryState,
+    setWaiting,
+    setSubmitted,
+    setSearchField,
+    queryDicts,
+  }}
                           plotChoices=${singleFilters.field}
                           filters=${stateFilters}
                           colWidth=${colWidth}
@@ -168,17 +193,17 @@ export default function ConditionBridges() {
                 </${Grid}>
                 <${Grid} item xs=${12}>
                   <${DetailedForm} stateInfo=${{
-                                   queryState: queryState,
-                                   detailedQueryState: detailedQueryState,
-                                   submitted: renderSubmitted,
-                                   setWaiting: setWaiting,
-                                   queryURI: queryURI,
-                                   setSubmitted: setSubmitted,
-                                   setDetailedQueryState: setDetailedQueryState,
-                                   validRange: validRanges,
-                                   queryDicts: queryDicts,
-                                   setExpanded: setExpanded
-                                   }}
+    queryState,
+    detailedQueryState,
+    submitted,
+    setWaiting,
+    queryURI,
+    setSubmitted,
+    setDetailedQueryState,
+    validRange,
+    queryDicts,
+    setExpanded,
+  }}
                                    colWidth=12
                                    filters=${detailedFilters}
                                    />
@@ -187,8 +212,8 @@ export default function ConditionBridges() {
             </${Collapse}>
             <${Grid} item xs=${12}>
               ${
-              renderSubmitted
-              ? html`
+                submitted
+                  ? html`
               <${Paper} sx=${{ padding: 2 }} variant="outlined">
                 <${Typography} style=${"text-align: center"}
                                variant="h6"
@@ -198,7 +223,7 @@ export default function ConditionBridges() {
                 <${LinearProgress} />
               </${Paper}>
               `
-              : null
+                  : null
               }
             </${Grid}>
           </${Grid}>
@@ -208,8 +233,8 @@ export default function ConditionBridges() {
         <${Paper} sx=${{ padding: 3, minHeight: { xs: 0, md: 900 } }}>
           <${Grid} container spacing=${3}>
             ${
-            renderWaiting && !renderSubmitted
-            ? html`
+              waiting && !submitted
+                ? html`
             <${Grid} item xs=${12}>
               <${Typography} style=${"text-align: center"}
                              variant="h6"
@@ -218,12 +243,12 @@ export default function ConditionBridges() {
               </${Typography}>
             </${Grid}>
             `
-            : null
+                : null
             }
             ${
-            !isEmpty(conditionBridges) &&
-            !conditionBridges.hasOwnProperty("message")
-            ? html`
+              !isEmpty(conditionBridges) &&
+              recordCount !== 0
+                ? html`
             <${Grid} item xs=${12}>
               <${Typography} variant="h6" style=${"text-align: center"}>
                 Click each wedge to zoom in. Click the center to zoom out.
@@ -231,33 +256,31 @@ export default function ConditionBridges() {
             </${Grid}>
             <${SunburstChart}
               bridgeConditionData=${conditionBridges}
-              field=${renderField}
-              submitted=${renderSubmitted}
               chartID="SunburstDiagram"
               />`
-            : null
+                : null
             }
             ${
-            !renderSubmitted && conditionBridges.hasOwnProperty("message")
-            ? html`
+              !submitted && recordCount === 0
+                ? html`
             <${Grid} item xs=${12}>
               <${Typography} style=${"text-align: center"}
                              variant="h6"
                              color=${grey[500]}>
-                <i>${conditionBridges.message}</i>
+                <i>No bridges with ratings available to create a sunburst plot!</i>
               </${Typography}>
             </${Grid}>`
-            : null
+                : null
             }
           </${Grid}>
         </${Paper}>
       </${Grid}>
       ${
-      !isEmpty(conditionBridges) &&
-      !conditionBridges.hasOwnProperty("message") &&
-      !submitted &&
-      !renderWaiting
-      ? html`
+        !isEmpty(conditionBridges) &&
+        recordCount !== 0  &&
+        !submitted &&
+        !waiting
+          ? html`
       <${Grid} item xs=${12}>
         <${Paper} sx=${{ padding: 3 }}>
           <${Grid} container spacing=${3}>
@@ -270,19 +293,19 @@ export default function ConditionBridges() {
                 Sunburst Condition Ratings
               </${Typography}>
               ${
-              queryState.state.length === 0
-              ? html`
-              <${Typography} 
+                queryState.state.length === 0
+                  ? html`
+              <${Typography}
                 variant="h6"
                 component="h3"
                 style=${"font-weight:400"}>
                 United States (and territories)</${Typography}>
               `
-              : null
+                  : null
               }
               ${getFiltersAsString(combinedFilters).map(
-              (d) =>
-              html`<${Typography} 
+                (d) =>
+                  html`<${Typography}
                      variant="h6"
                      component="h3"
                      style=${"font-weight:400"}>
@@ -297,7 +320,7 @@ export default function ConditionBridges() {
         </${Paper}>
       </${Grid}>
       `
-      : null
+          : null
       }
     </${Grid}>
   </${Container}>

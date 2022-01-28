@@ -1,51 +1,54 @@
 import { h } from "preact";
 import htm from "htm";
-import { getConditionBridges } from "../../utils/nbi-api";
-import { useEffect, useState, useRef } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { isEmpty } from "lodash-es";
-import { isEqual } from "lodash-es";
-import { makeStyles } from "@mui/styles";
 
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import LinearProgress from "@mui/material/LinearProgress";
-import Typography from "@mui/material/Typography";
 import { grey } from "@mui/material/colors";
+import Grid from "@mui/material/Grid";
+import LinearProgress from "@mui/material/LinearProgress";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
+import { getConditionBridges } from "../../utils/nbi-api";
+import { SunburstChart } from "../../components/sunburstChart";
 import { TopForm } from "../../components/topForm";
 import {
   singleFilters,
   multiFilters,
-  filterMaps,
   detailedQueryMaps,
-  validRanges,
   fieldOptions,
   stateSingleFilters,
   stateOptions,
 } from "../../components/options";
-import { SunburstChart } from "../../components/sunburstChart";
-import { constructURI, handleChange, getFiltersAsString } from "../../components/helperFunctions";
-import { DetailedForm } from "../../components/detailedForm";
+import {
+  constructURI,
+  getFiltersAsString,
+} from "../../components/helperFunctions";
+
 const html = htm.bind(h);
 
 const attrFilters = (({ material, type, service, service_under }) => ({
   material,
   type,
   service,
-  service_under
-}))(multiFilters);
-
-const detailedFilters = (({ ratings, deck_type, deck_surface }) => ({
-  ratings, deck_type, deck_surface
+  service_under,
 }))(multiFilters);
 
 function constructURIs(baseQuery, detailedQuery, queryDicts) {
   let { stateOne, stateTwo, ...rest } = baseQuery;
-  const uriOne = constructURI({stateOne: stateOne, ...rest }, detailedQuery, queryDicts)
-  const uriTwo = constructURI({stateTwo: stateTwo, ...rest }, detailedQuery, queryDicts)
-  const uriArray = [uriOne, uriTwo]
+  const uriOne = constructURI(
+    { stateOne: stateOne, ...rest },
+    detailedQuery,
+    queryDicts
+  );
+  const uriTwo = constructURI(
+    { stateTwo: stateTwo, ...rest },
+    detailedQuery,
+    queryDicts
+  );
+  const uriArray = [uriOne, uriTwo];
   return uriArray;
 }
 
@@ -78,16 +81,20 @@ export default function HeadToHead() {
   const [waiting, setWaiting] = useState(false);
 
   const queryDicts = {
-    filterMaps: filterMaps,
-    detailedQueryMaps: detailedQueryMaps,
-    fieldOptions: fieldOptions,
-    stateOptions: stateOptions
+    multiFilters,
+    detailedQueryMaps,
+    fieldOptions,
+    stateOptions,
   };
 
   const handleSingleChange = (event, type) => {
     const value = event.target.value;
     setQueryState({ ...queryState, [type]: value });
-    const newURIs = constructURIs({ ...queryState, [type]: value }, detailedQueryState, queryDicts);
+    const newURIs = constructURIs(
+      { ...queryState, [type]: value },
+      detailedQueryState,
+      queryDicts
+    );
     if (
       newURIs[0] !== queryURIs["stateOne"] ||
       newURIs[1] !== queryURIs["stateTwo"]
@@ -118,7 +125,11 @@ export default function HeadToHead() {
       service: [],
     };
     setQueryState(clearedQueryState);
-    const newURIs = constructURIs(clearedQueryState, detailedQueryState, queryDicts);
+    const newURIs = constructURIs(
+      clearedQueryState,
+      detailedQueryState,
+      queryDicts
+    );
     if (
       newURIs[0] !== queryURIs["stateOne"] ||
       newURIs[1] !== queryURIs["stateTwo"]
@@ -160,18 +171,18 @@ export default function HeadToHead() {
               <${TopForm}
                 queryState=${queryState}
                 stateInfo=${{
-                            state: queryState,
-                            detailedQueryState: detailedQueryState,
-                            submitted: submitted,
-                            queryURIs: queryURIs,
-                            setState: setQueryState,
-                            setWaiting: setWaiting,
-                            setSubmitted: setSubmitted,
-                            routeType: "headToHead",
-                            queryDicts: queryDicts,
-                            searchField: searchField,
-                            setSearchField: setSearchField
-                          }}
+                  queryState,
+                  detailedQueryState,
+                  submitted,
+                  queryURIs,
+                  setQueryState,
+                  setWaiting,
+                  setSubmitted,
+                  routeType: "headToHead",
+                  queryDicts,
+                  searchField,
+                  setSearchField,
+                }}
                 handleClose=${handleFormClose}
                 handleSingleChange=${handleSingleChange}
                 submitted=${renderSubmitted}

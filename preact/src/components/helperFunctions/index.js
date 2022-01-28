@@ -1,9 +1,120 @@
+export function queryDictFromURI(
+  savedQuery,
+  filters,
+  originalQuery,
+  originalDetailedQuery
+) {
+  let queryKeys = Object.keys(originalQuery);
+  let queryState = {};
+  for (const key of queryKeys) {
+    if (key === "plot_type" || key === "field") {
+      queryState[key] = "";
+    } else {
+      queryState[key] = [];
+    }
+  }
+  let detailedQueryKeys = Object.keys(originalDetailedQuery);
+  let detailedQueryState = {};
+  for (const key of detailedQueryKeys) {
+    if (key === "rangeFilters") {
+      const rangeKeys = Object.keys(originalDetailedQuery[key]);
+      detailedQueryState["rangeFilters"] = [];
+      for (const rangeKey of rangeKeys) {
+        detailedQueryState.rangeFilters[rangeKey] = { min: "", max: "" };
+      }
+    } else {
+      detailedQueryState[key] = [];
+    }
+  }
+  const unprocessedJSON = JSON.parse(
+    '{"' +
+      decodeURI(savedQuery)
+        .replace(/"/g, '\\"')
+        .replace(/&/g, '","')
+        .replace(/=/g, '":"') +
+      '"}'
+  );
+  const rangeKeys = ["year_built", "span_length", "bridge_length", "traffic"];
+  const detailedKeys = ["ratings", "deck_type", "deck_surface"];
+  const baseKeys = [
+    "plot_type",
+    "material",
+    "type",
+    "service",
+    "service_under",
+    "state",
+    "field",
+  ];
+  const URIQueryKeys = Object.keys(unprocessedJSON);
+  for (const key of URIQueryKeys) {
+    // first get plot_type
+    if (key === "plot_type" || key === "field") {
+      queryState = { ...queryState, [key]: decodeURI(unprocessedJSON[key]) };
+    } else if (baseKeys.includes(key)) {
+      const filteredValues = getFilteredValues(filters, unprocessedJSON, key);
+      queryState = { ...queryState, [key]: filteredValues };
+    } else if (detailedKeys.includes(key)) {
+      const filteredValues = getFilteredValues(filters, unprocessedJSON, key);
+      detailedQueryState = { ...detailedQueryState, [key]: filteredValues };
+    } else if (
+      (key.split("_")[0] === "min" || key.split("_")[0] === "max") &&
+      rangeKeys.includes(key.substring(4))
+    ) {
+      let rangeFilters = detailedQueryState.rangeFilters;
+      const type = key.substring(0, 3);
+      const field = key.substring(4);
+      const rangeValues = {
+        ...rangeFilters[field],
+        [type]: parseInt(decodeURI(unprocessedJSON[key])),
+      };
+      rangeFilters = { ...rangeFilters, [field]: rangeValues };
+      detailedQueryState = {
+        ...detailedQueryState,
+        rangeFilters,
+      };
+    }
+  }
+  return [queryState, detailedQueryState];
+}
+
+function getFilteredValues(filters, unprocessedJSON, key) {
+  const reversedMap = reverseOptionMap(filters[key].options);
+  const filteredList = decodeURIComponent(unprocessedJSON[key])
+    .split(",")
+    // .map((d) => parseInt(d));
+  let filteredValues = [];
+  for (const item of filteredList) {
+    if (!filteredValues.includes(reversedMap[item])) {
+      filteredValues.push(reversedMap[item]);
+    }
+  }
+  return filteredValues;
+}
+
+function reverseOptionMap(optionMap) {
+  // get reverse map of a given multifilter
+  const keys = Object.keys(optionMap);
+  const reversed = {};
+  for (const key of keys) {
+    if (Array.isArray(optionMap[key])) {
+      const values = optionMap[key];
+      for (const value of values) {
+        reversed[value] = key;
+      }
+    } else {
+      const value = optionMap[key];
+      reversed[value] = key;
+    }
+  }
+  return reversed;
+}
+
 export function constructURI(baseQuery, detailedQuery, queryDicts) {
   const {
     plotOptions,
     fieldOptions,
     stateOptions,
-    filterMaps,
+    multiFilters,
     detailedQueryMaps,
   } = queryDicts;
   const searchParams = new URLSearchParams();
@@ -23,8 +134,17 @@ export function constructURI(baseQuery, detailedQuery, queryDicts) {
       const value = baseQuery[item];
       searchParams.set("state", stateOptions[value]);
     } else if (baseQuery[item].length !== 0) {
-      const filterMap = filterMaps[item].options;
-      searchParams.set(item, baseQuery[item].map((d) => filterMap[d]).sort());
+      const filterMap = multiFilters[item].options;
+      searchParams.set(
+        item,
+        baseQuery[item].map((d) => {
+          if (Array.isArray(filterMap[d])) {
+            return filterMap[d].sort().join();
+          } else {
+            return filterMap[d];
+          }
+        })
+      );
     }
   });
   // add detailed query components to searchParams
@@ -46,10 +166,16 @@ export function constructURI(baseQuery, detailedQuery, queryDicts) {
         }
       });
     } else if (detailedQuery[item].length !== 0) {
-      const filterMap = filterMaps[item].options;
+      const filterMap = multiFilters[item].options;
       searchParams.set(
         item,
-        detailedQuery[item].map((d) => filterMap[d]).sort()
+        detailedQuery[item].map((d) => {
+          if (Array.isArray(filterMap[d])) {
+            return filterMap[d].sort().join();
+          } else {
+            return filterMap[d];
+          }
+        })
       );
     }
   });
@@ -83,7 +209,8 @@ export function fixDateData(data, binType) {
 }
 
 export const handleChange = (event, type, stateInfo) => {
-  const { routeType, queryState, setQueryState, setWaiting, setShowPlot } = stateInfo;
+  const { routeType, queryState, setQueryState, setWaiting, setShowPlot } =
+    stateInfo;
   const value = event.target.value;
   const valueArray =
     typeof value === "string" ? value.split(",").sort() : value.sort();
@@ -106,17 +233,36 @@ export const handleClose = (event, stateInfo) => {
   if (newURI !== queryURI) {
     setSubmitted(true);
     setWaiting(true);
+  } else {
+    setWaiting(false);
   }
 };
 
 export const handleDetailedChange = (event, type, stateInfo) => {
-  const { routeType, detailedQueryState, setDetailedQueryState, setWaiting } =
-    stateInfo;
+  const {
+    routeType,
+    detailedQueryState,
+    setDetailedQueryState,
+    setWaiting,
+    queryDicts,
+    queryState,
+    queryURI,
+  } = stateInfo;
   const value = event.target.value;
   const valueArray =
     typeof value === "string" ? value.split(",").sort() : value.sort();
   setDetailedQueryState({ ...detailedQueryState, [type]: valueArray });
-  setWaiting(true);
+  // check if query has changed:
+  const newURI = constructURI(
+    queryState,
+    { ...detailedQueryState, [type]: valueArray },
+    queryDicts
+  );
+  if (newURI !== queryURI) {
+    setWaiting(true);
+  } else {
+    setWaiting(false);
+  }
 };
 
 export const handleSingleChange = (event, type, stateInfo) => {
@@ -170,7 +316,7 @@ export const handleClearAllFiltersClick = (event, stateInfo) => {
   } = stateInfo;
   let clearedQueryState;
   if (routeType === "state" || routeType === "country") {
-  clearedQueryState = {
+    clearedQueryState = {
       ...queryState,
       material: [],
       type: [],
@@ -251,8 +397,15 @@ function isPositiveInt(val) {
 }
 
 export const handleRangeChange = (event, type, stateInfo, extrema) => {
-  const { detailedQueryState, setDetailedQueryState, setWaiting, validRange } =
-    stateInfo;
+  const {
+    queryState,
+    detailedQueryState,
+    queryURI,
+    setDetailedQueryState,
+    setWaiting,
+    validRange,
+    queryDicts,
+  } = stateInfo;
   const value = event.target.value;
   const minValue = detailedQueryState.rangeFilters[type].min;
   const maxValue = detailedQueryState.rangeFilters[type].max;
@@ -296,7 +449,17 @@ export const handleRangeChange = (event, type, stateInfo, extrema) => {
       ...detailedQueryState,
       rangeFilters: detailedRanges,
     });
-    setWaiting(true);
+    // check if query has changed:
+    const newURI = constructURI(
+      queryState,
+      { ...detailedQueryState, rangeFilters: detailedRanges },
+      queryDicts
+    );
+    if (newURI !== queryURI) {
+      setWaiting(true);
+    } else {
+      setWaiting(false);
+    }
   } else if (value === null || value === "") {
     const inputValue = "";
     const newNumberFilters = {
@@ -311,7 +474,17 @@ export const handleRangeChange = (event, type, stateInfo, extrema) => {
       ...detailedQueryState,
       rangeFilters: detailedRanges,
     });
-    setWaiting(true);
+    // check if query has changed:
+    const newURI = constructURI(
+      queryState,
+      { ...detailedQueryState, rangeFilters: detailedRanges },
+      queryDicts
+    );
+    if (newURI !== queryURI) {
+      setWaiting(true);
+    } else {
+      setWaiting(false);
+    }
   }
 };
 
