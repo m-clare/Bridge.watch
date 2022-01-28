@@ -7,6 +7,7 @@ from django.db.models import F, Count
 from .writers import get_streaming_response
 from django_pandas.io import read_frame
 from django.http import JsonResponse
+from django.http import HttpResponse
 from datetime import timedelta
 from datetime import date
 import copy
@@ -99,10 +100,10 @@ def state_bridges_csv(request):
 
         # DETAILED FILTERS
         # year range
-        min_year = request.query_params.get("min_year")
+        min_year = request.query_params.get("min_year_built")
         if min_year is not None:
             bridges = bridges.filter(year_built__gte=min_year)
-        max_year = request.query_params.get("max_year")
+        max_year = request.query_params.get("max_year_built")
         if max_year is not None:
             bridges = bridges.filter(year_built__lte=max_year)
         min_traffic = request.query_params.get("min_traffic")
@@ -138,7 +139,6 @@ def state_bridges_csv(request):
             max_span_length_m = float(max_span_length) * 0.3048
             bridges = bridges.filter(maximum_span_length__lte=max_span_length_m)
 
-
         fields.extend(["latitude", "longitude"])
         if "rating" in fields:
             bridges = bridges.annotate(rating=F("lowest_rating__code"))
@@ -165,7 +165,6 @@ def state_bridges_csv(request):
 
         bridges = bridges.values_list(*fields)
 
-        print(len(bridges))
         # limit query results for troubleshooting
         limit = request.query_params.get("limit")
         if limit != None:
@@ -262,10 +261,10 @@ def national_bridges_csv(request):
 
         # DETAILED FILTERS
         # year range
-        min_year = request.query_params.get("min_year")
+        min_year = request.query_params.get("min_year_built")
         if min_year is not None:
             bridges = bridges.filter(year_built__gte=min_year)
-        max_year = request.query_params.get("max_year")
+        max_year = request.query_params.get("max_year_built")
         if max_year is not None:
             bridges = bridges.filter(year_built__lte=max_year)
         min_traffic = request.query_params.get("min_traffic")
@@ -532,10 +531,10 @@ def bridge_conditions(request):
 
         # DETAILED FILTERS
         # year range
-        min_year = request.query_params.get("min_year")
+        min_year = request.query_params.get("min_year_built")
         if min_year is not None:
             bridges = bridges.filter(year_built__gte=min_year)
-        max_year = request.query_params.get("max_year")
+        max_year = request.query_params.get("max_year_built")
         if max_year is not None:
             bridges = bridges.filter(year_built__lte=max_year)
         min_traffic = request.query_params.get("min_traffic")
