@@ -17,7 +17,6 @@ const routes = [
   { key: "U.S. Overview", value: "/country" },
   { key: "State Info", value: "/state" },
   { key: "Condition Info", value: "/condition" },
-  { key: "State Comparison", value: "/state_comparison" },
 ];
 
 const backgroundRoutes = [

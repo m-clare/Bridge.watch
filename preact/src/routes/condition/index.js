@@ -125,6 +125,8 @@ export default function ConditionBridges() {
     async function getBridgeData(newURI) {
       let bridgeData = await getConditionBridges(newURI)
       setConditionBridges(bridgeData)
+      setSubmitted(false);
+      setWaiting(false);
     }
     if (submitted) {
       const newURI = constructURI(queryState, detailedQueryState, queryDicts);
@@ -132,8 +134,6 @@ export default function ConditionBridges() {
       window.history.pushState("object", "", "?".concat(newURI));
       setQueryURI(newURI);
       getBridgeData(newURI)
-      setSubmitted(false);
-      setWaiting(false);
     }
   }, [submitted]);
 

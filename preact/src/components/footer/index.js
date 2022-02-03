@@ -2,7 +2,6 @@ import { h, Component } from "preact";
 import htm from "htm";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";

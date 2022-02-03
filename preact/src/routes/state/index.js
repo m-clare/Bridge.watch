@@ -129,6 +129,9 @@ export default function StateBridges() {
         bridgeData = fixDateData(bridgeData, "hexBin");
       }
       setStateBridges(bridgeData)
+      setSubmitted(false);
+      setWaiting(false);
+      setShowPlot(true);
     }
     if (submitted) {
       const newURI = constructURI(queryState, detailedQueryState, queryDicts);
@@ -142,9 +145,6 @@ export default function StateBridges() {
       }
       setQueryURI(newURI);
       getBridgeData(newURI)
-      setSubmitted(false);
-      setWaiting(false);
-      setShowPlot(true);
     }
   }, [submitted]);
 

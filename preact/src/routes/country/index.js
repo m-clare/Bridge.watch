@@ -129,6 +129,8 @@ export default function CountryBridges() {
         bridgeData = fixDateData(bridgeData, "hexBin");
       }
       setBridges(bridgeData)
+      setSubmitted(false)
+      setWaiting(false)
     }
     if (submitted) {
       const newURI = constructURI(queryState, detailedQueryState, queryDicts);
@@ -142,8 +144,6 @@ export default function CountryBridges() {
       }
       setQueryURI(newURI)
       getBridgeData(newURI)
-      setSubmitted(false)
-      setWaiting(false)
     }
   }, [submitted])
 

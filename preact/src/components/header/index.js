@@ -1,9 +1,6 @@
 import { h, Component } from "preact";
-import { forwardRef } from "preact/compat";
-import { useMemo } from "preact/hooks";
 import htm from "htm";
 import { Link as RouterLink } from "preact-router/match";
-import { Link as MaterialLink } from "@mui/material/Link"
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
@@ -14,7 +11,6 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import TopMenu from "../topMenu";
 import SideMenu from "../sideMenu";
-import Grid from "@mui/material/Grid";
 import masthead from "../../assets/masthead.webp";
 import background from "../../assets/blue_wallpaper.webp";
 
@@ -43,10 +39,6 @@ export default function Header() {
           <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}} variant="contained"><${RouterLink} href='/condition'
                                                                   style=${"color: #fff; text-decoration: none; font-size: 18px"}>
               Condition Info</${RouterLink}>
-          </${Button}>
-          <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}} variant="contained"><${RouterLink} href='/state_comparison'
-                                                                  style=${"color: #fff; text-decoration: none; font-size: 18px"}>
-              State Comparison</${RouterLink}>
           </${Button}>
           <${TopMenu}/>
           <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}} variant="contained"><${RouterLink} href='/about'
