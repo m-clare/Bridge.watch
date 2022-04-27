@@ -112,8 +112,8 @@ def state_bridges_csv(request):
         max_traffic = request.query_params.get("max_traffic")
         if max_traffic is not None:
             bridges = bridges.filter(average_daily_traffic__lte=max_traffic)
-        ratings = request.query_params.get("ratings")
         # ratings
+        ratings = request.query_params.get("ratings")
         if ratings is not None:
             ratings_list = ratings.split(",")
             bridges = bridges.filter(lowest_rating__code__in=ratings_list)
@@ -664,5 +664,3 @@ def bridge_conditions(request):
         return JsonResponse(output_dict)
     else:
         return Response("", status=status.HTTP_400_BAD_REQUEST)
-
-

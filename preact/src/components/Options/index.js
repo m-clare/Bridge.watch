@@ -18,7 +18,7 @@ const structureTypeOptions = {
 const materialOptions = {
   "Reinforced Concrete": [1, 2],
   Steel: [3, 4],
-  "Prestressed or Post-tensioned Concrete": [5, 6],
+  "Prestressed Concrete": [5, 6],
   "Wood or Timber": "7",
   Masonry: "8",
   "Aluminum, Wrought Iron, or Cast Iron": "9",

@@ -1,6 +1,7 @@
 import { h, Component } from "preact";
 import htm from "htm";
 import { Link as RouterLink } from "preact-router/match";
+import Link from "@mui/material/Link";
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
@@ -41,6 +42,10 @@ export default function Header() {
               Condition Info</${RouterLink}>
           </${Button}>
           <${TopMenu}/>
+          <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}} variant="contained"><${Link} href='https://blog.bridge.watch'
+                                                                  style=${"color: #fff; text-decoration: none; font-size: 18px"}>
+              Blog</${Link}>
+          </${Button}>
           <${Button} sx=${{px: 1, mx: 1, border: 1, borderColor: "white"}} variant="contained"><${RouterLink} href='/about'
                                                                   style=${"color: #fff; text-decoration: none; font-size: 18px"}>
               About</${RouterLink}>

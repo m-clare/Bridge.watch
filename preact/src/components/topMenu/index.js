@@ -41,12 +41,6 @@ export default function TopMenu() {
         }}
       >
         <${MenuItem} onClick=${handleClose}>
-          <${RouterLink} href='/posts/west_seattle_bridge'
-                         style=${"color: #1c5d99; text-decoration: none; font-variant: small-caps"}>
-            West Seattle Bridge Case Study
-          </${RouterLink}>
-        </${MenuItem}>
-        <${MenuItem} onClick=${handleClose}>
           <${RouterLink} href='/bridge_types'
                          style=${"color: #1c5d99; text-decoration: none; font-variant: small-caps"}>
             Bridge Types

@@ -1,15 +1,18 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
 import htm from "htm";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
+
+import { Link as RouterLink } from "preact-router/match";
+
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link"
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import { Link as RouterLink } from "preact-router/match";
 import { makeStyles } from "@mui/styles";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const html = htm.bind(h);
 
@@ -78,20 +81,6 @@ export default function SideMenu() {
           <${ListItem}>
             <${ListItemText} sx=${{
                              fontVariant: "small-caps",
-                             }} primary="Case Studies"/>
-          </${ListItem}>
-          <${RouterLink} className=${classes.link}
-                         activeClassName="active"
-                         href="/posts/west_seattle_bridge">
-          <${ListItem} button key="West Seattle Bridge"
-                         onClick=${toggleDrawer(false)}
-                         sx=${{ pl: 4 }}>
-            <${ListItemText} primary="West Seattle Bridge" />
-          </${ListItem}>
-          </${RouterLink}>
-          <${ListItem}>
-            <${ListItemText} sx=${{
-                             fontVariant: "small-caps",
                              }} primary="Background Information"/>
           </${ListItem}>
           ${backgroundRoutes.map(
@@ -106,6 +95,11 @@ export default function SideMenu() {
             </${ListItem}>
           </${RouterLink}>`
           )}
+          <${Link} className=${classes.link} activeClassName="active" href="https://blog.bridge.watch">
+            <${ListItem} button key=${"Blog"} onClick=${toggleDrawer(false)}>
+              <${ListItemText} primary="Blog" />
+            </${ListItem}>
+          </${Link}>
           <${RouterLink} className=${
                          classes.link
                          } activeClassName="active" href="/about">

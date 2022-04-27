@@ -68,7 +68,7 @@ function addDays(date, days) {
 
 function getStatebinData(data) {
   let startTime = Date.now();
-  const [columns, ...parsedData] = d3.csvParse(data);
+  const parsedData = d3.csvParse(data);
   let msElapsed = Date.now() - startTime;
   console.log(`csvParse took ${msElapsed / 1000} seconds to complete.`);
 

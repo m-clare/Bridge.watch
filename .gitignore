@@ -1,6 +1,6 @@
 # ignore environment variables and local dev settings
 app/env/
-.env.dev
+#.env.dev
 pyrightconfig.json
 */.env
 
@@ -9,6 +9,7 @@ app/nbi/__pycache__
 app/nbi/migrations/__pycache__
 app/national/__pycache__
 app/national/migrations/__pycache__
+.mypy_cache
 
 # ignore frontend package files
 preact/node_modules
@@ -16,7 +17,8 @@ preact/build
 preact/public/build
 express-redis/node_modules
 express-redis/data
+nginx
+bridge_animation
 
 #ignore csvs
 postgres/*.csv
-
