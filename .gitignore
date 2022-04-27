@@ -19,6 +19,7 @@ express-redis/node_modules
 express-redis/data
 nginx
 bridge_animation
+bridge.watch_nginx
 
 #ignore csvs
 postgres/*.csv
