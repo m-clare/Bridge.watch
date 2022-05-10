@@ -83,6 +83,7 @@ WSGI_APPLICATION = 'nbi.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+# NOTE: These default fields are overwritten by environment variables
 
 DATABASES = {
     "default": {

@@ -16,7 +16,8 @@ import copy
 def first_day_of_next_month(dt):
     return (dt.replace(day=1) + timedelta(days=32)).replace(day=1)
 
-
+# Using Django Rest Framework - https://www.django-rest-framework.org/
+# TODO: adjust filtering and exclusion for state vs national as filters are nearly identical
 @api_view(["GET"])
 def state_bridges_csv(request):
     if request.method == "GET":
@@ -171,6 +172,8 @@ def state_bridges_csv(request):
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
+        # Test block for performance comparison btw. dataframes and other response types
+        # ------------------------------------------------------------------------------
         # df = read_frame(bridges, fieldnames=fields)
         # response = HttpResponse(content_type='text/csv')
         # df.to_csv(path_or_buf=response, index=False)
@@ -324,6 +327,8 @@ def national_bridges_csv(request):
             num_limit = int(limit)
             bridges = bridges[:num_limit]
 
+        # Test block for performance comparison btw. dataframes and other response types
+        # ------------------------------------------------------------------------------
         # df = read_frame(bridges, fieldnames=fields)
         # response = HttpResponse(content_type='text/csv')
         # df.to_csv(path_or_buf=response, index=False)
@@ -343,6 +348,7 @@ def check_conditions(query_dict, value, permutation_mapping):
 def bridge_conditions(request):
     fields = []
 
+    # Mapping between Database keys and desired values for front-end data visualization
     field_options = {
         "material": {
             "forward_map": {
@@ -462,6 +468,8 @@ def bridge_conditions(request):
         "mismatched or missing component ratings": 0,
     }
 
+    # possible permutations for different component states
+    # TODO: create generic way of generating all outcomes?
     permutation_mapping = {
         (True, True, True): "all components",
         (True, False, True): "deck and substructure",
@@ -472,6 +480,7 @@ def bridge_conditions(request):
         (False, False, True): "substructure",
         (False, False, False): "mismatched or missing component ratings",
     }
+    # main method for request
     if request.method == "GET":
 
         bridges = Bridge.objects.all()
@@ -571,6 +580,7 @@ def bridge_conditions(request):
             bridges = bridges.filter(maximum_span_length__lte=max_span_length_m)
 
 
+        # Adjust annotations to avoid strange field names (due to ORM with tables in Postgres)
         bridges = bridges.annotate(bridge_cond=F("bridge_condition__code"))
         bridges = bridges.annotate(deck_cond=F("deck_condition__code"))
         bridges = bridges.annotate(
@@ -633,7 +643,8 @@ def bridge_conditions(request):
             "children": [],
         }
 
-        # create d3 output
+        # create d3 output (nested series of dictionaries)
+        # lowest level of the tree has the actual count of items
         for field, bridge_cond_dict in field_cond_dict.items():
             field_dict = {"name": field, "children": []}
             # G, F, P

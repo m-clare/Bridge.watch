@@ -5,6 +5,12 @@ from .models import Bridge
 from typing import Dict, Any
 
 
+# -----------------------------------------------------------
+# Serializers are not currently in use.
+# Led to significant slowdown for passing data to express for
+# post-processing.
+# StreamingHTTPRequest used instead
+# ----------------------------------------------------------
 class BridgeLocationFieldSerializer(ModelSerializer):
 
     class Meta:
@@ -18,6 +24,7 @@ class BridgeLocationFieldSerializer(ModelSerializer):
 
         super().__init__(*args, **kwargs)
 
+   # slow Serializer to add additional fields to a serializer on the fly
     def get_field_names(self, *args, **kwargs):
         original_fields = super().get_field_names(*args, **kwargs)
         if self._fields_to_add:

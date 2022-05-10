@@ -1,6 +1,8 @@
 import csv
 from django.http import StreamingHttpResponse
 
+# Create custom writer to provide a StreamingHttpResponse
+# Echo and iter_items() required to simulate a stream
 class Echo(object):
     def write(self, value):
         return value
