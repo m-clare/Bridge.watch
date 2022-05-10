@@ -2,7 +2,7 @@ FROM postgis/postgis:14-master
 
 RUN mkdir /db
 
-ADD ./db/2020AllRecordsDelimitedAllStatesClean.csv /db
+ADD ./db/2021AllRecordsDelimitedAllStatesClean.csv /db
 
 ADD ./db/fk_csvs/*.csv /db/fk_csvs/
 
