@@ -1,9 +1,9 @@
 import * as d3 from "d3";
 import { hexbin } from "d3-hexbin";
-import { object } from "underscore";
-import { countBy } from "lodash-es";
 
 // Constant values for scaling, aspectRatio, etc.
+// TODO: Should these become environment variables as they need to be shared with the frontend...
+// Other option is to pass them as a state object along with other data
 const width = 975;
 const height = 610;
 const scaleValue = 1300;
@@ -112,6 +112,8 @@ function getHexbinData(data) {
     let domain;
     let rawHistogram;
 
+    // TODO: Load min max from json based on type
+    // remove giant conditional chaining
     if (field === "rating") {
       min = 0;
       max = 9;

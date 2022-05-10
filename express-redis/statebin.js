@@ -1,7 +1,4 @@
 import * as d3 from "d3";
-import { hexbin } from "d3-hexbin";
-import { object } from "underscore";
-import { countBy } from "lodash-es";
 import { groupBy } from "underscore";
 
 const db_fields = [

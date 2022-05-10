@@ -9,7 +9,7 @@ dotenv.config();
 const host = process.env.DATA_HOST
 const port = process.env.DATA_PORT
 
-// possible arguments async (state = null) to abvoid multiple functions
+// possible arguments async (state = null) to avoid multiple functions
 const getCountryData = async (qs) => {
   console.log(`http://${host}:${port}/api/bridges/${qs}`)
   return await fetch(`http://${host}:${port}/api/bridges/${qs}`)
